@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}My Timetable – SchoolCamp{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'timetable/css/timetable.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<!-- Messages -->
+{% for message in messages %}
+<div class="tt-alert {% if message.tags == 'error' %}tt-alert-error{% elif message.tags == 'success' %}tt-alert-success{% else %}tt-alert-info{% endif %}">
+  {{ message }}
+</div>
+{% endfor %}
+
+<!-- Page Header -->
+<div class="tt-page-header">
+  <div class="d-flex justify-content-between align-items-start">
+    <div>
+      <h1>📅 Timetable</h1>
+      <p>Organize your classes, never miss a lecture.</p>
+    </div>
+    <div style="display:flex;gap:6px;">
+      <a href="{% url 'timetable:shared_with_me' %}" class="btn-sc-outline" style="font-size:0.82rem;padding:8px 14px;color:white;border-color:rgba(255,255,255,.5);">
+        📬 Shared{% if share_requests %} <span style="background:white;color:var(--sc-green);border-radius:20px;padding:1px 6px;font-size:.7rem;font-weight:800;margin-left:4px;">{{ share_requests.count }}</span>{% endif %}
+      </a>
+      <a href="{% url 'timetable:create' %}" class="btn-sc-primary" style="font-size:0.82rem;padding:8px 14px;">
+        + New
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid px-3">
+
+  <!-- Share Requests Notification -->
+  {% if share_requests %}
+  <div class="tt-alert tt-alert-info">
+    📬 You have {{ share_requests.count }} new timetable share request{{ share_requests.count|pluralize }}.
+  </div>
+  {% endif %}
+
+  {% if active_timetable %}
+
+  <!-- Today's Classes Banner -->
+  <div class="tt-today-banner">
+    <div class="day-label">Today</div>
+    <div class="day-name">{{ today_name }}</div>
+
+    {% if next_class %}
+    <div class="next-class-label">⏰ Up next</div>
+    <div class="next-class-name">{{ next_class.name }}</div>
+    <div class="next-class-time">{{ next_class.start_time|time:"g:i A" }} – {{ next_class.end_time|time:"g:i A" }}{% if next_class.room %} · {{ next_class.room }}{% endif %}</div>
+    {% elif today_courses %}
+    <div style="font-size:0.9rem;opacity:0.9;">✅ All done for today!</div>
+    {% else %}
+    <div style="font-size:0.9rem;opacity:0.9;">🎉 No classes today — enjoy your free day!</div>
+    {% endif %}
+  </div>
+
+  <!-- Today's Course List -->
+  {% if today_courses %}
+  <div class="tt-card">
+    <div class="tt-card-header">
+      <h2 class="tt-card-title">Today's Classes</h2>
+      <a href="{% url 'timetable:day_view' active_timetable.pk today_index %}" class="btn-sc-outline" style="font-size:0.78rem;padding:6px 12px;">View All</a>
+    </div>
+
+    {% for course in today_courses %}
+    <a href="{% url 'timetable:course_edit' course.pk %}" class="tt-course-pill">
+      <div class="course-color-bar" style="background: {{ course.color }};"></div>
+      <div class="course-info">
+        <div class="course-name">{{ course.name }}</div>
+        <div class="course-meta">
+          {% if course.lecturer %}👨‍🏫 {{ course.lecturer }}{% endif %}
+          {% if course.room %} · 📍 {{ course.room }}{% endif %}
+        </div>
+      </div>
+      <div class="course-time">{{ course.start_time|time:"g:i A" }}<br><small>{{ course.duration_display }}</small></div>
+    </a>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Active Timetable Quick Actions -->
+  <div class="tt-card">
+    <div class="tt-card-header">
+      <h2 class="tt-card-title">{{ active_timetable.name }}</h2>
+      <span class="tt-badge tt-badge-active">Active</span>
+    </div>
+    <div style="font-size:0.82rem;color:var(--sc-text-muted);margin-bottom:14px;">
+      {{ active_timetable.get_semester_display }} · {{ active_timetable.academic_year }} · {{ active_timetable.courses.count }} course{{ active_timetable.courses.count|pluralize }}
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <a href="{% url 'timetable:detail' active_timetable.pk %}" class="btn-sc-primary" style="font-size:0.82rem;padding:8px 14px;">📋 Weekly View</a>
+      <a href="{% url 'timetable:course_add' active_timetable.pk %}" class="btn-sc-outline" style="font-size:0.82rem;padding:8px 14px;">+ Add Course</a>
+      <a href="{% url 'timetable:free_periods' active_timetable.pk %}" class="btn-sc-outline" style="font-size:0.82rem;padding:8px 14px;">🕐 Free Periods</a>
+      <a href="{% url 'timetable:share' active_timetable.pk %}" class="btn-sc-outline" style="font-size:0.82rem;padding:8px 14px;">🔗 Share</a>
+    </div>
+  </div>
+
+  {% else %}
+  <!-- Empty State -->
+  <div class="tt-card">
+    <div class="tt-empty-state">
+      <div class="empty-icon">📅</div>
+      <h3>No Timetable Yet</h3>
+      <p>Create your first timetable to organize your semester lectures.</p>
+      <a href="{% url 'timetable:create' %}" class="btn-sc-primary">+ Create Timetable</a>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- All Timetables -->
+  {% if timetables.count > 1 or not active_timetable %}
+  <div class="tt-card">
+    <div class="tt-card-header">
+      <h2 class="tt-card-title">All Timetables</h2>
+    </div>
+
+    {% for tt in timetables %}
+    <div class="tt-list-card {% if tt.is_active %}active-timetable{% endif %}">
+      <div class="tt-icon">{% if tt.is_active %}📌{% else %}📅{% endif %}</div>
+      <div class="tt-meta">
+        <div class="tt-name">{{ tt.name }}</div>
+        <div class="tt-sub">
+          <span class="tt-badge tt-badge-sem">{{ tt.get_semester_display }}</span>
+          {{ tt.academic_year }} · {{ tt.courses.count }} course{{ tt.courses.count|pluralize }}
+          {% if tt.is_shared %}<span class="tt-badge tt-badge-shared" style="margin-left:4px;">Shared</span>{% endif %}
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
+        <a href="{% url 'timetable:detail' tt.pk %}" class="btn-sc-outline" style="font-size:0.75rem;padding:5px 10px;">View</a>
+        {% if not tt.is_active %}
+        <a href="{% url 'timetable:set_active' tt.pk %}" class="btn-sc-primary" style="font-size:0.75rem;padding:5px 10px;">Set Active</a>
+        {% endif %}
+      </div>
+    </div>
+    {% empty %}
+    <div class="tt-empty-state" style="padding:20px;">
+      <p>No timetables yet.</p>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'timetable/js/timetable.js' %}"></script>
+{% endblock %}

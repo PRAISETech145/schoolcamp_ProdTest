@@ -1,0 +1,240 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}{{ profile_user.username }}'s Profile - SchoolCamp{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <a href="{% url 'dashboard:home' %}" class="btn btn-outline-secondary btn-sm mb-3">
+        <i class="bi bi-arrow-left me-1"></i>Back to Dashboard
+      </a>
+    </div>
+    {% if is_own %}
+      <a href="{% url 'accounts:profile' %}" class="btn btn-primary">
+        <i class="bi bi-person-gear me-1"></i>Edit Profile
+      </a>
+    {% endif %}
+  </div>
+
+  <!-- Profile Header Card -->
+  <div class="card border-0 shadow-sm mb-4" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
+    <div class="card-body p-4">
+      <div class="row align-items-center">
+        <div class="col-auto">
+          <img src="{{ profile_user.get_avatar_url }}" alt="{{ profile_user.username }}"
+               class="rounded-circle border-4" style="width: 100px; height: 100px; object-fit: cover; border-color: white !important; box-shadow: 0 8px 24px rgba(0,0,0,0.15);">
+        </div>
+        <div class="col">
+          <div class="d-flex align-items-center flex-wrap gap-3 mb-2">
+            <h1 class="fw-bold mb-0">{{ profile_user.username }}</h1>
+            {% if stats %}
+              <span class="badge bg-primary-subtle text-primary px-3 py-2 fs-6">
+                Level {{ stats.current_level }}
+              </span>
+            {% endif %}
+            {% if profile_user.is_verified %}
+              <span class="badge bg-success-subtle text-success px-2 py-1">
+                <i class="bi bi-patch-check-fill me-1"></i>Verified
+              </span>
+            {% endif %}
+          </div>
+          <div class="text-muted mb-2">
+            <i class="bi bi-geo-alt me-1"></i>{{ profile_user.region|default:"Cameroon" }}
+            {% if profile_user.level %} • <i class="bi bi-mortarboard me-1"></i>{{ profile_user.get_level_display }}{% endif %}
+            {% if profile_user.school_name %} • <i class="bi bi-building me-1"></i>{{ profile_user.school_name }}{% endif %}
+          </div>
+          <div class="d-flex gap-4 small">
+            <span class="text-muted"><i class="bi bi-calendar me-1"></i>Joined {{ profile_user.date_joined|date:"M Y" }}</span>
+            <span class="text-muted"><i class="bi bi-chat me-1"></i>{{ stats.total_questions_asked|default:0 }} Questions</span>
+            <span class="text-muted"><i class="bi bi-reply me-1"></i>{{ stats.total_replies_posted|default:0 }} Replies</span>
+          </div>
+        </div>
+        <div class="col-auto text-end">
+          {% if stats %}
+          <div class="text-success fw-bold" style="font-size: 2.5rem;">{{ stats.total_xp|intcomma }}</div>
+          <div class="text-muted wmall">Total XP</div>
+          {% else %}
+          <div class="text-success fw-bold" style="font-size: 2.5rem;">0</div>
+          <div class="text-muted wmall">Total XP</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Overview -->
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+      <div class="card border-0 shadow-sm h-100 text-center py-3" style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);">
+        <div class="card-body">
+          <div class="fw-bold fs-3 text-success">{{ stats.total_materials_uploaded|default:0 }}</div>
+          <div class="text-muted small">Materials Uploaded</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card border-0 shadow-sm h-100 text-center py-3" style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);">
+        <div class="card-body">
+          <div class="fw-bold fs-3 text-primary">{{ stats.total_materials_downloaded|default:0 }}</div>
+          <div class="text-muted small">Materials Downloaded</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card border-0 shadow-sm h-100 text-center py-3" style="background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);">
+        <div class="card-body">
+          <div class="fw-bold fs-3 text-pink">{{ stats.total_quizzes_passed|default:0 }}</div>
+          <div class="text-muted small">Quizzes Passed</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card border-0 shadow-sm h-100 text-center py-3" style="background: linear-gradient(135deg, #fefce8 0%, #fef3c7 100%);">
+        <div class="card-body">
+          <div class="fw-bold fs-3 text-warning">{{ stats.total_answers_accepted|default:0 }}</div>
+          <div class="text-muted small">Answers Accepted</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Streak & Calendar -->
+  <div class="row g-4 mb-4">
+    <!-- Streak Card -->
+    <div class="col-12 col-lg-5">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+          <h5 class="fw-bold mb-0"><i class="bi bi-fire text-danger me-2"></i>Streak</h5>
+          {% if streak %}
+          <span class="badge bg-danger-subtle text-danger px-3 py-2 fs-6">
+            <i class="bi bi-fire me-1"></i>{{ streak.current_streak }} Days
+          </span>
+          {% endif %}
+        </div>
+        <div class="card-body text-center py-5">
+          {% if streak and streak.current_streak > 0 %}
+            <div class="mb-3" style="font-size: 5rem;">🔥</div>
+            <h1 class="display-2 fw-bold text-danger mb-1">{{ streak.current_streak }}</h1>
+            <p class="text-muted mb-3">Current streak</p>
+            <p class="text-muted small mb-4">Longest streak: <strong>{{ streak.longest_streak }} days</strong></p>
+
+            <div class="progress mb-3" style="height: 8px; max-width: 300px; margin: 0 auto;">
+              <div class="progress-bar bg-danger" role="progressbar"
+                   style="width: {{ streak.progress_to_milestone|default:0 }}%"
+                   aria-valuenow="{{ streak.progress_to_milestone|default:0 }}" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <p class="text-muted small mb-0">
+              {{ streak.days_until_milestone|default:0 }} days to next milestone ({{ streak.milestone_days|default:7 }} days)
+            </p>
+          {% else %}
+            <div class="mb-3" style="font-size: 4rem;">🌱</div>
+            <h3 class="fw-bold mb-2">No active streak</h3>
+            <p class="text-muted mb-3">Start learning today to begin your streak!</p>
+            <a href="{% url 'materials:list' %}" class="btn btn-primary">Browse Materials</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Mini Calendar Heatmap -->
+    <div class="col-12 col-lg-7">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+          <h5 class="fw-bold mb-0"><i class="bi bi-calendar3 text-primary me-2"></i>Activity Calendar</h5>
+          <small class="text-muted">{{ calendar_year|default:year }} Activity</small>
+        </div>
+        <div class="card-body p-3">
+          <div class="calendar-heatmap" style="font-size: 0.65rem;">
+            {% for month in calendar_months %}
+            <div class="cal-month mb-3">
+              <div class="fw-medium text-muted mb-1">{{ month.name }}</div>
+              <div class="d-flex flex-wrap gap-1">
+                {% for day in month.days %}
+                <div class="cal-day"
+                     style="width: 11px; height: 11px; border-radius: 2px;
+                            background: {% if day.level == 4 %}#0c4503{% elif day.level == 3 %}#1a7c0d{% elif day.level == 2 %}#2eb827{% elif day.level == 1 %}#6eff57{% else %}#e5e7eb{% endif %};"
+                     title="{{ day.date|date:"M d, Y" }}: {{ day.count }} activities, {{ day.xp }} XP"></div>
+                {% endfor %}
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          <div class="d-flex align-items-center gap-2 mt-3 small text-muted">
+            <span>Less</span>
+            <div style="width: 11px; height: 11px; border-radius: 2px; background: #e5e7eb;"></div>
+            <div style="width: 11px; height: 11px; border-radius: 2px; background: #6eff57;"></div>
+            <div style="width: 11px; height: 11px; border-radius: 2px; background: #2eb827;"></div>
+            <div style="width: 11px; height: 11px; border-radius: 2px; background: #1a7c0d;"></div>
+            <div style="width: 11px; height: 11px; border-radius: 2px; background: #0c4503;"></div>
+            <span>More</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Activity -->
+  <div class="card border-0 shadow-sm">
+    <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+      <h5 class="fw-bold mb-0"><i class="bi bi-clock-history text-primary me-2"></i>Recent Activity</h5>
+      <a href="{% url 'dashboard:activity_feed' %}" class="btn btn-sm btn-outline-primary">View All</a>
+    </div>
+    <div class="card-body p-0">
+      {% if recent_activities %}
+        <div class="list-group list-group-flush">
+          {% for activity in recent_activities %}
+          <div class="list-group-item list-group-item-action px-4 py-3 border-0 border-bottom">
+            <div class="d-flex align-items-start gap-3">
+              <div class="activity-icon rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                   style="width: 36px; height: 36px;">
+                {% if activity.activity_type == 'material_upload' %}<i class="bi bi-upload text-primary" style="background: #e0f2fe;"></i>
+                {% elif activity.activity_type == 'material_download' %}<i class="bi bi-download text-success" style="background: #dcfce7;"></i>
+                {% elif activity.activity_type == 'quiz_attempt' %}<i class="bi bi-clipboard-check text-warning" style="background: #fef3c7;"></i>
+                {% elif activity.activity_type == 'quiz_pass' %}<i class="bi bi-trophy text-warning" style="background: #dcfce7;"></i>
+                {% elif activity.activity_type == 'question_post' %}<i class="bi bi-question-circle text-pink" style="background: #fce7f3;"></i>
+                {% elif activity.activity_type == 'question_reply' %}<i class="bi bi-chat text-purple" style="background: #ede9fe;"></i>
+                {% elif activity.activity_type == 'answer_accepted' %}<i class="bi bi-check-circle text-success" style="background: #dcfce7;"></i>
+                {% else %}<i class="bi bi-lightning text-secondary" style="background: #f3f4f6;"></i>{% endif %}
+              </div>
+              <div class="flex-grow-1 min-width-0">
+                <div class="d-flex justify-content-between">
+                  <p class="fw-medium mb-1">{{ activity.description }}</p>
+                  {% if activity.xp_earned > 0 %}
+                    <span class="badge bg-success-subtle text-success fw-medium py-1 px-2">+{{ activity.xp_earned }} XP</span>
+                  {% endif %}
+                </div>
+                <div class="small text-muted">
+                  {{ activity.created_at|timesince }} ago
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="text-center py-5 text-muted">
+          <div style="font-size: 3rem;">📭</div>
+          <p class="mb-0">No recent activity</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<style>
+.cal-day {
+  transition: transform 0.15s ease;
+}
+.cal-day:hover {
+  transform: scale(1.5);
+  z-index: 10;
+  position: relative;
+}
+.calendar-heatmap {
+  overflow-x: auto;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+{% block title %}Groups{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2 class="fw-bold mb-0">👥 Groups</h2>
+  {% if user.is_authenticated %}
+    <a href="{% url 'groups:create' %}" class="btn btn-primary">
+      <i class="bi bi-plus-circle"></i> Create Group
+    </a>
+  {% endif %}
+</div>
+
+<!-- Pending invites banner -->
+{% if pending_invites %}
+<div class="alert alert-warning mb-4">
+  <strong>📬 You have {{ pending_invites|length }} pending group invite{{ pending_invites|length|pluralize }}:</strong>
+  <div class="mt-2 d-flex flex-wrap gap-2">
+    {% for inv in pending_invites %}
+    <div class="d-flex align-items-center gap-2 bg-white rounded px-3 py-2 border">
+      <span class="fw-bold">{{ inv.group.name }}</span>
+      <small class="text-muted">from {{ inv.invited_by.username }}</small>
+      <form method="post" action="{% url 'groups:respond_invite' inv.group.pk %}" class="d-flex gap-1">
+        {% csrf_token %}
+        <button name="action" value="accept" class="btn btn-success btn-sm">✓ Accept</button>
+        <button name="action" value="decline" class="btn btn-outline-danger btn-sm">✕</button>
+      </form>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<!-- My Groups -->
+{% if my_groups %}
+<div class="mb-5">
+  <h5 class="fw-bold text-muted mb-3 text-uppercase" style="letter-spacing:1px;font-size:12px">My Groups</h5>
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+    {% for group in my_groups %}
+    <div class="col">
+      <a href="{% url 'groups:detail' group.pk %}" class="text-decoration-none">
+        <div class="card h-100 border-success border-opacity-25">
+          {% if group.cover_image %}
+            <img src="{{ group.cover_image.url }}" class="card-img-top" style="height:80px;object-fit:cover">
+          {% else %}
+            <div class="d-flex align-items-center justify-content-center bg-success bg-opacity-10" style="height:60px;font-size:2rem">👥</div>
+          {% endif %}
+          <div class="card-body py-2 px-3">
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="fw-bold text-dark">{{ group.name }}</span>
+              <span class="badge {% if group.is_public %}bg-success{% else %}bg-secondary{% endif %} bg-opacity-75">
+                {% if group.is_public %}🌍{% else %}🔒{% endif %}
+              </span>
+            </div>
+            <small class="text-muted">{{ group.member_count }} member{{ group.member_count|pluralize }}</small>
+          </div>
+        </div>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<!-- Discover Public Groups -->
+<h5 class="fw-bold text-muted mb-3 text-uppercase" style="letter-spacing:1px;font-size:12px">Discover Public Groups</h5>
+
+<!-- Search -->
+<form method="get" class="mb-4">
+  <div class="input-group">
+    <input type="text" name="q" value="{{ search }}" class="form-control" placeholder="Search groups...">
+    <button class="btn btn-outline-secondary" type="submit"><i class="bi bi-search"></i></button>
+    {% if search %}<a href="{% url 'groups:list' %}" class="btn btn-outline-secondary">✕ Clear</a>{% endif %}
+  </div>
+</form>
+
+{% if public_groups %}
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+  {% for group in public_groups %}
+  <div class="col">
+    <div class="card h-100">
+      {% if group.cover_image %}
+        <img src="{{ group.cover_image.url }}" class="card-img-top" style="height:120px;object-fit:cover">
+      {% else %}
+        <div class="d-flex align-items-center justify-content-center" style="height:80px;font-size:3rem;background:linear-gradient(135deg,#e8f5ee,#d0eedd)">👥</div>
+      {% endif %}
+      <div class="card-body d-flex flex-column">
+        <div class="d-flex justify-content-between align-items-start mb-1">
+          <h5 class="fw-bold mb-0">
+            <a href="{% url 'groups:detail' group.pk %}" class="text-decoration-none text-dark">{{ group.name }}</a>
+          </h5>
+          <span class="badge bg-success">🌍 Public</span>
+        </div>
+        {% if group.description %}
+          <p class="text-muted small flex-grow-1">{{ group.description|truncatechars:100 }}</p>
+        {% endif %}
+        <div class="d-flex justify-content-between align-items-center mt-2">
+          <small class="text-muted"><i class="bi bi-people"></i> {{ group.mc }} member{{ group.mc|pluralize }}</small>
+          <small class="text-muted">{{ group.created_at|timesince }} ago</small>
+        </div>
+        <a href="{% url 'groups:detail' group.pk %}" class="btn btn-outline-primary btn-sm mt-3">View Group</a>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-5 text-muted">
+  <div style="font-size:4rem">👥</div>
+  <h4>No groups found</h4>
+  {% if user.is_authenticated %}
+    <a href="{% url 'groups:create' %}" class="btn btn-primary mt-2">Create the first one!</a>
+  {% endif %}
+</div>
+{% endif %}
+
+{% endblock %}

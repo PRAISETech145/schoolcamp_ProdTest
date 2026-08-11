@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chemistry Library | SchoolCamp</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Fira+Code:wght@400;500&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--sc-green:#1a9e5a;--sc-dark:#0f1c14;--sc-light:#e8f5ee;--sc-accent:#4cd98a;--sw:270px}
+    *{box-sizing:border-box}
+    body{background:#f4f7f5;font-family:'Nunito',sans-serif;margin:0}
+    .navbar{background:var(--sc-dark)!important;position:sticky;top:0;z-index:1030}
+    .navbar-brand{color:#fff!important;font-weight:800;font-size:1.4rem}
+    .navbar-brand span{color:var(--sc-accent)}
+    .nav-link{color:#cde8d8!important}
+    .page-wrapper{display:flex;min-height:calc(100vh - 56px)}
+    #sidebar{width:var(--sw);min-width:var(--sw);background:var(--sc-dark);position:sticky;top:56px;height:calc(100vh - 56px);overflow-y:auto;transition:transform .3s ease;z-index:1020;flex-shrink:0}
+    #sidebar::-webkit-scrollbar{width:5px}
+    #sidebar::-webkit-scrollbar-thumb{background:#2a5c3a;border-radius:10px}
+    .sb-head{background:#0a1510;padding:16px 20px;font-weight:800;font-size:.85rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--sc-accent);border-bottom:1px solid #1e3828;display:flex;align-items:center;gap:8px}
+    .sb-search{padding:12px 14px;border-bottom:1px solid #1e3828}
+    .sb-search input{background:#1a2e20;border:1px solid #2a5c3a;color:#cde8d8;border-radius:8px;padding:7px 12px;width:100%;font-size:13px;outline:none}
+    .sb-search input::placeholder{color:#6aad82}
+    .sb-search input:focus{border-color:var(--sc-accent)}
+    .sb-nav .cat-link{display:flex;align-items:center;gap:10px;padding:10px 20px;color:#9ecfb0;text-decoration:none;font-size:.88rem;font-weight:600;border-left:3px solid transparent;transition:all .2s;cursor:pointer}
+    .sb-nav .cat-link:hover,.sb-nav .cat-link.active{color:#fff;background:rgba(76,217,138,.1);border-left-color:var(--sc-accent)}
+    .sb-nav .cat-link i{font-size:1rem;color:var(--sc-accent)}
+    #sbOvl{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1019}
+    #mc{flex:1;padding:28px 24px;overflow-x:hidden;min-width:0}
+    .pg-title{font-family:'Merriweather',serif;font-size:1.9rem;font-weight:700;color:var(--sc-dark);margin-bottom:4px}
+    .pg-sub{color:#5a8a6a;font-size:.95rem;margin-bottom:28px}
+    .fsec{margin-bottom:44px;scroll-margin-top:80px}
+    .fsec.hidden{display:none}
+    .stitle{font-family:'Merriweather',serif;font-size:1.25rem;font-weight:700;color:var(--sc-dark);border-left:4px solid var(--sc-green);padding-left:12px;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+    .stitle i{color:var(--sc-green)}
+    .fcard{background:#fff;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,.07);overflow:hidden;margin-bottom:14px;border:none;transition:box-shadow .2s}
+    .fcard:hover{box-shadow:0 4px 20px rgba(26,158,90,.15)}
+    .fcard-h{background:var(--sc-light);border-bottom:1px solid #d2e8db;padding:10px 16px;font-weight:700;font-size:.92rem;color:#0f3d22;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px}
+    .fcard-b{padding:14px 16px}
+    .fbox{background:#0f1c14;border-radius:8px;padding:14px 18px;font-family:'Fira Code',monospace;font-size:.9rem;color:#4cd98a;margin:8px 0;position:relative;overflow-x:auto;line-height:1.9}
+    .fbox .v{color:#fda085}.fbox .k{color:#f6d365;font-weight:bold}.fbox .s{color:#89d8ff}.fbox .u{color:#c8a8ff;font-size:.82rem}.fbox .p{color:#9effc8}.fbox .c{color:#ffe07a;font-style:italic;font-size:.82rem}
+    .cpb{position:absolute;top:8px;right:8px;background:rgba(76,217,138,.15);border:1px solid rgba(76,217,138,.3);color:var(--sc-accent);border-radius:6px;padding:2px 8px;font-size:11px;cursor:pointer;transition:all .2s}
+    .cpb:hover{background:var(--sc-green);color:#fff;border-color:var(--sc-green)}
+    .fnote{font-size:.83rem;color:#5a8a6a;margin-top:6px;font-style:italic}
+    .fnote strong{color:#1a7a42;font-style:normal}
+    .ftbl{width:100%;border-collapse:collapse;font-size:.88rem}
+    .ftbl th{background:var(--sc-light);color:#0f3d22;padding:8px 12px;text-align:left;font-weight:700;border-bottom:2px solid #d2e8db}
+    .ftbl td{padding:8px 12px;border-bottom:1px solid #eef5f1;vertical-align:middle}
+    .ftbl tr:hover td{background:#f8fbf9}
+    .ftbl code{background:#0f1c14;color:#4cd98a;border-radius:5px;padding:2px 7px;font-family:'Fira Code',monospace;font-size:.85rem}
+    #sbToggle{display:none;background:var(--sc-green);color:#fff;border:none;border-radius:8px;padding:6px 12px;font-size:.85rem;font-weight:700;cursor:pointer;align-items:center;gap:6px}
+    .lp{font-size:10px;border-radius:20px;padding:2px 9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+    .lb{background:#d4edda;color:#155724}.li{background:#fff3cd;color:#856404}.la{background:#f8d7da;color:#721c24}
+    .crumb{font-size:.82rem;color:#7aad92;margin-bottom:20px}
+    .crumb a{color:var(--sc-green);text-decoration:none}
+    footer{background:var(--sc-dark);color:#7aad92;padding:30px 0;margin-top:20px}
+    footer a{color:var(--sc-accent);text-decoration:none}
+
+    /* PERIODIC TABLE */
+    .pt-wrap{overflow-x:auto;padding-bottom:10px}
+    .pt-grid{display:grid;grid-template-columns:repeat(18,46px);grid-template-rows:repeat(10,56px);gap:3px;min-width:860px}
+    .pt-cell{border-radius:5px;padding:2px 3px;cursor:default;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;transition:transform .15s,box-shadow .15s;border:1px solid rgba(255,255,255,.15)}
+    .pt-cell:hover{transform:scale(1.18);z-index:10;box-shadow:0 4px 18px rgba(0,0,0,.35)}
+    .pt-n{font-size:9px;color:rgba(255,255,255,.7);line-height:1;align-self:flex-start}
+    .pt-s{font-size:15px;font-weight:800;color:#fff;line-height:1.2}
+    .pt-nm{font-size:7px;color:rgba(255,255,255,.75);line-height:1;text-align:center}
+    .pt-m{font-size:7.5px;color:rgba(255,255,255,.6)}
+    .alk{background:#c0392b}.ale{background:#e67e22}.trn{background:#2980b9}.pst{background:#16a085}.met{background:#27ae60}.nmx{background:#8e44ad}.hal{background:#d35400}.nbl{background:#1a5f7a}.lan{background:#5d6d7e}.act{background:#4a235a}.hyd{background:#6c3483}
+    .pt-lbl{display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#7aad92;border:none;background:transparent}
+    .pt-leg{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+    .pt-li{display:flex;align-items:center;gap:5px;font-size:11px;color:#444}
+    .pt-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+
+    /* Organic test cards */
+    .og-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+    .og-card{background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.07)}
+    .og-head{background:var(--sc-dark);padding:8px 14px;font-weight:700;font-size:.88rem;color:var(--sc-accent);display:flex;justify-content:space-between;align-items:center}
+    .og-body{padding:12px 14px;font-size:.85rem}
+    .trow{margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid #eef5f1}
+    .trow:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none}
+    .tnm{font-weight:700;color:#1a7a42;font-size:.82rem;margin-bottom:2px}
+    .tob{font-size:.82rem;color:#555;margin-bottom:2px}
+    .teq{background:#0f1c14;border-radius:5px;padding:5px 8px;font-family:'Fira Code',monospace;font-size:.75rem;color:#4cd98a;overflow-x:auto}
+    .pb{display:inline-block;border-radius:6px;padding:1px 8px;font-size:.78rem;font-weight:700}
+    .pp{background:#d4edda;border:1px solid #28a745;color:#155724}
+    .pn{background:#f8d7da;border:1px solid #dc3545;color:#721c24}
+
+    @media(max-width:768px){
+      #sidebar{position:fixed;top:56px;left:0;height:calc(100vh - 56px);transform:translateX(-100%);box-shadow:4px 0 20px rgba(0,0,0,.3)}
+      #sidebar.open{transform:translateX(0)}
+      #sbOvl.open{display:block}
+      #sbToggle{display:flex}
+      #mc{padding:20px 16px}
+      .pg-title{font-size:1.45rem}
+      .fbox{font-size:.78rem}
+      .og-grid{grid-template-columns:1fr}
+      .pt-grid{grid-template-columns:repeat(18,38px);grid-template-rows:repeat(10,48px);min-width:700px}
+      .pt-s{font-size:12px}
+    }
+  </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark">
+  <div class="container-fluid px-3">
+    <a class="navbar-brand" href="#">🏕 School<span>Camp</span></a>
+    <div class="ms-auto d-flex align-items-center gap-3">
+      <button id="sbToggle" onclick="toggleSB()"><i class="bi bi-list"></i> Topics</button>
+      <a class="nav-link d-none d-lg-block" href="{% url 'forum:home' %}"><i class="bi bi-house"></i> Home</a>
+    </div>
+  </div>
+</nav>
+<div id="sbOvl" onclick="toggleSB()"></div>
+<div class="page-wrapper">
+  <aside id="sidebar">
+    <div class="sb-head"><i class="bi bi-eyedropper"></i> Chemistry Topics</div>
+    <div class="sb-search"><input type="text" placeholder="Search topics..." oninput="filterSecs(this.value)"></div>
+    <nav class="sb-nav">
+      <a class="cat-link active" onclick="goTo('periodic',event)" href="#"><i class="bi bi-grid-3x3"></i> Periodic Table</a>
+      <a class="cat-link" onclick="goTo('atomic',event)" href="#"><i class="bi bi-atom"></i> Atomic Structure</a>
+      <a class="cat-link" onclick="goTo('bonding',event)" href="#"><i class="bi bi-link-45deg"></i> Chemical Bonding</a>
+      <a class="cat-link" onclick="goTo('stoich',event)" href="#"><i class="bi bi-calculator"></i> Stoichiometry</a>
+      <a class="cat-link" onclick="goTo('gases',event)" href="#"><i class="bi bi-wind"></i> Gases</a>
+      <a class="cat-link" onclick="goTo('thermo',event)" href="#"><i class="bi bi-thermometer"></i> Thermochemistry</a>
+      <a class="cat-link" onclick="goTo('kinetics',event)" href="#"><i class="bi bi-speedometer"></i> Kinetics</a>
+      <a class="cat-link" onclick="goTo('equil',event)" href="#"><i class="bi bi-arrows-angle-contract"></i> Equilibrium</a>
+      <a class="cat-link" onclick="goTo('acids',event)" href="#"><i class="bi bi-lightning"></i> Acids &amp; Bases</a>
+      <a class="cat-link" onclick="goTo('redox',event)" href="#"><i class="bi bi-arrow-left-right"></i> Redox &amp; Electrochemistry</a>
+      <a class="cat-link" onclick="goTo('organic',event)" href="#"><i class="bi bi-hexagon"></i> Organic Chemistry</a>
+      <a class="cat-link" onclick="goTo('synth',event)" href="#"><i class="bi bi-arrow-repeat"></i> Organic Synthetic Routes</a>
+      <a class="cat-link" onclick="goTo('tests',event)" href="#"><i class="bi bi-search"></i> Tests for Compounds</a>
+      <a class="cat-link" onclick="goTo('formulas',event)" href="#"><i class="bi bi-journal-code"></i> Key Formulas</a>
+    </nav>
+  </aside>
+
+  <main id="mc"> 
+    <h1 class="pg-title">🧪 Chemistry Library</h1>
+    <p class="pg-sub">Periodic table, organic tests with equations, and all key formulas — complete chemistry reference for students.</p>
+
+    <!-- PERIODIC TABLE -->
+    <section class="fsec" id="periodic" data-title="Periodic Table elements">
+      <div class="stitle"><i class="bi bi-grid-3x3"></i> Periodic Table of Elements</div>
+      <div class="fcard">
+        <div class="fcard-h">All 118 Elements — Hover for full name &amp; mass</div>
+        <div class="fcard-b">
+          <div class="pt-wrap"><div class="pt-grid" id="ptGrid"></div></div>
+          <div class="pt-leg">
+            <div class="pt-li"><div class="pt-dot hyd"></div>Hydrogen</div>
+            <div class="pt-li"><div class="pt-dot alk"></div>Alkali Metal</div>
+            <div class="pt-li"><div class="pt-dot ale"></div>Alkaline Earth</div>
+            <div class="pt-li"><div class="pt-dot trn"></div>Transition Metal</div>
+            <div class="pt-li"><div class="pt-dot pst"></div>Post-Transition</div>
+            <div class="pt-li"><div class="pt-dot met"></div>Metalloid</div>
+            <div class="pt-li"><div class="pt-dot nmx"></div>Nonmetal</div>
+            <div class="pt-li"><div class="pt-dot hal"></div>Halogen</div>
+            <div class="pt-li"><div class="pt-dot nbl"></div>Noble Gas</div>
+            <div class="pt-li"><div class="pt-dot lan"></div>Lanthanide</div>
+            <div class="pt-li"><div class="pt-dot act"></div>Actinide</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ATOMIC STRUCTURE -->
+    <section class="fsec" id="atomic" data-title="Atomic Structure electron configuration isotopes">
+      <div class="stitle"><i class="bi bi-atom"></i> Atomic Structure</div>
+      <div class="fcard">
+        <div class="fcard-h">Subatomic Particles <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <table class="ftbl">
+            <tr><th>Particle</th><th>Symbol</th><th>Charge</th><th>Mass (u)</th><th>Location</th></tr>
+            <tr><td>Proton</td><td><code>p+</code></td><td>+1</td><td>1.007</td><td>Nucleus</td></tr>
+            <tr><td>Neutron</td><td><code>n0</code></td><td>0</td><td>1.008</td><td>Nucleus</td></tr>
+            <tr><td>Electron</td><td><code>e-</code></td><td>-1</td><td>0.000549</td><td>Shells</td></tr>
+          </table>
+          <div class="fbox" style="margin-top:10px">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">Atomic number (Z):</span> number of protons<br>
+            <span class="k">Mass number (A):</span>   protons + neutrons<br>
+            <span class="k">Neutrons (N):</span>       N = A - Z<br>
+            <span class="k">Isotopes:</span>           same Z, different A
+          </div>
+        </div>
+      </div>
+      <div class="fcard">
+        <div class="fcard-h">Electron Configuration <span class="lp li">Intermediate</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">Shell capacity:</span>  2n2  (n = shell number)<br>
+            <span class="k">Subshells:</span>       s(2) p(6) d(10) f(14)<br>
+            <span class="k">Aufbau order:</span>    1s > 2s > 2p > 3s > 3p > 4s > 3d > 4p ...<br>
+            <span class="k">Hund's Rule:</span>     fill singly before pairing<br>
+            <span class="k">Pauli Exclusion:</span> max 2 electrons per orbital (opposite spin)
+          </div>
+          <p class="fnote">Example — Fe (Z=26): <strong>[Ar] 3d6 4s2</strong> | Cu (Z=29): <strong>[Ar] 3d10 4s1</strong></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- BONDING -->
+    <section class="fsec" id="bonding" data-title="Chemical Bonding ionic covalent VSEPR molecular shapes">
+      <div class="stitle"><i class="bi bi-link-45deg"></i> Chemical Bonding</div>
+      <div class="fcard">
+        <div class="fcard-h">Types of Bonding <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <table class="ftbl">
+            <tr><th>Type</th><th>EN diff.</th><th>Between</th><th>Example</th></tr>
+            <tr><td>Ionic</td><td><code>&gt;1.7</code></td><td>Metal + Nonmetal</td><td>NaCl, MgO</td></tr>
+            <tr><td>Covalent (polar)</td><td><code>0.5-1.7</code></td><td>Nonmetals</td><td>HCl, H2O</td></tr>
+            <tr><td>Covalent (nonpolar)</td><td><code>&lt;0.5</code></td><td>Same/similar</td><td>O2, CH4</td></tr>
+            <tr><td>Metallic</td><td>—</td><td>Metal atoms</td><td>Fe, Cu, Na</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="fcard">
+        <div class="fcard-h">VSEPR &amp; Molecular Shapes <span class="lp li">Intermediate</span></div>
+        <div class="fcard-b">
+          <table class="ftbl">
+            <tr><th>Bond pairs</th><th>Lone pairs</th><th>Shape</th><th>Angle</th><th>Example</th></tr>
+            <tr><td>2</td><td>0</td><td>Linear</td><td>180°</td><td>CO2</td></tr>
+            <tr><td>3</td><td>0</td><td>Trigonal planar</td><td>120°</td><td>BF3</td></tr>
+            <tr><td>4</td><td>0</td><td>Tetrahedral</td><td>109.5°</td><td>CH4</td></tr>
+            <tr><td>3</td><td>1</td><td>Trigonal pyramidal</td><td>107°</td><td>NH3</td></tr>
+            <tr><td>2</td><td>2</td><td>Bent/V-shape</td><td>104.5°</td><td>H2O</td></tr>
+            <tr><td>6</td><td>0</td><td>Octahedral</td><td>90°</td><td>SF6</td></tr>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- STOICHIOMETRY -->
+    <section class="fsec" id="stoich" data-title="Stoichiometry moles molar mass empirical molecular formula yield concentration">
+      <div class="stitle"><i class="bi bi-calculator"></i> Stoichiometry</div>
+      <div class="fcard">
+        <div class="fcard-h">Mole Concept <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">Moles:</span>         n = m / M  <span class="u">[mol]</span><br>
+            <span class="k">Particles:</span>     N = n x Na  <span class="u">(Na = 6.022x10^23)</span><br>
+            <span class="k">Gas (STP):</span>     V = n x 22.4 L<br>
+            <span class="k">Gas (RTP):</span>     V = n x 24.0 L<br>
+            <span class="k">Concentration:</span> c = n / V  <span class="u">[mol/L]</span><br>
+            <span class="k">Dilution:</span>      c1V1 = c2V2
+          </div>
+          <p class="fnote"><strong>m</strong> = mass (g), <strong>M</strong> = molar mass (g/mol), <strong>V</strong> = volume (L).</p>
+        </div>
+      </div>
+      <div class="fcard">
+        <div class="fcard-h">Empirical &amp; Molecular Formula <span class="lp li">Intermediate</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">Step 1:</span>  % --&gt; mass (assume 100 g sample)<br>
+            <span class="k">Step 2:</span>  moles = mass / molar mass for each element<br>
+            <span class="k">Step 3:</span>  divide all by smallest mole value (whole ratios)<br>
+            <span class="k">Molecular formula:</span>  (empirical) x n<br>
+            <span class="v">n</span> = Molecular mass / Empirical formula mass
+          </div>
+        </div>
+      </div>
+      <div class="fcard">
+        <div class="fcard-h">Yield &amp; Purity <span class="lp li">Intermediate</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">% yield:</span>       (actual / theoretical) x 100%<br>
+            <span class="k">% purity:</span>      (pure mass / total mass) x 100%<br>
+            <span class="k">% composition:</span> (element mass / molar mass) x 100%
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- GASES -->
+    <section class="fsec" id="gases" data-title="Gases ideal gas law Dalton Graham diffusion Van der Waals">
+      <div class="stitle"><i class="bi bi-wind"></i> Gases</div>
+      <div class="fcard">
+        <div class="fcard-h">Gas Laws <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <table class="ftbl">
+            <tr><th>Law</th><th>Formula</th><th>Constant</th></tr>
+            <tr><td>Boyle's</td><td><code>P1V1 = P2V2</code></td><td>T, n</td></tr>
+            <tr><td>Charles's</td><td><code>V1/T1 = V2/T2</code></td><td>P, n</td></tr>
+            <tr><td>Gay-Lussac's</td><td><code>P1/T1 = P2/T2</code></td><td>V, n</td></tr>
+            <tr><td>Ideal Gas</td><td><code>PV = nRT</code></td><td>—</td></tr>
+            <tr><td>Combined</td><td><code>P1V1/T1 = P2V2/T2</code></td><td>n</td></tr>
+          </table>
+          <div class="fbox" style="margin-top:10px">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">Dalton's Law:</span>  P_total = P1 + P2 + P3 + ...<br>
+            <span class="k">Graham's Law:</span>  rate1/rate2 = sqrt(M2/M1)
+          </div>
+          <p class="fnote"><strong>R</strong> = 8.314 J/(mol·K) = 0.0821 L·atm/(mol·K). T must be in Kelvin.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- THERMOCHEMISTRY -->
+    <section class="fsec" id="thermo" data-title="Thermochemistry enthalpy Hess Gibbs entropy bond energy">
+      <div class="stitle"><i class="bi bi-thermometer"></i> Thermochemistry</div>
+      <div class="fcard">
+        <div class="fcard-h">Enthalpy &amp; Heat <span class="lp li">Intermediate</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">Heat:</span>          q = mcDT  <span class="u">[J]</span><br>
+            <span class="k">Enthalpy:</span>      DH = SH(products) - SH(reactants)<br>
+            <span class="k">Standard DH:</span>  DH_rxn = SDHf(products) - SDHf(reactants)<br>
+            <span class="k">Bond energy:</span>  DH = S(bonds broken) - S(bonds formed)<br>
+            <span class="k">Hess's Law:</span>   DH_total = S(DH_steps)
+          </div>
+        </div>
+      </div>
+      <div class="fcard">
+        <div class="fcard-h">Gibbs Free Energy <span class="lp la">Advanced</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            DG = DH - TDS  <span class="u">[J/mol]</span><br>
+            <span class="k">Spontaneous if:</span>  DG &lt; 0<br>
+            DG_std = -RT ln(K)<br>
+            DG = DG_std + RT ln(Q)
+          </div>
+          <p class="fnote"><strong>T</strong> in Kelvin. DS = entropy change (J/mol·K).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- KINETICS -->
+    <section class="fsec" id="kinetics" data-title="Kinetics rate law Arrhenius activation energy order half-life">
+      <div class="stitle"><i class="bi bi-speedometer"></i> Chemical Kinetics</div>
+      <div class="fcard">
+        <div class="fcard-h">Rate Laws &amp; Arrhenius <span class="lp la">Advanced</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">Rate law:</span>       rate = k[A]^m [B]^n<br>
+            <span class="k">Zero order:</span>    [A] = [A]0 - kt<br>
+            <span class="k">First order:</span>   ln[A] = ln[A]0 - kt<br>
+            <span class="k">Second order:</span>  1/[A] = 1/[A]0 + kt<br>
+            <span class="k">Half-life (1st):</span> t1/2 = 0.693 / k<br>
+            <span class="k">Arrhenius:</span>     k = A * e^(-Ea/RT)
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EQUILIBRIUM -->
+    <section class="fsec" id="equil" data-title="Equilibrium Kc Kp Le Chatelier solubility Ksp">
+      <div class="stitle"><i class="bi bi-arrows-angle-contract"></i> Chemical Equilibrium</div>
+      <div class="fcard">
+        <div class="fcard-h">Equilibrium Constants <span class="lp li">Intermediate</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">For: aA + bB = cC + dD</span><br>
+            Kc = [C]^c [D]^d / ([A]^a [B]^b)<br>
+            Kp = Kc(RT)^Dn   <span class="u">(Dn = moles gas products - reactants)</span><br>
+            <span class="k">Ksp (solubility):</span>  Ksp = [A+]^a [B-]^b
+          </div>
+          <p class="fnote">If <strong>Q &lt; K</strong> forward; <strong>Q &gt; K</strong> reverse; <strong>Q = K</strong> equilibrium.</p>
+        </div>
+      </div>
+      <div class="fcard">
+        <div class="fcard-h">Le Chatelier's Principle <span class="lp li">Intermediate</span></div>
+        <div class="fcard-b">
+          <table class="ftbl">
+            <tr><th>Stress applied</th><th>System responds by shifting...</th></tr>
+            <tr><td>Add reactant</td><td>→ Forward</td></tr>
+            <tr><td>Remove reactant</td><td>← Reverse</td></tr>
+            <tr><td>Add product</td><td>← Reverse</td></tr>
+            <tr><td>Increase pressure</td><td>→ fewer moles of gas</td></tr>
+            <tr><td>Increase temperature</td><td>→ endothermic direction</td></tr>
+            <tr><td>Add catalyst</td><td>No shift — faster equilibrium only</td></tr>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ACIDS & BASES -->
+    <section class="fsec" id="acids" data-title="Acids Bases pH pOH buffer Ka Kb neutralisation">
+      <div class="stitle"><i class="bi bi-lightning"></i> Acids &amp; Bases</div>
+      <div class="fcard">
+        <div class="fcard-h">pH, pOH &amp; Constants <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            pH = -log[H+]<br>
+            pOH = -log[OH-]<br>
+            pH + pOH = 14  <span class="u">(at 25°C)</span><br>
+            Kw = [H+][OH-] = 1x10^-14  <span class="u">(at 25°C)</span><br>
+            pKa = -log(Ka)  |  pKa + pKb = 14<br>
+            <span class="k">Henderson-Hasselbalch:</span> pH = pKa + log([A-]/[HA])
+          </div>
+        </div>
+      </div>
+      <div class="fcard">
+        <div class="fcard-h">Key Acid-Base Equations <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            HCl    --&gt; <span class="p">H+ + Cl-</span>                     <span class="c">(strong acid)</span><br>
+            NaOH   --&gt; <span class="p">Na+ + OH-</span>                    <span class="c">(strong base)</span><br>
+            HCl + NaOH --&gt; <span class="p">NaCl + H2O</span>               <span class="c">(neutralisation)</span><br>
+            H2SO4 + 2NaOH --&gt; <span class="p">Na2SO4 + 2H2O</span><br>
+            CaCO3 + 2HCl --&gt; <span class="p">CaCl2 + H2O + CO2</span>     <span class="c">(acid + carbonate)</span><br>
+            Zn + H2SO4 --&gt; <span class="p">ZnSO4 + H2 (gas)</span>         <span class="c">(acid + metal)</span><br>
+            NH3 + H2O = <span class="p">NH4+ + OH-</span>                   <span class="c">(weak base)</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- REDOX -->
+    <section class="fsec" id="redox" data-title="Redox electrochemistry oxidation reduction Faraday electrolysis EMF">
+      <div class="stitle"><i class="bi bi-arrow-left-right"></i> Redox &amp; Electrochemistry</div>
+      <div class="fcard">
+        <div class="fcard-h">Oxidation States &amp; OIL RIG <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">OIL RIG:</span>  Oxidation Is Loss; Reduction Is Gain (of electrons)<br>
+            <span class="k">Oxidising agent:</span>  gains e- (gets reduced)<br>
+            <span class="k">Reducing agent:</span>   loses e- (gets oxidised)<br>
+            <span class="k">Rules:</span>  pure element=0 | H=+1 | O=-2 | ion sum=charge
+          </div>
+        </div>
+      </div>
+      <div class="fcard">
+        <div class="fcard-h">Electrochemistry Formulas <span class="lp la">Advanced</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            E_cell = E_cathode - E_anode<br>
+            DG_std = -nFE_std<br>
+            <span class="k">Faraday's law:</span>  m = (M x I x t) / (n x F)<br>
+            <span class="k">Nernst eq.:</span>     E = E_std - (RT/nF) ln(Q)
+          </div>
+          <p class="fnote"><strong>F</strong> = 96485 C/mol, <strong>n</strong> = moles electrons, <strong>I</strong> = current (A), <strong>t</strong> = time (s).</p>
+        </div>
+      </div>
+      <div class="fcard">
+        <div class="fcard-h">Common Redox Equations <span class="lp li">Intermediate</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            2Mg + O2 --&gt; <span class="p">2MgO</span>                      <span class="c">(Mg oxidised)</span><br>
+            Fe2O3 + 3CO --&gt; <span class="p">2Fe + 3CO2</span>              <span class="c">(blast furnace)</span><br>
+            Cu + 2AgNO3 --&gt; <span class="p">Cu(NO3)2 + 2Ag</span>          <span class="c">(displacement)</span><br>
+            Zn + CuSO4 --&gt; <span class="p">ZnSO4 + Cu</span>               <span class="c">(Zn displaces Cu)</span><br>
+            2H2O --&gt; <span class="p">2H2 + O2</span>                          <span class="c">(electrolysis)</span><br>
+            MnO4- + 8H+ + 5e- --&gt; <span class="p">Mn2+ + 4H2O</span>         <span class="c">(half-reaction, acidic)</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ORGANIC CHEMISTRY -->
+    <section class="fsec" id="organic" data-title="Organic Chemistry alkane alkene alcohol ester carboxylic acid homologous series polymerisation">
+      <div class="stitle"><i class="bi bi-hexagon"></i> Organic Chemistry</div>
+      <div class="fcard">
+        <div class="fcard-h">Homologous Series &amp; General Formulae <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <table class="ftbl">
+            <tr><th>Series</th><th>General Formula</th><th>Functional Group</th><th>Example</th></tr>
+            <tr><td>Alkane</td><td><code>CnH(2n+2)</code></td><td>C-C only</td><td>CH4, C2H6</td></tr>
+            <tr><td>Alkene</td><td><code>CnH(2n)</code></td><td>C=C</td><td>C2H4, C3H6</td></tr>
+            <tr><td>Alkyne</td><td><code>CnH(2n-2)</code></td><td>C≡C</td><td>C2H2</td></tr>
+            <tr><td>Alcohol</td><td><code>CnH(2n+1)OH</code></td><td>-OH</td><td>CH3OH, C2H5OH</td></tr>
+            <tr><td>Aldehyde</td><td><code>CnH(2n)O</code></td><td>-CHO</td><td>HCHO, CH3CHO</td></tr>
+            <tr><td>Ketone</td><td><code>CnH(2n)O</code></td><td>-CO-</td><td>CH3COCH3</td></tr>
+            <tr><td>Carboxylic acid</td><td><code>CnH(2n)O2</code></td><td>-COOH</td><td>CH3COOH</td></tr>
+            <tr><td>Ester</td><td><code>CnH(2n)O2</code></td><td>-COO-</td><td>CH3COOC2H5</td></tr>
+            <tr><td>Amine</td><td><code>CnH(2n+3)N</code></td><td>-NH2</td><td>CH3NH2</td></tr>
+            <tr><td>Halogenoalkane</td><td><code>CnH(2n+1)X</code></td><td>-X (F,Cl,Br,I)</td><td>CH3Cl</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="fcard">
+        <div class="fcard-h">Key Organic Reaction Equations <span class="lp li">Intermediate</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">Complete combustion:</span><br>
+            CH4 + 2O2 --&gt; <span class="p">CO2 + 2H2O</span><br>
+            C2H5OH + 3O2 --&gt; <span class="p">2CO2 + 3H2O</span><br><br>
+            <span class="k">Hydration of alkene (addition):</span><br>
+            CH2=CH2 + H2O --&gt; <span class="p">CH3CH2OH</span>  <span class="c">(H3PO4, 300C)</span><br><br>
+            <span class="k">Halogenation of alkene:</span><br>
+            CH2=CH2 + Br2 --&gt; <span class="p">CH2BrCH2Br</span>  <span class="c">(decolourises bromine)</span><br><br>
+            <span class="k">Free-radical substitution (alkane):</span><br>
+            CH4 + Cl2 --&gt; <span class="p">CH3Cl + HCl</span>  <span class="c">(UV light)</span><br><br>
+            <span class="k">Esterification:</span><br>
+            CH3COOH + C2H5OH = <span class="p">CH3COOC2H5 + H2O</span>  <span class="c">(conc. H2SO4)</span><br><br>
+            <span class="k">Saponification:</span><br>
+            CH3COOC2H5 + NaOH --&gt; <span class="p">CH3COONa + C2H5OH</span><br><br>
+            <span class="k">Fermentation:</span><br>
+            C6H12O6 --&gt; <span class="p">2C2H5OH + 2CO2</span>  <span class="c">(yeast, 25-37C)</span><br><br>
+            <span class="k">Oxidation: primary alcohol to aldehyde to acid:</span><br>
+            CH3CH2OH --&gt; <span class="p">CH3CHO</span> --&gt; <span class="p">CH3COOH</span>  <span class="c">(K2Cr2O7/H+)</span><br><br>
+            <span class="k">Hydrogenation of alkene:</span><br>
+            CH2=CH2 + H2 --&gt; <span class="p">CH3CH3</span>  <span class="c">(Ni catalyst, 150C)</span><br><br>
+            <span class="k">Addition polymerisation:</span><br>
+            n(CH2=CH2) --&gt; <span class="p">-[CH2-CH2]n-</span>  <span class="c">(poly(ethene))</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ORGANIC SYNTHETIC ROUTES -->
+    <section class="fsec" id="synth" data-title="Organic Synthetic Routes synthesis alkane alkene alcohol halogenoalkane aldehyde ketone carboxylic acid ester amine amide nitrile Grignard Friedel-Crafts">
+      <div class="stitle"><i class="bi bi-arrow-repeat"></i> Organic Synthetic Routes</div>
+
+      <!-- ALKANES -->
+      <div class="fcard">
+        <div class="fcard-h">Alkanes — Preparation &amp; Reactions <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">1. Free-radical halogenation (substitution):</span><br>
+            CH4 + Cl2 --&gt; <span class="p">CH3Cl + HCl</span>  <span class="c">(UV light; initiation/propagation/termination)</span><br><br>
+            <span class="k">2. Catalytic cracking (long → short alkanes + alkenes):</span><br>
+            C10H22 --&gt; <span class="p">C4H10 + C3H6 + C3H8 ...</span>  <span class="c">(zeolite/Al2O3, 400–500°C)</span><br><br>
+            <span class="k">3. Hydrogenation of alkenes → alkanes:</span><br>
+            CH2=CH2 + H2 --&gt; <span class="p">CH3CH3</span>  <span class="c">(Ni catalyst, 150°C)</span><br><br>
+            <span class="k">4. Wurtz reaction (C-C coupling):</span><br>
+            2CH3Br + 2Na --&gt; <span class="p">CH3CH3 + 2NaBr</span>  <span class="c">(dry ether; doubles carbon chain)</span>
+          </div>
+          <p class="fnote">Free-radical mechanism: <strong>Initiation</strong> (Cl2 → 2Cl•, UV) → <strong>Propagation</strong> (Cl• + CH4 → CH3• + HCl; CH3• + Cl2 → CH3Cl + Cl•) → <strong>Termination</strong> (radicals combine).</p>
+        </div>
+      </div>
+
+      <!-- ALKENES -->
+      <div class="fcard">
+        <div class="fcard-h">Alkenes — Synthesis &amp; Addition Reactions <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">MAKING ALKENES:</span><br>
+            <span class="s">Elimination of alcohol (dehydration):</span><br>
+            CH3CH2OH --&gt; <span class="p">CH2=CH2 + H2O</span>  <span class="c">(conc. H2SO4 or Al2O3, 170°C)</span><br>
+            <span class="s">Elimination of HX from halogenoalkane:</span><br>
+            CH3CH2Br + KOH --&gt; <span class="p">CH2=CH2 + KBr + H2O</span>  <span class="c">(alcoholic KOH, heat)</span><br><br>
+            <span class="k">REACTIONS OF ALKENES (Electrophilic Addition):</span><br>
+            <span class="s">+ HBr (Markovnikov):</span><br>
+            CH3CH=CH2 + HBr --&gt; <span class="p">CH3CHBrCH3</span>  <span class="c">(major product, 2° carbocation)</span><br>
+            <span class="s">+ H2O (hydration):</span><br>
+            CH2=CH2 + H2O --&gt; <span class="p">CH3CH2OH</span>  <span class="c">(H3PO4/H2SO4, 300°C, 70 atm)</span><br>
+            <span class="s">+ Br2 (halogenation):</span><br>
+            CH2=CH2 + Br2 --&gt; <span class="p">CH2BrCH2Br</span>  <span class="c">(CCl4 solvent; decolourises brown Br2)</span><br>
+            <span class="s">+ H2SO4 then H2O (indirect hydration):</span><br>
+            CH2=CH2 + H2SO4 --&gt; CH3CH2OSO3H --&gt; <span class="p">CH3CH2OH + H2SO4</span><br>
+            <span class="s">Oxidation with cold dilute KMnO4:</span><br>
+            CH2=CH2 + [O] + H2O --&gt; <span class="p">CH2(OH)CH2(OH)</span>  <span class="c">(diol; purple KMnO4 decolourises)</span><br>
+            <span class="s">Ozonolysis:</span><br>
+            R-CH=CH-R' + O3 --&gt; <span class="p">RCHO + R'CHO</span>  <span class="c">(then Zn/H2O; cleaves double bond)</span>
+          </div>
+          <p class="fnote"><strong>Markovnikov's Rule:</strong> H adds to the carbon already bearing more H atoms (gives most stable carbocation intermediate).</p>
+        </div>
+      </div>
+
+      <!-- ALKYNES -->
+      <div class="fcard">
+        <div class="fcard-h">Alkynes — Synthesis &amp; Reactions <span class="lp li">Intermediate</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">Making alkynes — double dehydrohalogenation:</span><br>
+            CH2BrCH2Br + 2KOH --&gt; <span class="p">HC≡CH + 2KBr + 2H2O</span>  <span class="c">(alcoholic KOH, heat)</span><br><br>
+            <span class="k">Partial hydrogenation (Lindlar's catalyst → cis-alkene):</span><br>
+            HC≡CH + H2 --&gt; <span class="p">cis-CH2=CH2</span>  <span class="c">(Pd/CaCO3 + quinoline = Lindlar's)</span><br><br>
+            <span class="k">Full hydrogenation → alkane:</span><br>
+            HC≡CH + 2H2 --&gt; <span class="p">CH3CH3</span>  <span class="c">(Ni catalyst, 150°C)</span><br><br>
+            <span class="k">Hydration → ketone (Markovnikov):</span><br>
+            CH3C≡CH + H2O --&gt; <span class="p">CH3COCH3</span>  <span class="c">(H2SO4/HgSO4 catalyst)</span><br><br>
+            <span class="k">Terminal alkyne + strong base → acetylide nucleophile:</span><br>
+            HC≡CH + NaNH2 --&gt; <span class="p">HC≡C:Na+ + NH3</span>  <span class="c">(then reacts with RX → chain extension)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ALCOHOLS -->
+      <div class="fcard">
+        <div class="fcard-h">Alcohols — Synthesis &amp; Reactions <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">MAKING ALCOHOLS:</span><br>
+            <span class="s">Hydration of alkene:</span>  CH2=CH2 + H2O --&gt; <span class="p">CH3CH2OH</span>  <span class="c">(H3PO4, 300°C)</span><br>
+            <span class="s">SN2 substitution of halogenoalkane:</span>  CH3Br + NaOH --&gt; <span class="p">CH3OH + NaBr</span>  <span class="c">(aq. NaOH)</span><br>
+            <span class="s">Fermentation:</span>  C6H12O6 --&gt; <span class="p">2C2H5OH + 2CO2</span>  <span class="c">(zymase enzyme, 25-37°C)</span><br>
+            <span class="s">Grignard + carbonyl:</span>  RMgBr + RCHO --&gt; <span class="p">R-CH(OH)-R'</span>  <span class="c">(then H3O+)</span><br>
+            <span class="s">Reduction of aldehyde/ketone/acid:</span>  RCHO + 2[H] --&gt; <span class="p">RCH2OH</span>  <span class="c">(NaBH4 or LiAlH4)</span><br><br>
+            <span class="k">REACTIONS OF ALCOHOLS:</span><br>
+            <span class="s">Dehydration → alkene:</span>  CH3CH2OH --&gt; <span class="p">CH2=CH2 + H2O</span>  <span class="c">(conc. H2SO4, 170°C)</span><br>
+            <span class="s">Oxidation (1° → aldehyde → carboxylic acid):</span><br>
+            RCH2OH --&gt; <span class="p">RCHO</span>  <span class="c">(K2Cr2O7/H2SO4, distill)</span><br>
+            RCHO --&gt; <span class="p">RCOOH</span>  <span class="c">(K2Cr2O7/H2SO4, reflux)</span><br>
+            <span class="s">Oxidation (2° → ketone):</span>  R2CHOH --&gt; <span class="p">R2C=O</span>  <span class="c">(K2Cr2O7/H2SO4)</span><br>
+            <span class="s">Halogenation → halogenoalkane:</span>  CH3CH2OH + HBr --&gt; <span class="p">CH3CH2Br + H2O</span>  <span class="c">(or SOCl2/PCl5)</span><br>
+            <span class="s">Esterification:</span>  CH3COOH + C2H5OH = <span class="p">CH3COOC2H5 + H2O</span>  <span class="c">(conc. H2SO4 cat.)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- HALOGENOALKANES -->
+      <div class="fcard">
+        <div class="fcard-h">Halogenoalkanes — Nucleophilic Substitution &amp; Elimination <span class="lp li">Intermediate</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">MAKING HALOGENOALKANES:</span><br>
+            <span class="s">From alcohol + HX:</span>  ROH + HBr --&gt; <span class="p">RBr + H2O</span><br>
+            <span class="s">From alcohol + PCl5:</span>  ROH + PCl5 --&gt; <span class="p">RCl + POCl3 + HCl</span><br>
+            <span class="s">From alcohol + SOCl2:</span>  ROH + SOCl2 --&gt; <span class="p">RCl + SO2 + HCl</span><br>
+            <span class="s">Addition of HX to alkene:</span>  CH2=CH2 + HBr --&gt; <span class="p">CH3CH2Br</span><br><br>
+            <span class="k">REACTIONS (Nucleophilic Substitution SN1/SN2):</span><br>
+            <span class="s">→ Alcohol (aq NaOH):</span>  RBr + NaOH(aq) --&gt; <span class="p">ROH + NaBr</span><br>
+            <span class="s">→ Nitrile/CN (chain extension +1C):</span>  RBr + KCN --&gt; <span class="p">RCN + KBr</span>  <span class="c">(ethanol solvent)</span><br>
+            <span class="s">→ Amine:</span>  RBr + NH3(excess) --&gt; <span class="p">RNH2 + NH4Br</span>  <span class="c">(ethanol, sealed tube)</span><br>
+            <span class="s">→ Ether (Williamson synthesis):</span>  RBr + RONa --&gt; <span class="p">ROR + NaBr</span><br>
+            <span class="s">→ Grignard reagent:</span>  RBr + Mg --&gt; <span class="p">RMgBr</span>  <span class="c">(dry ether; very versatile nucleophile)</span><br>
+            <span class="s">Elimination → alkene (alc KOH):</span>  RBr + KOH --&gt; <span class="p">alkene + KBr + H2O</span>  <span class="c">(hot, alcoholic)</span>
+          </div>
+          <p class="fnote"><strong>SN2:</strong> 1° halogenoalkanes, one step, inversion of config. | <strong>SN1:</strong> 3° halogenoalkanes, two steps, racemisation. | <strong>Rate of leaving group:</strong> I > Br > Cl > F.</p>
+        </div>
+      </div>
+
+      <!-- ALDEHYDES & KETONES -->
+      <div class="fcard">
+        <div class="fcard-h">Aldehydes &amp; Ketones — Synthesis &amp; Nucleophilic Addition <span class="lp li">Intermediate</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">MAKING ALDEHYDES:</span><br>
+            <span class="s">Oxidation of 1° alcohol (distill off product):</span>  RCH2OH --&gt; <span class="p">RCHO</span>  <span class="c">(K2Cr2O7/H+, distil)</span><br>
+            <span class="s">Reduction of acyl chloride:</span>  RCOCl + H2 --&gt; <span class="p">RCHO</span>  <span class="c">(Pd/BaSO4 = Rosenmund reduction)</span><br><br>
+            <span class="k">MAKING KETONES:</span><br>
+            <span class="s">Oxidation of 2° alcohol:</span>  R2CHOH --&gt; <span class="p">R2C=O</span>  <span class="c">(K2Cr2O7/H+, reflux)</span><br>
+            <span class="s">Friedel-Crafts acylation:</span>  C6H6 + RCOCl --&gt; <span class="p">C6H5COR + HCl</span>  <span class="c">(AlCl3, anhydrous)</span><br><br>
+            <span class="k">REACTIONS (Nucleophilic Addition):</span><br>
+            <span class="s">+ NaBH4 (reduction → alcohol):</span>  RCHO + 2[H] --&gt; <span class="p">RCH2OH</span><br>
+            <span class="s">+ LiAlH4 (stronger reduction):</span>  RCHO --&gt; <span class="p">RCH2OH</span>  <span class="c">(then H3O+; dry ether)</span><br>
+            <span class="s">+ HCN (cyanohydrin formation):</span>  RCHO + HCN --&gt; <span class="p">RCH(OH)CN</span>  <span class="c">(KCN cat.; +1C chain)</span><br>
+            <span class="s">+ Grignard (→ alcohol):</span>  RCHO + R'MgBr --&gt; <span class="p">RR'CHOH</span>  <span class="c">(then H3O+)</span><br>
+            <span class="s">Aldol condensation (base):</span>  2CH3CHO --&gt; <span class="p">CH3CH(OH)CH2CHO</span>  <span class="c">(dil NaOH, cold)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARBOXYLIC ACIDS & DERIVATIVES -->
+      <div class="fcard">
+        <div class="fcard-h">Carboxylic Acids &amp; Derivatives — Synthesis &amp; Interconversions <span class="lp li">Intermediate</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">MAKING CARBOXYLIC ACIDS:</span><br>
+            <span class="s">Oxidation of 1° alcohol/aldehyde (reflux):</span>  RCH2OH --&gt; <span class="p">RCOOH</span>  <span class="c">(K2Cr2O7/H+, reflux)</span><br>
+            <span class="s">Hydrolysis of nitrile:</span>  RCN + H2O --&gt; <span class="p">RCOOH + NH3</span>  <span class="c">(dil. H2SO4 or NaOH, reflux)</span><br>
+            <span class="s">Grignard + CO2:</span>  RMgBr + CO2 --&gt; <span class="p">RCOOMgBr</span> --&gt; <span class="p">RCOOH</span>  <span class="c">(then H3O+)</span><br>
+            <span class="s">Hydrolysis of ester:</span>  RCOOR' + NaOH --&gt; <span class="p">RCOONa + R'OH</span>  <span class="c">(saponification)</span><br><br>
+            <span class="k">CARBOXYLIC ACID → DERIVATIVES:</span><br>
+            <span class="s">→ Acyl chloride (+ PCl5 or SOCl2):</span>  RCOOH + PCl5 --&gt; <span class="p">RCOCl + POCl3 + HCl</span><br>
+            <span class="s">→ Ester (+ alcohol, H2SO4 cat.):</span>  RCOOH + R'OH = <span class="p">RCOOR' + H2O</span><br>
+            <span class="s">→ Amide (+ amine or NH3, heat):</span>  RCOOH + NH3 --&gt; <span class="p">RCONH2 + H2O</span><br>
+            <span class="s">→ Acid anhydride (+ P2O5):</span>  2RCOOH --&gt; <span class="p">(RCO)2O + H2O</span><br>
+            <span class="s">Reduction → aldehyde (then alcohol):</span>  RCOOH + LiAlH4 --&gt; <span class="p">RCH2OH</span>  <span class="c">(dry ether, then H3O+)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACYL CHLORIDES -->
+      <div class="fcard">
+        <div class="fcard-h">Acyl Chlorides — Reactions (Very Reactive Electrophiles) <span class="lp li">Intermediate</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">Acyl chloride (RCOCl) reacts rapidly with nucleophiles:</span><br>
+            <span class="s">+ H2O → carboxylic acid:</span>  RCOCl + H2O --&gt; <span class="p">RCOOH + HCl</span><br>
+            <span class="s">+ ROH → ester:</span>  RCOCl + R'OH --&gt; <span class="p">RCOOR' + HCl</span>  <span class="c">(no acid catalyst needed; fast, irreversible)</span><br>
+            <span class="s">+ NH3 → amide:</span>  RCOCl + 2NH3 --&gt; <span class="p">RCONH2 + NH4Cl</span><br>
+            <span class="s">+ amine → N-substituted amide:</span>  RCOCl + R'NH2 --&gt; <span class="p">RCONHR' + HCl</span><br>
+            <span class="s">Friedel-Crafts acylation → aromatic ketone:</span>  C6H6 + RCOCl --&gt; <span class="p">C6H5COR + HCl</span>  <span class="c">(AlCl3)</span>
+          </div>
+          <p class="fnote">Acyl chlorides are more reactive than carboxylic acids — no catalyst needed and reactions are irreversible. Used to make esters in high yield.</p>
+        </div>
+      </div>
+
+      <!-- ESTERS -->
+      <div class="fcard">
+        <div class="fcard-h">Esters — Synthesis &amp; Hydrolysis <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">MAKING ESTERS:</span><br>
+            <span class="s">Esterification (reversible):</span>  RCOOH + R'OH = <span class="p">RCOOR' + H2O</span>  <span class="c">(conc. H2SO4 cat., reflux)</span><br>
+            <span class="s">From acyl chloride (irreversible, fast):</span>  RCOCl + R'OH --&gt; <span class="p">RCOOR' + HCl</span><br>
+            <span class="s">From acid anhydride:</span>  (RCO)2O + R'OH --&gt; <span class="p">RCOOR' + RCOOH</span><br><br>
+            <span class="k">HYDROLYSIS OF ESTERS:</span><br>
+            <span class="s">Acid hydrolysis (reversible):</span>  RCOOR' + H2O = <span class="p">RCOOH + R'OH</span>  <span class="c">(H2SO4, reflux)</span><br>
+            <span class="s">Base hydrolysis/saponification (irreversible):</span>  RCOOR' + NaOH --&gt; <span class="p">RCOONa + R'OH</span>  <span class="c">(reflux)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- AMINES -->
+      <div class="fcard">
+        <div class="fcard-h">Amines — Synthesis &amp; Reactions <span class="lp li">Intermediate</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">MAKING AMINES:</span><br>
+            <span class="s">SN2 from halogenoalkane + excess NH3:</span>  RBr + 2NH3 --&gt; <span class="p">RNH2 + NH4Br</span>  <span class="c">(ethanol, sealed tube)</span><br>
+            <span class="s">Reduction of nitrile:</span>  RCN + 4[H] --&gt; <span class="p">RCH2NH2</span>  <span class="c">(LiAlH4, dry ether; or H2/Ni)</span><br>
+            <span class="s">Reduction of nitro group (aromatic amines):</span>  C6H5NO2 + 6[H] --&gt; <span class="p">C6H5NH2 + 2H2O</span>  <span class="c">(Sn/HCl, then NaOH)</span><br>
+            <span class="s">Hofmann degradation (amide → 1° amine, -1C):</span>  RCONH2 + Br2 + 4NaOH --&gt; <span class="p">RNH2 + Na2CO3 + 2NaBr + 2H2O</span><br><br>
+            <span class="k">REACTIONS OF AMINES:</span><br>
+            <span class="s">As base + HCl:</span>  RNH2 + HCl --&gt; <span class="p">RNH3+Cl-</span>  <span class="c">(salt formation)</span><br>
+            <span class="s">Acylation with acyl chloride → amide:</span>  RNH2 + R'COCl --&gt; <span class="p">R'CONHR + HCl</span><br>
+            <span class="s">Diazotisation (aromatic, 0–5°C):</span>  C6H5NH2 + NaNO2 + HCl --&gt; <span class="p">C6H5N2+Cl- + NaCl + 2H2O</span><br>
+            <span class="s">Coupling reaction (azo dye):</span>  C6H5N2+ + C6H5OH --&gt; <span class="p">C6H5-N=N-C6H4OH</span>  <span class="c">(orange azo dye)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- AMIDES -->
+      <div class="fcard">
+        <div class="fcard-h">Amides — Synthesis &amp; Reactions <span class="lp li">Intermediate</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">MAKING AMIDES:</span><br>
+            <span class="s">From acyl chloride + amine/NH3:</span>  RCOCl + 2NH3 --&gt; <span class="p">RCONH2 + NH4Cl</span><br>
+            <span class="s">From carboxylic acid + NH3 (heat ammonium salt):</span>  RCOONH4 --&gt; <span class="p">RCONH2 + H2O</span><br><br>
+            <span class="k">REACTIONS OF AMIDES:</span><br>
+            <span class="s">Acid hydrolysis → carboxylic acid + ammonium salt:</span><br>
+            RCONH2 + H2O + H+ --&gt; <span class="p">RCOOH + NH4+</span>  <span class="c">(reflux with dil. H2SO4)</span><br>
+            <span class="s">Base hydrolysis → carboxylate + ammonia:</span><br>
+            RCONH2 + NaOH --&gt; <span class="p">RCOONa + NH3</span>  <span class="c">(reflux)</span><br>
+            <span class="s">Reduction → amine (+ 1 carbon retained):</span><br>
+            RCONH2 + 4[H] --&gt; <span class="p">RCH2NH2</span>  <span class="c">(LiAlH4, dry ether)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- NITRILES -->
+      <div class="fcard">
+        <div class="fcard-h">Nitriles — Synthesis &amp; Reactions (Chain Extension) <span class="lp li">Intermediate</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">MAKING NITRILES (+1 carbon added):</span><br>
+            RBr + KCN --&gt; <span class="p">RCN + KBr</span>  <span class="c">(ethanol solvent; SN2 on 1° halogenoalkane)</span><br><br>
+            <span class="k">REACTIONS:</span><br>
+            <span class="s">Hydrolysis → carboxylic acid:</span>  RCN + H2O --&gt; <span class="p">RCOOH + NH3</span>  <span class="c">(dil. H2SO4, reflux)</span><br>
+            <span class="s">Reduction → primary amine:</span>  RCN + 4[H] --&gt; <span class="p">RCH2NH2</span>  <span class="c">(LiAlH4 or H2/Ni)</span><br>
+            <span class="s">Addition to carbonyl → cyanohydrin:</span>  RCHO + HCN --&gt; <span class="p">RCH(OH)CN</span>  <span class="c">(KCN cat.)</span>
+          </div>
+          <p class="fnote">Nitrile formation via KCN is crucial for <strong>chain extension</strong> (adds 1 carbon to skeleton). Restricted to 1° halogenoalkanes to avoid elimination.</p>
+        </div>
+      </div>
+
+      <!-- GRIGNARD REAGENTS -->
+      <div class="fcard">
+        <div class="fcard-h">Grignard Reagents — Versatile Carbon Nucleophile <span class="lp la">Advanced</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">Formation:</span>  RBr + Mg --&gt; <span class="p">RMgBr</span>  <span class="c">(dry ether; strictly anhydrous conditions)</span><br><br>
+            <span class="k">Grignard + carbonyl compounds (then H3O+):</span><br>
+            <span class="s">+ HCHO → primary alcohol:</span>  RMgBr + HCHO --&gt; <span class="p">RCH2OH</span>  <span class="c">(1 extra C)</span><br>
+            <span class="s">+ RCHO → secondary alcohol:</span>  RMgBr + R'CHO --&gt; <span class="p">R-CH(OH)-R'</span><br>
+            <span class="s">+ R2CO → tertiary alcohol:</span>  RMgBr + R'COR'' --&gt; <span class="p">R-C(OH)(R')(R'')</span><br>
+            <span class="s">+ CO2 → carboxylic acid:</span>  RMgBr + CO2 --&gt; <span class="p">RCOOH</span>  <span class="c">(then H3O+)</span><br>
+            <span class="s">+ ester → tertiary alcohol (2 equivalents):</span>  2RMgBr + R'COOR'' --&gt; <span class="p">R2R'COH</span><br>
+            <span class="s">+ H2O → alkane (destroys Grignard):</span>  RMgBr + H2O --&gt; <span class="p">RH + Mg(OH)Br</span>
+          </div>
+          <p class="fnote">Grignard reagents are powerful <strong>carbanion equivalents</strong>. Must be prepared in absolutely dry conditions — water destroys the reagent. Always add dilute acid (H3O+) to hydrolyse the magnesium alkoxide intermediate.</p>
+        </div>
+      </div>
+
+      <!-- BENZENE / AROMATIC -->
+      <div class="fcard">
+        <div class="fcard-h">Benzene &amp; Aromatic Chemistry — Electrophilic Aromatic Substitution (EAS) <span class="lp la">Advanced</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">1. Nitration:</span><br>
+            C6H6 + HNO3 --&gt; <span class="p">C6H5NO2 + H2O</span>  <span class="c">(conc. H2SO4, 55°C; NO2+ electrophile)</span><br><br>
+            <span class="k">2. Halogenation (requires Lewis acid):</span><br>
+            C6H6 + Cl2 --&gt; <span class="p">C6H5Cl + HCl</span>  <span class="c">(AlCl3 or FeCl3 cat.; no UV)</span><br>
+            C6H6 + Br2 --&gt; <span class="p">C6H5Br + HBr</span>  <span class="c">(FeBr3 cat.)</span><br><br>
+            <span class="k">3. Friedel-Crafts Alkylation:</span><br>
+            C6H6 + RCl --&gt; <span class="p">C6H5R + HCl</span>  <span class="c">(anhydrous AlCl3; gives polyalkylation problem)</span><br><br>
+            <span class="k">4. Friedel-Crafts Acylation (preferred):</span><br>
+            C6H6 + RCOCl --&gt; <span class="p">C6H5COR + HCl</span>  <span class="c">(anhydrous AlCl3; no overreaction)</span><br><br>
+            <span class="k">5. Sulfonation:</span><br>
+            C6H6 + H2SO4 --&gt; <span class="p">C6H5SO3H + H2O</span>  <span class="c">(fuming H2SO4 or oleum, 80°C)</span><br><br>
+            <span class="k">Reduction of nitrobenzene → aniline:</span><br>
+            C6H5NO2 + 6[H] --&gt; <span class="p">C6H5NH2 + 2H2O</span>  <span class="c">(Sn/conc. HCl, then NaOH)</span><br><br>
+            <span class="k">Activating groups (ortho/para directors):</span>  <span class="v">-OH, -NH2, -OCH3, -R</span><br>
+            <span class="k">Deactivating groups (meta directors):</span>  <span class="v">-NO2, -COOH, -CHO, -COR, -SO3H, -CN</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- POLYMERS -->
+      <div class="fcard">
+        <div class="fcard-h">Polymerisation — Addition &amp; Condensation <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">Addition polymerisation (no atoms lost):</span><br>
+            n(CH2=CH2) --&gt; <span class="p">-[CH2-CH2]n-</span>  <span class="c">(poly(ethene))</span><br>
+            n(CH2=CHCN) --&gt; <span class="p">-[CH2-CHCN]n-</span>  <span class="c">(PAN/acrylic)</span><br>
+            n(CF2=CF2) --&gt; <span class="p">-[CF2-CF2]n-</span>  <span class="c">(PTFE/Teflon)</span><br>
+            n(CH2=CHCl) --&gt; <span class="p">-[CH2-CHCl]n-</span>  <span class="c">(PVC)</span><br><br>
+            <span class="k">Condensation polymerisation (small molecule lost, e.g. H2O or HCl):</span><br>
+            <span class="s">Polyester (Terylene/PET):</span><br>
+            n HOCH2CH2OH + n HOOC-C6H4-COOH --&gt; <span class="p">-[OCH2CH2OOC-C6H4-CO]n- + nH2O</span><br>
+            <span class="s">Polyamide (Nylon-6,6):</span><br>
+            n H2N(CH2)6NH2 + n HOOC(CH2)4COOH --&gt; <span class="p">-[NH(CH2)6NHCO(CH2)4CO]n- + nH2O</span><br>
+            <span class="s">Polypeptide/protein:</span><br>
+            n H2N-CHR-COOH --&gt; <span class="p">-[NH-CHR-CO]n- + nH2O</span>  <span class="c">(peptide bonds)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- INTERCONVERSION SUMMARY TABLE -->
+      <div class="fcard">
+        <div class="fcard-h">Organic Interconversion Summary Table <span class="lp la">Advanced</span></div>
+        <div class="fcard-b">
+          <table class="ftbl">
+            <tr><th>From</th><th>To</th><th>Reagent(s) &amp; Conditions</th></tr>
+            <tr><td>Alkene</td><td>Alkane</td><td><code>H2, Ni, 150°C</code></td></tr>
+            <tr><td>Alkene</td><td>Halogenoalkane</td><td><code>HX (Markovnikov)</code> or <code>X2 (anti-addition)</code></td></tr>
+            <tr><td>Alkene</td><td>Alcohol</td><td><code>H2O, H3PO4, 300°C</code></td></tr>
+            <tr><td>Alkene</td><td>Diol</td><td><code>Cold dil. KMnO4</code></td></tr>
+            <tr><td>Alcohol</td><td>Alkene</td><td><code>Conc. H2SO4, 170°C</code> or <code>Al2O3, 350°C</code></td></tr>
+            <tr><td>Alcohol (1°)</td><td>Aldehyde</td><td><code>K2Cr2O7/H+, distil</code></td></tr>
+            <tr><td>Alcohol (1°)</td><td>Carboxylic acid</td><td><code>K2Cr2O7/H+, reflux</code></td></tr>
+            <tr><td>Alcohol (2°)</td><td>Ketone</td><td><code>K2Cr2O7/H+, reflux</code></td></tr>
+            <tr><td>Alcohol</td><td>Halogenoalkane</td><td><code>HBr(aq)</code> or <code>PCl5</code> or <code>SOCl2</code></td></tr>
+            <tr><td>Halogenoalkane</td><td>Alcohol</td><td><code>Aq. NaOH, heat</code></td></tr>
+            <tr><td>Halogenoalkane</td><td>Amine</td><td><code>Excess NH3, ethanol, sealed tube</code></td></tr>
+            <tr><td>Halogenoalkane</td><td>Nitrile</td><td><code>KCN, ethanol</code></td></tr>
+            <tr><td>Halogenoalkane</td><td>Alkene</td><td><code>Alcoholic KOH, heat</code></td></tr>
+            <tr><td>Halogenoalkane</td><td>Grignard</td><td><code>Mg, dry ether</code></td></tr>
+            <tr><td>Aldehyde / Ketone</td><td>Alcohol</td><td><code>NaBH4</code> or <code>LiAlH4/ether</code></td></tr>
+            <tr><td>Carboxylic acid</td><td>Acyl chloride</td><td><code>PCl5</code> or <code>SOCl2</code></td></tr>
+            <tr><td>Carboxylic acid</td><td>Ester</td><td><code>ROH, conc. H2SO4, heat</code></td></tr>
+            <tr><td>Carboxylic acid</td><td>Amide</td><td><code>NH3, heat</code></td></tr>
+            <tr><td>Ester</td><td>Carboxylic acid + alcohol</td><td><code>Dil. H2SO4, reflux</code> (acid hyd.)</td></tr>
+            <tr><td>Ester</td><td>Carboxylate salt + alcohol</td><td><code>NaOH, reflux</code> (saponification)</td></tr>
+            <tr><td>Nitrile</td><td>Carboxylic acid</td><td><code>Dil. H2SO4, reflux</code></td></tr>
+            <tr><td>Nitrile</td><td>Primary amine</td><td><code>LiAlH4, dry ether</code> or <code>H2/Ni</code></td></tr>
+            <tr><td>Amide</td><td>Amine (−1C)</td><td><code>Br2 + NaOH</code> (Hofmann degradation)</td></tr>
+            <tr><td>Amine (aromatic)</td><td>Diazonium salt</td><td><code>NaNO2 + HCl, 0–5°C</code></td></tr>
+            <tr><td>Benzene</td><td>Nitrobenzene</td><td><code>Conc. HNO3 + conc. H2SO4, 55°C</code></td></tr>
+            <tr><td>Nitrobenzene</td><td>Aniline (PhNH2)</td><td><code>Sn/conc. HCl, then NaOH</code></td></tr>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- TESTS FOR COMPOUNDS -->
+    <section class="fsec" id="tests" data-title="Tests organic compounds identification functional group observations equations inorganic ions gases">
+      <div class="stitle"><i class="bi bi-search"></i> Tests for Organic &amp; Inorganic Compounds</div>
+      <div class="fcard">
+        <div class="fcard-h">Tests for Organic Functional Groups</div>
+        <div class="fcard-b">
+          <div class="og-grid">
+
+            <div class="og-card">
+              <div class="og-head"><span>Alkene (C=C)</span><span class="lp lb">Basic</span></div>
+              <div class="og-body">
+                <div class="trow">
+                  <div class="tnm">Bromine Water Test</div>
+                  <div class="tob">Add Br2(aq) — orange/brown <strong>decolourises</strong> <span class="pb pp">+ve</span></div>
+                  <div class="teq">CH2=CH2 + Br2 → CH2BrCH2Br</div>
+                </div>
+                <div class="trow">
+                  <div class="tnm">Acidified KMnO4 Test</div>
+                  <div class="tob">Purple KMnO4 <strong>decolourises</strong> (oxidises C=C) <span class="pb pp">+ve</span></div>
+                  <div class="teq">C=C + KMnO4(aq) → diol (cold, dilute)</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="og-card">
+              <div class="og-head"><span>Alcohol (-OH)</span><span class="lp lb">Basic</span></div>
+              <div class="og-body">
+                <div class="trow">
+                  <div class="tnm">Sodium Metal Test</div>
+                  <div class="tob">Add Na metal — <strong>fizzing/effervescence</strong> (H2 gas) <span class="pb pp">+ve</span></div>
+                  <div class="teq">2ROH + 2Na → 2RONa + H2↑</div>
+                </div>
+                <div class="trow">
+                  <div class="tnm">Esterification Test</div>
+                  <div class="tob">Add RCOOH + conc. H2SO4 — <strong>fruity/sweet smell</strong> <span class="pb pp">+ve</span></div>
+                  <div class="teq">ROH + RCOOH ⇌ RCOOR' + H2O</div>
+                </div>
+                <div class="trow">
+                  <div class="tnm">Lucas Test (1°/2°/3°)</div>
+                  <div class="tob">3° → immediate turbidity; 2° → slow; 1° → no reaction</div>
+                  <div class="teq">ROH + HCl/ZnCl2 → RCl + H2O</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="og-card">
+              <div class="og-head"><span>Aldehyde (-CHO)</span><span class="lp li">Intermediate</span></div>
+              <div class="og-body">
+                <div class="trow">
+                  <div class="tnm">Tollens' Reagent — Silver Mirror Test</div>
+                  <div class="tob">Add Ag(NH3)2+ solution, warm — <strong>silver mirror</strong> on wall <span class="pb pp">+ve Aldehyde</span></div>
+                  <div class="teq">RCHO + 2Ag(NH3)2+ + 2OH- → RCOO- + 2Ag↓ + 4NH3 + H2O</div>
+                </div>
+                <div class="trow">
+                  <div class="tnm">Fehling's Solution</div>
+                  <div class="tob">Blue solution → <strong>brick-red precipitate</strong> (Cu2O) <span class="pb pp">+ve Aldehyde</span></div>
+                  <div class="teq">RCHO + 2Cu2+ + 5OH- → RCOO- + Cu2O↓ + 3H2O</div>
+                </div>
+                <div class="trow">
+                  <div class="tnm">Benedict's Test</div>
+                  <div class="tob">Blue → <strong>orange/red precipitate</strong> <span class="pb pp">+ve Reducing sugar</span></div>
+                  <div class="teq">Similar to Fehling's — Cu2+ reduced to Cu2O</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="og-card">
+              <div class="og-head"><span>Ketone (-CO-)</span><span class="lp li">Intermediate</span></div>
+              <div class="og-body">
+                <div class="trow">
+                  <div class="tnm">2,4-DNP (Brady's Reagent) Test</div>
+                  <div class="tob">Add 2,4-dinitrophenylhydrazine — <strong>orange/yellow precipitate</strong> <span class="pb pp">+ve (C=O group)</span></div>
+                  <div class="teq">R2CO + 2,4-DNP → orange ppt (mp identifies compound)</div>
+                </div>
+                <div class="trow">
+                  <div class="tnm">Tollens' — Negative</div>
+                  <div class="tob">No silver mirror forms <span class="pb pn">Ketone -ve</span></div>
+                </div>
+                <div class="trow">
+                  <div class="tnm">Iodoform Test (methyl ketones)</div>
+                  <div class="tob">Add I2 + NaOH — <strong>yellow CHI3 precipitate</strong> <span class="pb pp">+ve</span></div>
+                  <div class="teq">CH3COR + 3I2 + 3NaOH → CHI3↓ + RCOONa</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="og-card">
+              <div class="og-head"><span>Carboxylic Acid (-COOH)</span><span class="lp lb">Basic</span></div>
+              <div class="og-body">
+                <div class="trow">
+                  <div class="tnm">Litmus / pH Paper</div>
+                  <div class="tob">Turns blue litmus <strong>red</strong>; pH &lt; 7 <span class="pb pp">+ve</span></div>
+                </div>
+                <div class="trow">
+                  <div class="tnm">Na2CO3 Test</div>
+                  <div class="tob">Add Na2CO3 — <strong>effervescence (CO2 gas)</strong> <span class="pb pp">+ve</span></div>
+                  <div class="teq">2RCOOH + Na2CO3 → 2RCOONa + H2O + CO2↑</div>
+                </div>
+                <div class="trow">
+                  <div class="tnm">Ester formation</div>
+                  <div class="tob">With alcohol + H2SO4 — <strong>fruity/sweet smell</strong></div>
+                  <div class="teq">RCOOH + R'OH ⇌ RCOOR' + H2O</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="og-card">
+              <div class="og-head"><span>Ester (-COO-)</span><span class="lp lb">Basic</span></div>
+              <div class="og-body">
+                <div class="trow">
+                  <div class="tnm">Smell Test</div>
+                  <div class="tob"><strong>Sweet/fruity odour</strong> <span class="pb pp">+ve</span></div>
+                </div>
+                <div class="trow">
+                  <div class="tnm">Acid Hydrolysis</div>
+                  <div class="tob">Heat with H2SO4 + H2O — gives alcohol + acid</div>
+                  <div class="teq">RCOOR' + H2O ⇌ RCOOH + R'OH</div>
+                </div>
+                <div class="trow">
+                  <div class="tnm">Saponification (base)</div>
+                  <div class="tob">Heat with NaOH — <strong>soap (carboxylate salt) formed</strong></div>
+                  <div class="teq">RCOOR' + NaOH → RCOONa + R'OH</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="og-card">
+              <div class="og-head"><span>Halogenoalkane (-X)</span><span class="lp li">Intermediate</span></div>
+              <div class="og-body">
+                <div class="trow">
+                  <div class="tnm">Silver Nitrate Test</div>
+                  <div class="tob">Heat with AgNO3(aq)/ethanol after hydrolysis:<br>Cl → <strong>white ppt</strong> | Br → <strong>cream ppt</strong> | I → <strong>yellow ppt</strong> <span class="pb pp">+ve</span></div>
+                  <div class="teq">RX + AgNO3 → AgX↓ + R-based product</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="og-card">
+              <div class="og-head"><span>Amine (-NH2)</span><span class="lp li">Intermediate</span></div>
+              <div class="og-body">
+                <div class="trow">
+                  <div class="tnm">Litmus Test</div>
+                  <div class="tob">Turns red litmus <strong>blue</strong> (basic) <span class="pb pp">+ve</span></div>
+                </div>
+                <div class="trow">
+                  <div class="tnm">Smell</div>
+                  <div class="tob"><strong>Fishy/ammonia-like odour</strong></div>
+                </div>
+                <div class="trow">
+                  <div class="tnm">HCl Test</div>
+                  <div class="tob">Reacts with HCl — <strong>white fumes/white solid</strong> <span class="pb pp">+ve</span></div>
+                  <div class="teq">RNH2 + HCl → RNH3+Cl-</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="og-card">
+              <div class="og-head"><span>Protein / Amino Acids</span><span class="lp li">Intermediate</span></div>
+              <div class="og-body">
+                <div class="trow">
+                  <div class="tnm">Biuret Test</div>
+                  <div class="tob">Add NaOH + CuSO4 — blue → <strong>violet/purple</strong> <span class="pb pp">+ve (peptide bonds)</span></div>
+                </div>
+                <div class="trow">
+                  <div class="tnm">Ninhydrin Test</div>
+                  <div class="tob">Add ninhydrin — <strong>purple/blue colour</strong> <span class="pb pp">+ve (amino acids)</span></div>
+                </div>
+                <div class="trow">
+                  <div class="tnm">Xanthoproteic Test</div>
+                  <div class="tob">Conc. HNO3 → <strong>yellow</strong> (aromatic amino acids) <span class="pb pp">+ve</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="og-card">
+              <div class="og-head"><span>Phenol (C6H5OH)</span><span class="lp li">Intermediate</span></div>
+              <div class="og-body">
+                <div class="trow">
+                  <div class="tnm">FeCl3 Test</div>
+                  <div class="tob">Add FeCl3(aq) — <strong>violet/purple colour</strong> <span class="pb pp">+ve</span></div>
+                  <div class="teq">C6H5OH + FeCl3 → purple complex</div>
+                </div>
+                <div class="trow">
+                  <div class="tnm">Bromine Water</div>
+                  <div class="tob">Immediate <strong>white precipitate</strong> (2,4,6-tribromophenol) <span class="pb pp">+ve</span></div>
+                  <div class="teq">C6H5OH + 3Br2 → C6H2Br3OH↓ + 3HBr</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="og-card">
+              <div class="og-head"><span>Starch</span><span class="lp lb">Basic</span></div>
+              <div class="og-body">
+                <div class="trow">
+                  <div class="tnm">Iodine Test</div>
+                  <div class="tob">Add I2(aq) — orange-brown → <strong>dark blue/black</strong> <span class="pb pp">+ve</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="og-card">
+              <div class="og-head"><span>Unsaturated Fats/Oils</span><span class="lp lb">Basic</span></div>
+              <div class="og-body">
+                <div class="trow">
+                  <div class="tnm">Bromine Water</div>
+                  <div class="tob">Orange Br2(aq) <strong>decolourises</strong> (C=C present) <span class="pb pp">+ve</span></div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="fcard" style="margin-top:18px">
+        <div class="fcard-h">Tests for Inorganic Ions &amp; Gases <span class="lp li">Intermediate</span></div>
+        <div class="fcard-b">
+          <table class="ftbl">
+            <tr><th>Ion/Gas</th><th>Reagent</th><th>Observation</th><th>Equation</th></tr>
+            <tr><td>CO2</td><td>Limewater Ca(OH)2</td><td>Turns <strong>milky/cloudy</strong></td><td><code>CO2 + Ca(OH)2 → CaCO3↓ + H2O</code></td></tr>
+            <tr><td>H2</td><td>Lighted splint</td><td><strong>Squeaky pop</strong></td><td><code>2H2 + O2 → 2H2O</code></td></tr>
+            <tr><td>O2</td><td>Glowing splint</td><td>Splint <strong>relights</strong></td><td>—</td></tr>
+            <tr><td>Cl2</td><td>Damp litmus paper</td><td>Litmus <strong>bleached white</strong></td><td><code>Cl2 + H2O → HCl + HOCl</code></td></tr>
+            <tr><td>NH3</td><td>Damp red litmus</td><td>Turns <strong>blue</strong></td><td><code>NH3 + H2O → NH4+ + OH-</code></td></tr>
+            <tr><td>SO2</td><td>Acidified K2Cr2O7</td><td>Orange → <strong>green</strong></td><td><code>Cr2O72- + SO2 → Cr3+ (green)</code></td></tr>
+            <tr><td>Fe2+</td><td>NaOH(aq)</td><td><strong>Green</strong> precipitate</td><td><code>Fe2+ + 2OH- → Fe(OH)2↓</code></td></tr>
+            <tr><td>Fe3+</td><td>NaOH(aq)</td><td><strong>Red-brown</strong> precipitate</td><td><code>Fe3+ + 3OH- → Fe(OH)3↓</code></td></tr>
+            <tr><td>Cu2+</td><td>NaOH(aq)</td><td><strong>Blue</strong> precipitate</td><td><code>Cu2+ + 2OH- → Cu(OH)2↓</code></td></tr>
+            <tr><td>Al3+</td><td>NaOH(aq) excess</td><td>White ppt dissolves in excess <strong>(amphoteric)</strong></td><td><code>Al3+ + 4OH- → Al(OH)4-</code></td></tr>
+            <tr><td>Cl-</td><td>AgNO3/dilute HNO3</td><td><strong>White</strong> precipitate (AgCl)</td><td><code>Ag+ + Cl- → AgCl↓</code></td></tr>
+            <tr><td>Br-</td><td>AgNO3/dilute HNO3</td><td><strong>Cream</strong> precipitate (AgBr)</td><td><code>Ag+ + Br- → AgBr↓</code></td></tr>
+            <tr><td>I-</td><td>AgNO3/dilute HNO3</td><td><strong>Yellow</strong> precipitate (AgI)</td><td><code>Ag+ + I- → AgI↓</code></td></tr>
+            <tr><td>SO42-</td><td>BaCl2/dilute HCl</td><td><strong>White</strong> precipitate (BaSO4)</td><td><code>Ba2+ + SO42- → BaSO4↓</code></td></tr>
+            <tr><td>CO32-</td><td>Dilute HCl</td><td><strong>Effervescence</strong> (CO2)</td><td><code>CO32- + 2H+ → H2O + CO2↑</code></td></tr>
+            <tr><td>NH4+</td><td>NaOH(aq), warm</td><td><strong>Pungent gas</strong> (NH3) — blue litmus</td><td><code>NH4+ + OH- → NH3↑ + H2O</code></td></tr>
+            <tr><td>Na+</td><td>Flame test</td><td><strong>Yellow</strong> flame</td><td>—</td></tr>
+            <tr><td>K+</td><td>Flame test</td><td><strong>Lilac/violet</strong> flame</td><td>—</td></tr>
+            <tr><td>Ca2+</td><td>Flame test</td><td><strong>Brick red</strong> flame</td><td>—</td></tr>
+            <tr><td>Li+</td><td>Flame test</td><td><strong>Crimson red</strong> flame</td><td>—</td></tr>
+            <tr><td>Ba2+</td><td>Flame test</td><td><strong>Green</strong> flame</td><td>—</td></tr>
+            <tr><td>Cu2+</td><td>Flame test</td><td><strong>Blue-green</strong> flame</td><td>—</td></tr>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- KEY FORMULAS -->
+    <section class="fsec" id="formulas" data-title="Key Formulas important chemistry summary constants">
+      <div class="stitle"><i class="bi bi-journal-code"></i> Key Chemistry Formulas — Complete Summary</div>
+      <div class="fcard">
+        <div class="fcard-h">All Essential Formulas at a Glance <span class="lp lb">All levels</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">Moles:</span>         n = m/M  |  n = cV  |  n = V/22.4 (STP)<br>
+            <span class="k">Concentration:</span> c = n/V  |  c1V1 = c2V2<br>
+            <span class="k">Ideal Gas:</span>     PV = nRT  (R = 8.314 J/mol·K)<br>
+            <span class="k">pH:</span>            pH = -log[H+]  |  pH + pOH = 14<br>
+            <span class="k">Henderson-H:</span>  pH = pKa + log([A-]/[HA])<br>
+            <span class="k">Enthalpy:</span>      DH = S(Hf products) - S(Hf reactants)<br>
+            <span class="k">Gibbs:</span>         DG = DH - TDS  (spontaneous if DG &lt; 0)<br>
+            <span class="k">Equilibrium:</span>   Kc = [products]/[reactants]  |  Kp = Kc(RT)^Dn<br>
+            <span class="k">Arrhenius:</span>     k = A * e^(-Ea/RT)<br>
+            <span class="k">Electrochem.:</span>  DG = -nFE  |  m = MIt/(nF)<br>
+            <span class="k">% yield:</span>       (actual/theoretical) x 100<br>
+            <span class="k">% purity:</span>      (pure/total) x 100
+          </div>
+        </div>
+      </div>
+      <div class="fcard">
+        <div class="fcard-h">Important Chemistry Constants <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <table class="ftbl">
+            <tr><th>Constant</th><th>Symbol</th><th>Value</th></tr>
+            <tr><td>Avogadro's Number</td><td><code>Na</code></td><td><code>6.022 × 10^23 mol-1</code></td></tr>
+            <tr><td>Gas Constant</td><td><code>R</code></td><td><code>8.314 J/(mol·K)</code></td></tr>
+            <tr><td>Faraday Constant</td><td><code>F</code></td><td><code>96485 C/mol</code></td></tr>
+            <tr><td>Molar volume (STP)</td><td><code>Vm</code></td><td><code>22.4 L/mol</code></td></tr>
+            <tr><td>Molar volume (RTP)</td><td><code>Vm</code></td><td><code>24.0 L/mol (25°C)</code></td></tr>
+            <tr><td>Kw (water, 25°C)</td><td><code>Kw</code></td><td><code>1.0 × 10-14 mol2/L2</code></td></tr>
+            <tr><td>Planck's constant</td><td><code>h</code></td><td><code>6.626 × 10-34 J·s</code></td></tr>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="container text-center">
+    <p class="mb-1">🏕 <strong style="color:#fff">SchoolCamp</strong> — The student community for Cameroon 🇨🇲</p>
+    <small><a href="{% url 'forum:home' %}">Forum</a> · <a href="{% url  'groups:list' %}">Groups</a> · <a href="{% url 'materials:list' %}">Materials</a> · <a href="{% url 'quiz:list' %}">Quiz</a></small>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+const EL=[
+  {n:1,s:"H",nm:"Hydrogen",m:"1.008",c:"hyd",col:1,row:1},
+  {n:2,s:"He",nm:"Helium",m:"4.003",c:"nbl",col:18,row:1},
+  {n:3,s:"Li",nm:"Lithium",m:"6.941",c:"alk",col:1,row:2},
+  {n:4,s:"Be",nm:"Beryllium",m:"9.012",c:"ale",col:2,row:2},
+  {n:5,s:"B",nm:"Boron",m:"10.81",c:"met",col:13,row:2},
+  {n:6,s:"C",nm:"Carbon",m:"12.01",c:"nmx",col:14,row:2},
+  {n:7,s:"N",nm:"Nitrogen",m:"14.01",c:"nmx",col:15,row:2},
+  {n:8,s:"O",nm:"Oxygen",m:"16.00",c:"nmx",col:16,row:2},
+  {n:9,s:"F",nm:"Fluorine",m:"19.00",c:"hal",col:17,row:2},
+  {n:10,s:"Ne",nm:"Neon",m:"20.18",c:"nbl",col:18,row:2},
+  {n:11,s:"Na",nm:"Sodium",m:"22.99",c:"alk",col:1,row:3},
+  {n:12,s:"Mg",nm:"Magnesium",m:"24.31",c:"ale",col:2,row:3},
+  {n:13,s:"Al",nm:"Aluminium",m:"26.98",c:"pst",col:13,row:3},
+  {n:14,s:"Si",nm:"Silicon",m:"28.09",c:"met",col:14,row:3},
+  {n:15,s:"P",nm:"Phosphorus",m:"30.97",c:"nmx",col:15,row:3},
+  {n:16,s:"S",nm:"Sulfur",m:"32.07",c:"nmx",col:16,row:3},
+  {n:17,s:"Cl",nm:"Chlorine",m:"35.45",c:"hal",col:17,row:3},
+  {n:18,s:"Ar",nm:"Argon",m:"39.95",c:"nbl",col:18,row:3},
+  {n:19,s:"K",nm:"Potassium",m:"39.10",c:"alk",col:1,row:4},
+  {n:20,s:"Ca",nm:"Calcium",m:"40.08",c:"ale",col:2,row:4},
+  {n:21,s:"Sc",nm:"Scandium",m:"44.96",c:"trn",col:3,row:4},
+  {n:22,s:"Ti",nm:"Titanium",m:"47.87",c:"trn",col:4,row:4},
+  {n:23,s:"V",nm:"Vanadium",m:"50.94",c:"trn",col:5,row:4},
+  {n:24,s:"Cr",nm:"Chromium",m:"52.00",c:"trn",col:6,row:4},
+  {n:25,s:"Mn",nm:"Manganese",m:"54.94",c:"trn",col:7,row:4},
+  {n:26,s:"Fe",nm:"Iron",m:"55.85",c:"trn",col:8,row:4},
+  {n:27,s:"Co",nm:"Cobalt",m:"58.93",c:"trn",col:9,row:4},
+  {n:28,s:"Ni",nm:"Nickel",m:"58.69",c:"trn",col:10,row:4},
+  {n:29,s:"Cu",nm:"Copper",m:"63.55",c:"trn",col:11,row:4},
+  {n:30,s:"Zn",nm:"Zinc",m:"65.38",c:"trn",col:12,row:4},
+  {n:31,s:"Ga",nm:"Gallium",m:"69.72",c:"pst",col:13,row:4},
+  {n:32,s:"Ge",nm:"Germanium",m:"72.63",c:"met",col:14,row:4},
+  {n:33,s:"As",nm:"Arsenic",m:"74.92",c:"met",col:15,row:4},
+  {n:34,s:"Se",nm:"Selenium",m:"78.97",c:"nmx",col:16,row:4},
+  {n:35,s:"Br",nm:"Bromine",m:"79.90",c:"hal",col:17,row:4},
+  {n:36,s:"Kr",nm:"Krypton",m:"83.80",c:"nbl",col:18,row:4},
+  {n:37,s:"Rb",nm:"Rubidium",m:"85.47",c:"alk",col:1,row:5},
+  {n:38,s:"Sr",nm:"Strontium",m:"87.62",c:"ale",col:2,row:5},
+  {n:39,s:"Y",nm:"Yttrium",m:"88.91",c:"trn",col:3,row:5},
+  {n:40,s:"Zr",nm:"Zirconium",m:"91.22",c:"trn",col:4,row:5},
+  {n:41,s:"Nb",nm:"Niobium",m:"92.91",c:"trn",col:5,row:5},
+  {n:42,s:"Mo",nm:"Molybdenum",m:"95.95",c:"trn",col:6,row:5},
+  {n:43,s:"Tc",nm:"Technetium",m:"(98)",c:"trn",col:7,row:5},
+  {n:44,s:"Ru",nm:"Ruthenium",m:"101.1",c:"trn",col:8,row:5},
+  {n:45,s:"Rh",nm:"Rhodium",m:"102.9",c:"trn",col:9,row:5},
+  {n:46,s:"Pd",nm:"Palladium",m:"106.4",c:"trn",col:10,row:5},
+  {n:47,s:"Ag",nm:"Silver",m:"107.9",c:"trn",col:11,row:5},
+  {n:48,s:"Cd",nm:"Cadmium",m:"112.4",c:"trn",col:12,row:5},
+  {n:49,s:"In",nm:"Indium",m:"114.8",c:"pst",col:13,row:5},
+  {n:50,s:"Sn",nm:"Tin",m:"118.7",c:"pst",col:14,row:5},
+  {n:51,s:"Sb",nm:"Antimony",m:"121.8",c:"met",col:15,row:5},
+  {n:52,s:"Te",nm:"Tellurium",m:"127.6",c:"met",col:16,row:5},
+  {n:53,s:"I",nm:"Iodine",m:"126.9",c:"hal",col:17,row:5},
+  {n:54,s:"Xe",nm:"Xenon",m:"131.3",c:"nbl",col:18,row:5},
+  {n:55,s:"Cs",nm:"Caesium",m:"132.9",c:"alk",col:1,row:6},
+  {n:56,s:"Ba",nm:"Barium",m:"137.3",c:"ale",col:2,row:6},
+  {n:57,s:"La",nm:"Lanthanum",m:"138.9",c:"lan",col:3,row:6},
+  {n:72,s:"Hf",nm:"Hafnium",m:"178.5",c:"trn",col:4,row:6},
+  {n:73,s:"Ta",nm:"Tantalum",m:"180.9",c:"trn",col:5,row:6},
+  {n:74,s:"W",nm:"Tungsten",m:"183.8",c:"trn",col:6,row:6},
+  {n:75,s:"Re",nm:"Rhenium",m:"186.2",c:"trn",col:7,row:6},
+  {n:76,s:"Os",nm:"Osmium",m:"190.2",c:"trn",col:8,row:6},
+  {n:77,s:"Ir",nm:"Iridium",m:"192.2",c:"trn",col:9,row:6},
+  {n:78,s:"Pt",nm:"Platinum",m:"195.1",c:"trn",col:10,row:6},
+  {n:79,s:"Au",nm:"Gold",m:"197.0",c:"trn",col:11,row:6},
+  {n:80,s:"Hg",nm:"Mercury",m:"200.6",c:"trn",col:12,row:6},
+  {n:81,s:"Tl",nm:"Thallium",m:"204.4",c:"pst",col:13,row:6},
+  {n:82,s:"Pb",nm:"Lead",m:"207.2",c:"pst",col:14,row:6},
+  {n:83,s:"Bi",nm:"Bismuth",m:"208.9",c:"pst",col:15,row:6},
+  {n:84,s:"Po",nm:"Polonium",m:"(209)",c:"pst",col:16,row:6},
+  {n:85,s:"At",nm:"Astatine",m:"(210)",c:"hal",col:17,row:6},
+  {n:86,s:"Rn",nm:"Radon",m:"(222)",c:"nbl",col:18,row:6},
+  {n:87,s:"Fr",nm:"Francium",m:"(223)",c:"alk",col:1,row:7},
+  {n:88,s:"Ra",nm:"Radium",m:"(226)",c:"ale",col:2,row:7},
+  {n:89,s:"Ac",nm:"Actinium",m:"(227)",c:"act",col:3,row:7},
+  {n:104,s:"Rf",nm:"Rutherfordium",m:"(267)",c:"trn",col:4,row:7},
+  {n:105,s:"Db",nm:"Dubnium",m:"(268)",c:"trn",col:5,row:7},
+  {n:106,s:"Sg",nm:"Seaborgium",m:"(271)",c:"trn",col:6,row:7},
+  {n:107,s:"Bh",nm:"Bohrium",m:"(272)",c:"trn",col:7,row:7},
+  {n:108,s:"Hs",nm:"Hassium",m:"(270)",c:"trn",col:8,row:7},
+  {n:109,s:"Mt",nm:"Meitnerium",m:"(278)",c:"trn",col:9,row:7},
+  {n:110,s:"Ds",nm:"Darmstadtium",m:"(281)",c:"trn",col:10,row:7},
+  {n:111,s:"Rg",nm:"Roentgenium",m:"(282)",c:"trn",col:11,row:7},
+  {n:112,s:"Cn",nm:"Copernicium",m:"(285)",c:"trn",col:12,row:7},
+  {n:113,s:"Nh",nm:"Nihonium",m:"(286)",c:"pst",col:13,row:7},
+  {n:114,s:"Fl",nm:"Flerovium",m:"(289)",c:"pst",col:14,row:7},
+  {n:115,s:"Mc",nm:"Moscovium",m:"(290)",c:"pst",col:15,row:7},
+  {n:116,s:"Lv",nm:"Livermorium",m:"(293)",c:"pst",col:16,row:7},
+  {n:117,s:"Ts",nm:"Tennessine",m:"(294)",c:"hal",col:17,row:7},
+  {n:118,s:"Og",nm:"Oganesson",m:"(294)",c:"nbl",col:18,row:7},
+  {n:58,s:"Ce",nm:"Cerium",m:"140.1",c:"lan",col:4,row:9},
+  {n:59,s:"Pr",nm:"Praseodymium",m:"140.9",c:"lan",col:5,row:9},
+  {n:60,s:"Nd",nm:"Neodymium",m:"144.2",c:"lan",col:6,row:9},
+  {n:61,s:"Pm",nm:"Promethium",m:"(145)",c:"lan",col:7,row:9},
+  {n:62,s:"Sm",nm:"Samarium",m:"150.4",c:"lan",col:8,row:9},
+  {n:63,s:"Eu",nm:"Europium",m:"152.0",c:"lan",col:9,row:9},
+  {n:64,s:"Gd",nm:"Gadolinium",m:"157.3",c:"lan",col:10,row:9},
+  {n:65,s:"Tb",nm:"Terbium",m:"158.9",c:"lan",col:11,row:9},
+  {n:66,s:"Dy",nm:"Dysprosium",m:"162.5",c:"lan",col:12,row:9},
+  {n:67,s:"Ho",nm:"Holmium",m:"164.9",c:"lan",col:13,row:9},
+  {n:68,s:"Er",nm:"Erbium",m:"167.3",c:"lan",col:14,row:9},
+  {n:69,s:"Tm",nm:"Thulium",m:"168.9",c:"lan",col:15,row:9},
+  {n:70,s:"Yb",nm:"Ytterbium",m:"173.0",c:"lan",col:16,row:9},
+  {n:71,s:"Lu",nm:"Lutetium",m:"175.0",c:"lan",col:17,row:9},
+  {n:90,s:"Th",nm:"Thorium",m:"232.0",c:"act",col:4,row:10},
+  {n:91,s:"Pa",nm:"Protactinium",m:"231.0",c:"act",col:5,row:10},
+  {n:92,s:"U",nm:"Uranium",m:"238.0",c:"act",col:6,row:10},
+  {n:93,s:"Np",nm:"Neptunium",m:"(237)",c:"act",col:7,row:10},
+  {n:94,s:"Pu",nm:"Plutonium",m:"(244)",c:"act",col:8,row:10},
+  {n:95,s:"Am",nm:"Americium",m:"(243)",c:"act",col:9,row:10},
+  {n:96,s:"Cm",nm:"Curium",m:"(247)",c:"act",col:10,row:10},
+  {n:97,s:"Bk",nm:"Berkelium",m:"(247)",c:"act",col:11,row:10},
+  {n:98,s:"Cf",nm:"Californium",m:"(251)",c:"act",col:12,row:10},
+  {n:99,s:"Es",nm:"Einsteinium",m:"(252)",c:"act",col:13,row:10},
+  {n:100,s:"Fm",nm:"Fermium",m:"(257)",c:"act",col:14,row:10},
+  {n:101,s:"Md",nm:"Mendelevium",m:"(258)",c:"act",col:15,row:10},
+  {n:102,s:"No",nm:"Nobelium",m:"(259)",c:"act",col:16,row:10},
+  {n:103,s:"Lr",nm:"Lawrencium",m:"(266)",c:"act",col:17,row:10},
+];
+
+function buildPT(){
+  const g=document.getElementById('ptGrid');
+  const mp={};
+  EL.forEach(e=>{mp[e.row+'-'+e.col]=e;});
+  for(let r=1;r<=10;r++){
+    for(let c=1;c<=18;c++){
+      const e=mp[r+'-'+c];
+      if(r===8){const d=document.createElement('div');d.style.gridColumn=c;d.style.gridRow=r;g.appendChild(d);continue;}
+      if(e){
+        const d=document.createElement('div');
+        d.className='pt-cell '+e.c;
+        d.style.gridColumn=e.col;d.style.gridRow=e.row;
+        d.title=e.nm+' | Z='+e.n+' | Mass: '+e.m+' u';
+        const nm=e.nm.length>9?e.nm.substring(0,8)+'...':e.nm;
+        d.innerHTML='<div class="pt-n">'+e.n+'</div><div class="pt-s">'+e.s+'</div><div class="pt-nm">'+nm+'</div><div class="pt-m">'+e.m+'</div>';
+        g.appendChild(d);
+      } else {
+        const d=document.createElement('div');d.style.gridColumn=c;d.style.gridRow=r;g.appendChild(d);
+      }
+    }
+  }
+}
+buildPT();
+
+function toggleSB(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sbOvl').classList.toggle('open');}
+function goTo(id,e){if(e)e.preventDefault();const el=document.getElementById(id);if(!el)return;el.scrollIntoView({behavior:'smooth',block:'start'});if(window.innerWidth<=768)toggleSB();document.querySelectorAll('.cat-link').forEach(l=>l.classList.remove('active'));if(e&&e.currentTarget)e.currentTarget.classList.add('active');}
+function filterSecs(q){q=q.toLowerCase().trim();document.querySelectorAll('.fsec').forEach(s=>{s.classList.toggle('hidden',q&&!s.textContent.toLowerCase().includes(q));});}
+function cpf(btn){const b=btn.closest('.fbox');const t=b.innerText.replace(/^Copy\n|^.Copied!\n/,'').trim();navigator.clipboard.writeText(t).then(()=>{btn.textContent='Copied!';btn.style.cssText='background:var(--sc-green);color:#fff;border-color:var(--sc-green)';setTimeout(()=>{btn.textContent='Copy';btn.style.cssText='';},2000);});}
+const secs=document.querySelectorAll('.fsec');
+window.addEventListener('scroll',()=>{let cur='';secs.forEach(s=>{if(window.scrollY+100>=s.offsetTop)cur=s.id;});document.querySelectorAll('.cat-link').forEach(l=>{l.classList.remove('active');if((l.getAttribute('onclick')||'').includes("'"+cur+"'"))l.classList.add('active');});});
+</script>
+</body>
+</html>

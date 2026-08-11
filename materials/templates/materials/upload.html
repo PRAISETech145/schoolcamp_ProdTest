@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block title %}Upload Material{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <div class="card">
+      <div class="card-header"><i class="bi bi-upload"></i> Upload Study Material</div>
+      <div class="card-body p-4">
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          {{ form|crispy }}
+          <button type="submit" class="btn btn-primary mt-2 w-100">
+            <i class="bi bi-cloud-upload"></i> Upload Material
+          </button>
+        </form>
+      </div>
+    </div>
+    
+  </div>
+</div>
+{% endblock %}

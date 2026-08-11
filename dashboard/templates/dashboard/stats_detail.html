@@ -1,0 +1,394 @@
+{% extends 'base.html' %}
+{% load humanize dashboard_extras %}
+
+{% block title %}Detailed Statistics - SchoolCamp{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="fw-bold mb-1">
+        <i class="bi bi-graph-up text-success me-2"></i>Detailed Statistics
+      </h1>
+      <p class="text-muted mb-0">Deep dive into your learning patterns</p>
+    </div>
+    <a href="{% url 'dashboard:home' %}" class="btn btn-outline-secondary">
+      <i class="bi bi-arrow-left me-1"></i>Dashboard
+    </a>
+  </div>
+
+  <!-- Stats Overview Cards -->
+  <div class="row mb-4">
+    <div class="col-12 col-md-6 col-lg-3 mb-3">
+      <div class="card border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);">
+        <div class="card-body text-center">
+          <div class="mb-2" style="font-size: 2.5rem;">🏆</div>
+          <h2 class="fw-bold text-success mb-1">{{ stats.total_xp|intcomma }}</h2>
+          <p class="text-muted mb-1">Total XP</p>
+          <p class="small fw-medium text-success">Level {{ stats.current_level }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-6 col-lg-3 mb-3">
+      <div class="card border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);">
+        <div class="card-body text-center">
+          <div class="mb-2" style="font-size: 2.5rem;">🔥</div>
+          <h2 class="fw-bold text-danger mb-1">{{ streak.current_streak }}</h2>
+          <p class="text-muted mb-1">Day Streak</p>
+          <p class="small fw-medium text-danger">Longest: {{ streak.longest_streak }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-6 col-lg-3 mb-3">
+      <div class="card border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);">
+        <div class="card-body text-center">
+          <div class="mb-2" style="font-size: 2.5rem;">📚</div>
+          <h2 class="fw-bold text-primary mb-1">{{ stats.total_materials_uploaded|default:0 }}</h2>
+          <p class="text-muted mb-1">Uploaded</p>
+          <p class="small fw-medium text-primary">{{ stats.total_materials_downloaded|default:0 }} downloaded</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-6 col-lg-3 mb-3">
+      <div class="card border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #fefce8 0%, #fef3c7 100%);">
+        <div class="card-body text-center">
+          <div class="mb-2" style="font-size: 2.5rem;">📝</div>
+          <h2 class="fw-bold text-warning mb-1">{{ stats.total_quizzes_passed|default:0 }}</h2>
+          <p class="text-muted mb-1">Quizzes Passed</p>
+          <p class="small fw-medium text-warning">{{ stats.total_quizzes_taken|default:0 }} taken</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <ul class="nav nav-tabs mb-4" id="statsTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab">
+        <i class="bi bi-grid me-1"></i>Overview
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="activity-tab" data-bs-toggle="tab" data-bs-target="#activity" type="button" role="tab">
+        <i class="bi bi-activity me-1"></i>By Activity
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="monthly-tab" data-bs-toggle="tab" data-bs-target="#monthly" type="button" role="tab">
+        <i class="bi bi-calendar3 me-1"></i>Monthly
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="progression-tab" data-bs-toggle="tab" data-bs-target="#progression" type="button" role="tab">
+        <i class="bi bi-graph-up-arrow me-1"></i>XP Progression
+      </button>
+    </li>
+  </ul>
+
+  <div class="tab-content" id="statsTabsContent">
+    <!-- Overview Tab -->
+    <div class="tab-pane fade show active" id="overview" role="tabpanel">
+      <div class="row">
+        <div class="col-12 col-lg-8">
+          <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0">
+              <h5 class="fw-bold mb-0">XP Over Time</h5>
+            </div>
+            <div class="card-body">
+              <div class="ratio ratio-16x9">
+                <canvas id="xpChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-lg-4">
+          <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white border-0">
+              <h5 class="fw-bold mb-0">Activity Breakdown</h5>
+            </div>
+            <div class="card-body">
+              <canvas id="typeChart" style="max-height: 200px;"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- By Activity Tab -->
+    <div class="tab-pane fade" id="activity" role="tabpanel">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-0">
+          <h5 class="fw-bold mb-0">All-Time Activity Breakdown</h5>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>Activity Type</th>
+                  <th class="text-center">Count</th>
+                  <th class="text-center">Total XP</th>
+                  <th class="text-center">Average XP</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for item in type_stats %}
+                <tr>
+                  <td>
+                    <span class="badge bg-light text-dark border me-2">{{ item.activity_type|capfirst }}</span>
+                    <small class="text-muted">
+                      {% if item.activity_type == 'material_upload' %}📤
+                      {% elif item.activity_type == 'material_download' %}📥
+                      {% elif item.activity_type == 'quiz_attempt' %}🧪
+                      {% elif item.activity_type == 'quiz_pass' %}✅
+                      {% elif item.activity_type == 'question_post' %}❓
+                      {% elif item.activity_type == 'question_reply' %}💬
+                      {% elif item.activity_type == 'answer_accepted' %}⭐
+                      {% elif item.activity_type == 'timetable_create' %}📅
+                      {% elif item.activity_type == 'course_add' %}📖
+                      {% elif item.activity_type == 'group_create' %}👥
+                      {% else %}⚡{% endif %}
+                    </small>
+                  </td>
+                  <td class="text-center fw-medium">{{ item.count }}</td>
+                  <td class="text-center text-success fw-medium">+{{ item.xp|intcomma }}</td>
+                  <td class="text-center text-muted">{{ item.avg_xp|floatformat:1 }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Monthly Tab -->
+    <div class="tab-pane fade" id="monthly" role="tabpanel">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-0">
+          <h5 class="fw-bold mb-0">Monthly Activity</h5>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>Month</th>
+                  <th class="text-end">Activities</th>
+                  <th class="text-end">XP Earned</th>
+                  <th class="text-end">Avg XP/Day</th>
+                  <th class="text-end">Active Days</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for ms in monthly_stats %}
+                <tr>
+                  <td class="fw-medium">{{ ms.month }}</td>
+                  <td class="text-end">{{ ms.count }}</td>
+                  <td class="text-end text-success fw-medium">+{{ ms.xp|intcomma }}</td>
+                  <td class="text-end text-muted">{{ ms.avg_xp_per_day|floatformat:1 }}</td>
+                  <td class="text-end">{{ ms.active_days }}/{{ ms.days_in_month }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- XP Progression Tab -->
+    <div class="tab-pane fade" id="progression" role="tabpanel">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-0">
+          <h5 class="fw-bold mb-0">Cumulative XP Progression</h5>
+        </div>
+        <div class="card-body">
+          <div class="ratio ratio-16x9">
+            <canvas id="progressionChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Days -->
+  <div class="row mt-4">
+    <div class="col-12 col-lg-6 mb-4">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-header bg-white border-0">
+          <h5 class="fw-bold mb-0">Most Productive Days</h5>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>Date</th>
+                  <th class="text-center">Activities</th>
+                  <th class="text-center">XP Earned</th>
+                  <th class="text-center">Top Activity</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for day in top_days %}
+                <tr>
+                  <td class="fw-medium">{{ day.activity_date|date:"M d, Y" }}</td>
+                  <td class="text-center">{{ day.count }}</td>
+                  <td class="text-center text-success fw-medium">+{{ day.xp|intcomma }}</td>
+                  <td class="text-center">
+                    <span class="badge bg-light text-dark border">{{ day.top_activity|default:"—" }}</span>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-lg-6 mb-4">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-header bg-white border-0">
+          <h5 class="fw-bold mb-0">Streak Milestones</h5>
+        </div>
+        <div class="card-body">
+          <div class="progress mb-3" style="height: 10px;">
+            <div class="progress-bar bg-danger" role="progressbar"
+                 style="width: {{ streak.progress_to_milestone|default:0 }}%"
+                 aria-valuenow="{{ streak.progress_to_milestone|default:0 }}" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+          <div class="d-flex justify-content-between small text-muted mb-3">
+            <span>Current</span>
+            <span>Next: {{ streak.milestone_days|default:7 }} days</span>
+          </div>
+
+          <div class="row text-center">
+            <div class="col-6">
+              <div class="p-3 rounded" style="background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);">
+                <div class="fw-bold text-danger fs-3">{{ streak.current_streak }}</div>
+                <div class="text-muted small">Current</div>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="p-3 rounded" style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);">
+                <div class="fw-bold text-success fs-3">{{ streak.longest_streak }}</div>
+                <div class="text-muted small">Personal Best</div>
+              </div>
+            </div>
+          </div>
+
+          <hr class="my-3">
+
+          <h6 class="fw-bold mb-3">Achieved Milestones</h6>
+          <div class="d-flex flex-wrap gap-2">
+            {% for m in streak.milestones_achieved %}
+              <span class="badge bg-success-subtle text-success px-3 py-2">{{ m }} days 🏆</span>
+            {% empty %}
+              <span class="badge bg-light text-muted px-3 py-2">None yet — keep going!</span>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+// Chart configuration
+const chartColors = {
+  primary: '#3b82f6',
+  success: '#22c55e',
+  warning: '#f59e0b',
+  danger: '#ef4444',
+  info: '#06b6d4',
+  purple: '#a855f7',
+  pink: '#ec4899',
+};
+
+// XP Chart
+const xpCtx = document.getElementById('xpChart');
+if (xpCtx) {
+  new Chart(xpCtx, {
+    type: 'line',
+    data: {
+      labels: {{ monthly_stats|get_xp_labels|safe }},
+      datasets: [{
+        label: 'XP Earned',
+        data: {{ monthly_stats|get_xp_data|safe }},
+        borderColor: chartColors.primary,
+        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+        fill: true,
+        tension: 0.3,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+}
+
+// Activity Type Chart (Doughnut)
+const typeCtx = document.getElementById('typeChart');
+if (typeCtx) {
+  new Chart(typeCtx, {
+    type: 'doughnut',
+    data: {
+      labels: {{ type_stats|get_labels|safe }},
+      datasets: [{
+        data: {{ type_stats|get_counts|safe }},
+        backgroundColor: [
+          chartColors.primary, chartColors.success, chartColors.warning,
+          chartColors.danger, chartColors.info, chartColors.purple,
+          chartColors.pink, '#84cc16', '#f97316', '#06b6d4'
+        ],
+        borderWidth: 0,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: { legend: { position: 'bottom', labels: { padding: 15, font: { size: 11 } } } },
+      cutout: '65%',
+    }
+  });
+}
+
+// Progression Chart
+const progCtx = document.getElementById('progressionChart');
+if (progCtx) {
+  new Chart(progCtx, {
+    type: 'line',
+    data: {
+      labels: {{ xp_progression|get_months|safe }},
+      datasets: [{
+        label: 'Cumulative XP',
+        data: {{ xp_progression|get_cumulative|safe }},
+        borderColor: chartColors.success,
+        backgroundColor: 'rgba(34, 197, 94, 0.1)',
+        fill: true,
+        tension: 0.3,
+        pointRadius: 3,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true, grid: { color: '#f1f5f9' } }, x: { grid: { display: false } } }
+    }
+  });
+}
+</script>
+{% endblock %}

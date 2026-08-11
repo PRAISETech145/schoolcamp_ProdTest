@@ -1,0 +1,274 @@
+{% extends 'base.html' %}
+{% block title %}Payment & Refund Policy{% endblock %}
+
+{% block extra_css %}
+<style>
+  .legal-hero {
+    background: linear-gradient(135deg, var(--sc-dark) 0%, #1a3323 100%);
+    border-radius: 16px;
+    padding: 40px 36px 32px;
+    margin-bottom: 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .legal-hero::before {
+    content: '💳';
+    position: absolute;
+    right: 32px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 80px;
+    opacity: 0.08;
+  }
+  .legal-hero h1 { color: #fff; font-weight: 800; font-size: 1.9rem; margin-bottom: 6px; }
+  .legal-hero p  { color: #7aad92; margin: 0; font-size: 0.9rem; }
+  .legal-badge {
+    display: inline-block;
+    background: rgba(76,217,138,0.15);
+    border: 1px solid rgba(76,217,138,0.3);
+    color: #4cd98a;
+    border-radius: 20px;
+    padding: 3px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+  .legal-section {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin-bottom: 16px;
+    transition: box-shadow 0.2s;
+  }
+  .legal-section:hover { box-shadow: 0 4px 20px rgba(26,158,90,0.1); }
+  .legal-section h5 {
+    color: var(--sc-green);
+    font-weight: 700;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .legal-section h5 .sec-num {
+    background: var(--sc-light-green);
+    color: var(--sc-green);
+    border-radius: 50%;
+    width: 26px; height: 26px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 800; flex-shrink: 0;
+  }
+  .legal-section p, .legal-section li {
+    color: var(--text-main);
+    font-size: 0.92rem;
+    line-height: 1.7;
+    margin-bottom: 6px;
+  }
+  .legal-section ul { padding-left: 20px; margin-bottom: 0; }
+  .legal-section ul li { margin-bottom: 4px; }
+  .legal-toc {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--sc-green);
+    border-radius: 10px;
+    padding: 18px 22px;
+    margin-bottom: 24px;
+  }
+  .legal-toc h6 { color: var(--sc-green); font-weight: 700; margin-bottom: 10px; font-size: 0.85rem; letter-spacing: 0.5px; text-transform: uppercase; }
+  .legal-toc a { color: var(--text-main); text-decoration: none; font-size: 0.88rem; display: block; padding: 2px 0; }
+  .legal-toc a:hover { color: var(--sc-green); }
+  .legal-contact {
+    background: linear-gradient(135deg, rgba(26,158,90,0.08), rgba(26,158,90,0.03));
+    border: 1px solid rgba(26,158,90,0.2);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-top: 8px;
+    text-align: center;
+  }
+  .legal-contact p { color: var(--text-main); margin: 0; font-size: 0.9rem; }
+  .legal-contact a { color: var(--sc-green); font-weight: 600; }
+  .legal-nav { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px; }
+  .legal-nav a {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 12px;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .legal-nav a:hover, .legal-nav a.active {
+    background: var(--sc-green);
+    border-color: var(--sc-green);
+    color: #fff;
+  }
+  .plan-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+  .plan-card {
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 16px 18px;
+    background: var(--bg-card-header);
+  }
+  .plan-card.premium { border-color: var(--sc-green); background: rgba(26,158,90,0.05); }
+  .plan-card .plan-name { font-weight: 700; font-size: 0.95rem; color: var(--text-main); margin-bottom: 4px; }
+  .plan-card .plan-price { font-size: 1.3rem; font-weight: 800; color: var(--sc-green); margin-bottom: 8px; }
+  .plan-card .plan-price span { font-size: 0.8rem; font-weight: 400; color: var(--text-muted); }
+  .plan-card ul { padding-left: 16px; margin: 0; }
+  .plan-card ul li { font-size: 0.83rem; color: var(--text-muted); margin-bottom: 3px; }
+  .refund-alert {
+    background: rgba(231,76,60,0.07);
+    border: 1px solid rgba(231,76,60,0.2);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 12px;
+  }
+  .refund-alert p { color: var(--text-main); margin: 0; font-size: 0.9rem; }
+  .refund-alert strong { color: #e74c3c; }
+  @media (max-width: 576px) { .plan-cards { grid-template-columns: 1fr; } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+
+    <div class="legal-nav">
+      <a href="{% url 'legal:terms' %}">📋 Terms of Service</a>
+      <a href="{% url 'legal:privacy' %}">🔒 Privacy Policy</a>
+      <a href="{% url 'legal:payment' %}" class="active">💳 Payment Policy</a>
+      <a href="{% url 'legal:cookies' %}">🍪 Cookie Policy</a>
+    </div>
+
+    <div class="legal-hero">
+      <div class="legal-badge">LEGAL</div>
+      <h1>Payment &amp; Refund Policy</h1>
+      <p>Effective Date: June 2026 &nbsp;·&nbsp; Version 1.0 &nbsp;·&nbsp; MTN MoMo · XAF</p>
+    </div>
+
+    <div class="legal-toc">
+      <h6>📑 Contents</h6>
+      <div class="row">
+        <div class="col-6">
+          <a href="#s1">1. Subscription Plans</a>
+          <a href="#s2">2. Payment Methods</a>
+          <a href="#s3">3. Billing &amp; Renewal</a>
+          <a href="#s4">4. Cancellation</a>
+        </div>
+        <div class="col-6">
+          <a href="#s5">5. Refund Policy</a>
+          <a href="#s6">6. Price Changes</a>
+          <a href="#s7">7. Free Trial Terms</a>
+          <a href="#s8">8. Contact</a>
+        </div>
+      </div>
+    </div>
+
+    <p class="text-muted mb-4" style="font-size:0.93rem;">
+      This policy explains how payments are handled on SchoolCamp, what your Premium subscription
+      includes, and our policy on refunds.
+    </p>
+
+    <div class="legal-section" id="s1">
+      <h5><span class="sec-num">1</span> Subscription Plans</h5>
+      <div class="plan-cards">
+        <div class="plan-card">
+          <div class="plan-name">🆓 Free Plan</div>
+          <div class="plan-price">0 XAF <span>/month</span></div>
+          <ul>
+            <li>Forum access</li>
+            <li>Group membership</li>
+            <li>Basic chat</li>
+            <li>Quiz participation</li>
+          </ul>
+        </div>
+        <div class="plan-card premium">
+          <div class="plan-name">⭐ Premium Plan</div>
+          <div class="plan-price">500 XAF <span>/month</span></div>
+          <ul>
+            <li>Unlimited materials</li>
+            <li>Voice messages</li>
+            <li>Advanced quiz modes</li>
+            <li>Priority support</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="legal-section" id="s2">
+      <h5><span class="sec-num">2</span> Payment Methods</h5>
+      <p>Payments are processed exclusively through <strong>MTN Mobile Money (MoMo)</strong> in
+        Central African Francs (XAF). We do not currently accept credit/debit cards,
+        Orange Money, or other payment methods.</p>
+      <p>By initiating a payment, you authorise SchoolCamp to charge <strong>500 XAF</strong> to
+        your MTN MoMo account for each billing period.</p>
+    </div>
+
+    <div class="legal-section" id="s3">
+      <h5><span class="sec-num">3</span> Billing &amp; Renewal</h5>
+      <p>Your Premium subscription is billed monthly and will automatically renew on the same date
+        each month unless you cancel before the renewal date.</p>
+      <ul>
+        <li>You will receive a notification before your subscription renews.</li>
+        <li>If payment fails (e.g. insufficient MoMo balance), your account reverts to the Free Plan.</li>
+        <li>You can view your subscription status and renewal date under <strong>My Subscription</strong>.</li>
+      </ul>
+    </div>
+
+    <div class="legal-section" id="s4">
+      <h5><span class="sec-num">4</span> Cancellation</h5>
+      <p>You may cancel your Premium subscription at any time from your account settings under
+        <strong>My Subscription</strong>. Cancellation takes effect at the end of the current billing
+        period — you will retain Premium access until that date.</p>
+      <p>Cancellation does not automatically trigger a refund for the current period.</p>
+    </div>
+
+    <div class="legal-section" id="s5">
+      <h5><span class="sec-num">5</span> Refund Policy</h5>
+      <div class="refund-alert">
+        <p><strong>General rule:</strong> Due to the digital nature of our services, all subscription
+          payments are generally non-refundable.</p>
+      </div>
+      <p>However, we may issue a refund in the following exceptional circumstances:</p>
+      <ul>
+        <li>You were charged twice for the same billing period (billing error).</li>
+        <li>You did not receive access to Premium features after a successful payment.</li>
+        <li>The platform was completely unavailable for more than <strong>72 consecutive hours</strong> during your paid period.</li>
+      </ul>
+      <p>Refund requests must be submitted within <strong>7 days</strong> of the charge to
+        <a href="mailto:support@schoolcamp.cm" style="color:var(--sc-green)">support@schoolcamp.cm</a>,
+        with your MTN MoMo transaction reference.</p>
+    </div>
+
+    <div class="legal-section" id="s6">
+      <h5><span class="sec-num">6</span> Price Changes</h5>
+      <p>SchoolCamp reserves the right to change subscription pricing. We will provide at least
+        <strong>30 days notice</strong> of any price increase via email and an in-app notification.
+        Continued use after the effective date constitutes acceptance of the new price.</p>
+    </div>
+
+    <div class="legal-section" id="s7">
+      <h5><span class="sec-num">7</span> Free Trial Terms</h5>
+      <p>If you are offered a free trial:</p>
+      <ul>
+        <li>The trial period and its duration will be clearly stated at sign-up.</li>
+        <li>No payment is required during the trial.</li>
+        <li>At the end of the trial, your account reverts to the Free Plan unless you subscribe.</li>
+        <li>Each user is eligible for <strong>one free trial only</strong>.</li>
+      </ul>
+    </div>
+
+    <div class="legal-section" id="s8">
+      <h5><span class="sec-num">8</span> Contact for Payment Issues</h5>
+      <div class="legal-contact">
+        <p>Payment questions or disputes? Contact us at<br>
+          <a href="mailto:support@schoolcamp.cm">support@schoolcamp.cm</a><br>
+          <small class="text-muted" style="font-size:0.82rem;">Include your username, charge date, and MTN MoMo transaction reference.</small>
+        </p>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

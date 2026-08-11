@@ -1,0 +1,665 @@
+<!-- materials/templates/materials/topic_room.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+  :root {
+    --sidebar-w: 320px;
+    --accent: {{ path.color|default:'#1a9e5a' }};
+    --dark: #0f1c14;
+    --accent-light: #e8f5ee;
+  }
+
+  .room-layout { display: flex; min-height: calc(100vh - 56px); }
+
+  /* Sidebar - Task List */
+  .room-sidebar {
+    width: var(--sidebar-w); min-width: var(--sidebar-w);
+    background: var(--dark); color: #cde8d8;
+    position: sticky; top: 56px; height: calc(100vh - 56px);
+    overflow-y: auto; transition: transform .3s; z-index: 1020; flex-shrink: 0;
+  }
+  .room-sidebar::-webkit-scrollbar { width: 5px; }
+  .room-sidebar::-webkit-scrollbar-thumb { background: #2a5c3a; border-radius: 10px; }
+
+  .sidebar-header {
+    background: #0a1510; padding: 16px 20px;
+    font-weight: 800; font-size: .85rem; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--accent);
+    border-bottom: 1px solid #1e3828;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .sidebar-search { padding: 12px 14px; border-bottom: 1px solid #1e3828; }
+  .sidebar-search input {
+    background: #1a2e20; border: 1px solid #2a5c3a; color: #cde8d8;
+    border-radius: 8px; padding: 7px 12px; width: 100%; font-size: 13px; outline: none;
+  }
+
+  .task-list { padding: 8px; }
+  .task-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 12px 14px; border-radius: 8px;
+    color: #9ecfb0; text-decoration: none; font-size: .9rem; font-weight: 600;
+    border-left: 3px solid transparent; transition: all .2s; cursor: pointer;
+    background: transparent;
+  }
+  .task-item:hover, .task-item.active {
+    color: #fff; background: rgba(76,217,138,.1); border-left-color: var(--accent);
+  }
+  .task-item.completed { opacity: .7; }
+  .task-item.completed .task-title { text-decoration: line-through; }
+  .task-icon { font-size: 1.1rem; color: var(--accent); flex-shrink: 0; margin-top: 2px; }
+  .task-meta { flex: 1; min-width: 0; }
+  .task-title { font-size: .88rem; line-height: 1.4; }
+  .task-xp { font-size: .75rem; color: var(--accent); font-weight: 700; white-space: nowrap; margin-left: 8px; }
+  .task-status { font-size: .7rem; }
+
+  /* Main Content */
+  .room-main { flex: 1; padding: 28px 24px; overflow-x: hidden; min-width: 0; }
+  .room-header { margin-bottom: 24px; }
+  .room-breadcrumb { font-size: .82rem; color: #7aad92; margin-bottom: 8px; }
+  .room-breadcrumb a { color: var(--accent); text-decoration: none; }
+  .room-title { font-family: 'Merriweather', serif; font-size: 1.9rem; font-weight: 700; color: var(--dark); margin: 0 0 4px; }
+  .room-subtitle { color: #5a8a6a; font-size: .95rem; }
+
+  /* Progress Bar */
+  .room-progress { margin-top: 16px; }
+  .progress-bar-custom {
+    height: 8px; background: #eef5f1; border-radius: 4px; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%; background: linear-gradient(90deg, var(--accent), #4cd98a);
+    border-radius: 4px; transition: width .3s ease;
+  }
+  .progress-text { font-size: .8rem; color: #5a8a6a; margin-top: 6px; display: flex; justify-content: space-between; }
+
+  /* Content Panels */
+  .content-panel { background: #fff; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,.07); overflow: hidden; }
+  .panel-header { background: var(--accent-light); border-bottom: 1px solid #d2e8db; padding: 14px 20px; font-weight: 700; font-size: 1rem; color: #0f3d22; display: flex; justify-content: space-between; align-items: center; }
+  .panel-body { padding: 24px 20px; }
+
+  /* Theory Sections */
+  .theory-section { margin-bottom: 32px; scroll-margin-top: 80px; }
+  .section-title { font-family: 'Merriweather', serif; font-size: 1.2rem; font-weight: 700; color: var(--dark); border-left: 4px solid var(--accent); padding-left: 12px; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+  .section-title i { color: var(--accent); }
+
+  .formula-card { background: #fff; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,.07); margin-bottom: 14px; border: none; overflow: hidden; transition: box-shadow .2s; }
+  .formula-card:hover { box-shadow: 0 4px 20px rgba(26,158,90,.15); }
+  .formula-card-header { background: var(--accent-light); border-bottom: 1px solid #d2e8db; padding: 10px 16px; font-weight: 700; font-size: .92rem; color: #0f3d22; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; }
+  .formula-body { padding: 14px 16px; }
+  .formula-box { background: #0f1c14; border-radius: 8px; padding: 14px 18px; font-family: 'Fira Code', monospace; font-size: .95rem; color: #4cd98a; margin: 8px 0; position: relative; overflow-x: auto; line-height: 1.9; }
+  .formula-box .var { color: #fda085; }
+  .formula-box .kw { color: #f6d365; font-weight: bold; }
+  .formula-box .sym { color: #89d8ff; }
+  .formula-note { font-size: .83rem; color: #5a8a6a; margin-top: 6px; font-style: italic; }
+
+  /* Exercise Questions */
+  .question-card { background: #fff; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,.07); margin-bottom: 20px; border: none; overflow: hidden; }
+  .question-header { background: var(--dark); color: #fff; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; }
+  .question-number { font-weight: 800; font-size: .9rem; }
+  .question-xp { background: var(--accent); color: #fff; padding: 4px 12px; border-radius: 20px; font-size: .75rem; font-weight: 700; }
+  .question-body { padding: 24px 20px; }
+  .question-prompt { font-size: 1.05rem; line-height: 1.7; color: #333; margin-bottom: 20px; }
+
+  .answer-input { width: 100%; padding: 14px 16px; border: 2px solid #b5d9c5; border-radius: 10px; font-size: 1rem; font-family: 'Fira Code', monospace; background: #f8fbf9; transition: border-color .2s, box-shadow .2s; }
+  .answer-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(76,217,138,.15); }
+  .answer-input.correct { border-color: #28a745; background: #f0fff4; }
+  .answer-input.incorrect { border-color: #dc3545; background: #fff8f8; }
+
+  .mcq-options { display: flex; flex-direction: column; gap: 10px; }
+  .mcq-option { display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: #f8fbf9; border: 2px solid #eef5f1; border-radius: 10px; cursor: pointer; transition: all .2s; }
+  .mcq-option:hover { border-color: var(--accent); background: var(--accent-light); }
+  .mcq-option.selected { border-color: var(--accent); background: var(--accent-light); }
+  .mcq-option.correct { border-color: #28a745; background: #f0fff4; }
+  .mcq-option.incorrect { border-color: #dc3545; background: #fff8f8; }
+  .mcq-option input { accent-color: var(--accent); width: 20px; height: 20px; }
+
+  .submit-btn { width: 100%; padding: 14px; font-size: 1rem; font-weight: 700; border-radius: 10px; background: var(--accent); border: none; color: #fff; cursor: pointer; transition: background .2s; }
+  .submit-btn:hover:not(:disabled) { background: #158048; }
+  .submit-btn:disabled { opacity: .6; cursor: not-allowed; }
+  .submit-btn.success { background: #28a745; }
+
+  .hint-box { background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 12px 16px; margin-top: 16px; font-size: .9rem; color: #856404; display: none; }
+  .hint-box.show { display: block; }
+
+  .result-feedback { padding: 14px 16px; border-radius: 8px; margin-top: 16px; font-weight: 600; display: none; }
+  .result-feedback.correct { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+  .result-feedback.incorrect { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+  .result-feedback.show { display: block; }
+
+  /* Lab Steps */
+  .lab-step { padding: 20px 0; border-bottom: 1px solid #eef5f1; }
+  .lab-step:last-child { border-bottom: none; }
+  .step-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .step-number { width: 36px; height: 36px; border-radius: 50%; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0; }
+  .step-number.completed { background: #28a745; }
+  .step-title { font-weight: 700; font-size: 1.05rem; color: var(--dark); }
+  .step-instruction { font-size: .95rem; line-height: 1.7; color: #444; margin-bottom: 16px; }
+  .step-validation { background: #0f1c14; border-radius: 8px; padding: 12px 16px; font-family: 'Fira Code', monospace; font-size: .85rem; color: #4cd98a; }
+
+  /* Mobile */
+  @media (max-width: 991px) {
+    .room-sidebar { position: fixed; left: 0; transform: translateX(-100%); box-shadow: 4px 0 20px rgba(0,0,0,.3); }
+    .room-sidebar.open { transform: translateX(0); }
+    .room-main { padding: 20px 16px; }
+    .room-title { font-size: 1.5rem; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<nav class="navbar navbar-expand-lg navbar-dark" style="background: var(--dark) !important; position: sticky; top: 0; z-index: 1030;">
+  <div class="container-fluid px-3">
+    <a class="navbar-brand" href="{% url 'materials:learning_path' subject=path.subject %}">
+      {{ path.icon }} {{ path.name }}
+    </a>
+    <div class="ms-auto d-flex align-items-center gap-3">
+      <button id="sidebarToggle" class="btn d-lg-none" onclick="toggleSidebar()" style="background: var(--accent); color: #fff; border: none; border-radius: 8px; padding: 6px 12px; font-weight: 700;">
+        <i class="bi bi-list"></i> Tasks
+      </button>
+      <a class="nav-link d-none d-lg-block" href="{% url 'forum:home' %}"><i class="bi bi-house"></i> Home</a>
+    </div>
+  </div>
+</nav>
+
+<div id="sidebarOverlay" class="d-lg-none" onclick="toggleSidebar()" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 1019;"></div>
+
+<div class="room-layout">
+
+  <!-- SIDEBAR: Task List -->
+  <aside id="roomSidebar" class="room-sidebar">
+    <div class="sidebar-header">
+      <i class="bi bi-journal-code"></i> {{ topic.title }}
+    </div>
+    <div class="sidebar-search">
+      <input type="text" id="taskSearch" placeholder="🔍 Filter tasks..." oninput="filterTasks(this.value)">
+    </div>
+    <div class="task-list" id="taskList">
+      {% if content_data.type == 'theory' %}
+        {% for section in content_data.sections %}
+        <div class="task-item completed" data-section="{{ forloop.counter0 }}">
+          <i class="bi bi-check-circle-fill task-icon"></i>
+          <div class="task-meta">
+            <div class="task-title">{{ section.title }}</div>
+            <span class="task-status text-muted">{{ section.formulas|length|default:0 }} formulas</span>
+          </div>
+          <span class="task-xp"><i class="bi bi-star-fill"></i> ✓</span>
+        </div>
+        {% endfor %}
+
+      {% elif content_data.type == 'exercise' %}
+        {% for q in content_data.questions %}
+        <div class="task-item {% if forloop.counter0 < content_data.current_index %}completed{% elif forloop.counter0 == content_data.current_index %}active{% endif %}"
+             data-question="{{ forloop.counter0 }}">
+          <i class="bi {% if forloop.counter0 < content_data.current_index %}bi-check-circle-fill{% elif forloop.counter0 == content_data.current_index %}bi-play-circle-fill{% else %}bi-circle{% endif %} task-icon"></i>
+          <div class="task-meta">
+            <div class="task-title">{{ q.prompt|truncatewords:8 }}</div>
+            <span class="task-status text-muted">Q{{ forloop.counter }} / {{ content_data.total }}</span>
+          </div>
+          <span class="task-xp">+{{ q.xp|default:10 }} XP</span>
+        </div>
+        {% endfor %}
+
+      {% elif content_data.type == 'lab' %}
+        {% for step in content_data.steps %}
+        <div class="task-item {% if forloop.counter0 < content_data.current_index %}completed{% elif forloop.counter0 == content_data.current_index %}active{% endif %}"
+             data-step="{{ forloop.counter0 }}">
+          <i class="bi {% if forloop.counter0 < content_data.current_index %}bi-check-circle-fill{% elif forloop.counter0 == content_data.current_index %}bi-play-circle-fill{% else %}bi-circle{% endif %} task-icon"></i>
+          <div class="task-meta">
+            <div class="task-title">{{ step.title|default:step.instruction|truncatewords:8 }}</div>
+            <span class="task-status text-muted">Step {{ forloop.counter }} / {{ content_data.total }}</span>
+          </div>
+          <span class="task-xp">Lab</span>
+        </div>
+        {% endfor %}
+
+      {% elif content_data.type == 'quiz' %}
+        <div class="task-item active" data-quiz="true">
+          <i class="bi bi-question-circle-fill task-icon"></i>
+          <div class="task-meta">
+            <div class="task-title">{{ content_data.quiz.title }}</div>
+            <span class="task-status text-muted">{{ content_data.quiz.question_count }} questions • {{ content_data.quiz.duration_minutes }} min</span>
+          </div>
+          <span class="task-xp">Quiz</span>
+        </div>
+
+      {% elif content_data.type == 'project' %}
+        {% for m in content_data.milestones %}
+        <div class="task-item {% if content_data.progress_data.milestones|get_item:m.title.completed %}completed{% endif %}" data-milestone="{{ forloop.counter0 }}">
+          <i class="bi bi-flag-fill task-icon"></i>
+          <div class="task-meta">
+            <div class="task-title">{{ m.title }}</div>
+          </div>
+          <span class="task-xp">+{{ m.xp }} XP</span>
+        </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+
+    <!-- XP Summary -->
+    <div class="p-3 border-top" style="border-color: #1e3828;">
+      <div class="d-flex justify-content-between mb-2">
+        <small class="text-muted">Topic XP</small>
+        <strong class="text-warning">{{ completion.xp_earned|add:topic.xp_reward }} / {{ topic.xp_reward }}</strong>
+      </div>
+      <div class="progress" style="height: 6px;" role="progressbar" aria-valuenow="{{ completion.xp_earned|floatformat:0|div:topic.xp_reward|mul:100 }}" aria-valuemin="0" aria-valuemax="100">
+        <div class="progress-bar" style="width: {{ completion.xp_earned|floatformat:0|div:topic.xp_reward|mul:100 }}%; background: var(--accent);"></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="room-main" id="roomMain">
+
+    <!-- Header -->
+    <div class="room-header">
+      <div class="room-breadcrumb">
+        <a href="{% url 'materials:learning_paths' %}">Learning</a> /
+        <a href="{% url 'materials:learning_path' subject=path.subject %}">{{ path.name }}</a> /
+        <span>{{ topic.title }}</span>
+      </div>
+      <h1 class="room-title">{{ topic.title }}</h1>
+      <p class="room-subtitle">{{ topic.description }}</p>
+
+      <div class="room-progress">
+        <div class="progress-bar-custom">
+          <div class="progress-fill" id="overallProgress" style="width: 0%"></div>
+        </div>
+        <div class="progress-text">
+          <span>Step <span id="stepCurrent">1</span> of <span id="stepTotal">{{ content_data.total|default:content_data.sections|length }}</span></span>
+          <span>XP: {{ completion.xp_earned }} / {{ topic.xp_reward }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content Panels -->
+    <div id="contentPanels">
+
+      {% if content_data.type == 'theory' %}
+        {% for section in content_data.sections %}
+        <section class="content-panel theory-section" id="section-{{ forloop.counter0 }}">
+          <div class="panel-header">
+            <i class="bi bi-{{ section.icon|default:'book' }}"></i> {{ section.title }}
+            <span class="badge bg-success">{{ section.formulas|length|default:0 }} formulas</span>
+          </div>
+          <div class="panel-body">
+            {% if section.intro %}
+            <p class="text-muted mb-4">{{ section.intro }}</p>
+            {% endif %}
+
+            {% for formula in section.formulas %}
+            <div class="formula-card">
+              <div class="formula-card-header">
+                {{ formula.name }}
+                <span class="level-pill level-{{ formula.level|default:'basic' }}">{{ formula.level|default:'Basic'|capfirst }}</span>
+              </div>
+              <div class="formula-body">
+                <div class="formula-box">
+                  <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+                  {{ formula.latex|safe }}
+                </div>
+                {% if formula.note %}
+                <p class="formula-note">{{ formula.note|safe }}</p>
+                {% endif %}
+              </div>
+            </div>
+            {% endfor %}
+
+            {% if section.table %}
+            <div class="formula-card">
+              <div class="formula-card-header">{{ section.table.title }}</div>
+              <div class="formula-body">
+                <table class="formula-table">
+                  <thead>
+                    <tr>{% for col in section.table.headers %}<th>{{ col }}</th>{% endfor %}</tr>
+                  </thead>
+                  <tbody>
+                    {% for row in section.table.rows %}
+                    <tr>{% for cell in row %}<td>{{ cell|safe }}</td>{% endfor %}</tr>
+                    {% endfor %}
+                  </tbody>
+                </table              </div>
+            </div>
+            {% endif %}
+          </div>
+        </section>
+        {% endfor %}
+
+      {% elif content_data.type == 'exercise' %}
+        {% with q=content_data.current_question %}
+        <div class="content-panel question-card" id="question-{{ content_data.current_index }}">
+          <div class="question-header">
+            <span class="question-number">Question {{ content_data.current_index|add:1 }} / {{ content_data.total }}</span>
+            <span class="question-xp">+{{ q.xp|default:10 }} XP</span>
+          </div>
+          <div class="question-body">
+            <div class="question-prompt">{{ q.prompt|safe }}</div>
+
+            {% if q.type == 'mcq' %}
+            <form id="answerForm" data-qindex="{{ content_data.current_index }}">
+              <div class="mcq-options">
+                {% for choice in q.choices %}
+                <label class="mcq-option" data-value="{{ choice.value }}">
+                  <input type="radio" name="answer" value="{{ choice.value }}" {% if choice.value == content_data.progress_data|get_item:"q"|add:content_data.current_index|add:".answer" %}checked{% endif %}>
+                  <span>{{ choice.text }}</span>
+                </label>
+                {% endfor %}
+              </div>
+              <div class="hint-box" id="hintBox">{{ q.hint }}</div>
+              <button type="submit" class="submit-btn mt-3" {% if content_data.progress_data|get_item:"q"|add:content_data.current_index|add:".correct" %}disabled{% endif %}>
+                {% if content_data.progress_data|get_item:"q"|add:content_data.current_index|add:".correct" %}✓ Correct!{% else %}Submit Answer{% endif %}
+              </button>
+              <div class="result-feedback" id="resultFeedback"></div>
+            </form>
+
+            {% else %}
+            <form id="answerForm" data-qindex="{{ content_data.current_index }}">
+              <input type="text" class="answer-input" name="answer" id="answerInput"
+                     placeholder="Type your answer..." autocomplete="off"
+                     value="{{ content_data.progress_data|get_item:"q"|add:content_data.current_index|add:".answer"|default_if_none:"" }}">
+              <div class="hint-box" id="hintBox">{{ q.hint }}</div>
+              <button type="submit" class="submit-btn mt-3" {% if content_data.progress_data|get_item:"q"|add:content_data.current_index|add:".correct" %}disabled{% endif %}>
+                {% if content_data.progress_data|get_item:"q"|add:content_data.current_index|add:".correct" %}✓ Correct!{% else %}Submit Answer{% endif %}
+              </button>
+              <div class="result-feedback" id="resultFeedback"></div>
+            </form>
+            {% endif %}
+          </div>
+        </div>
+        {% endwith %}
+
+      {% elif content_data.type == 'lab' %}
+        {% with step=content_data.current_step %}
+        <div class="content-panel" id="step-{{ content_data.current_index }}">
+          <div class="panel-header">
+            Step {{ content_data.current_index|add:1 }} / {{ content_data.total }}
+            <span class="badge bg-info">{{ step.type|default:'instruction' }}</span>
+          </div>
+          <div class="panel-body">
+            <div class="lab-step">
+              <div class="step-header">
+                <div class="step-number {% if content_data.current_index > 0 %}completed{% endif %}">{{ content_data.current_index|add:1 }}</div>
+                <h4 class="step-title mb-0">{{ step.title|default:"Lab Step" }}</h4>
+              </div>
+              <div class="step-instruction">{{ step.instruction|safe }}</div>
+
+              {% if step.validation_type == 'command' %}
+              <div class="step-validation">
+                Expected output: <code>{{ step.expected_output }}</code>
+                <div class="mt-2">
+                  <input type="text" class="form-control form-control-sm" placeholder="Paste terminal output here...">
+                  <button class="btn btn-sm btn-primary mt-2" onclick="validateLabStep({{ content_data.current_index }})">Validate</button>
+                </div>
+              </div>
+              {% elif step.validation_type == 'flag' %}
+              <div class="step-validation">
+                <input type="text" class="form-control" placeholder="Enter flag (e.g., THM{...})" id="flagInput">
+                <button class="btn btn-danger btn-sm mt-2" onclick="submitFlag('{{ step.flag }}')">Submit Flag</button>
+              </div>
+              {% elif step.validation_type == 'question' %}
+              <div class="step-validation">
+                <p>{{ step.validation_question }}</p>
+                <input type="text" class="form-control" placeholder="Your answer" id="labAnswer">
+                <button class="btn btn-primary btn-sm mt-2" onclick="validateLabAnswer('{{ step.validation_answer }}')">Check</button>
+              </div>
+              {% endif %}
+            </div>
+
+            <div class="d-flex justify-content-between mt-4 pt-3 border-top">
+              {% if content_data.current_index > 0 %}
+              <a href="?step={{ content_data.current_index|add:-1 }}" class="btn btn-outline-secondary">← Previous</a>
+              {% endif %}
+              {% if content_data.current_index|add:1 < content_data.total %}
+              <button class="btn btn-primary" onclick="nextLabStep({{ content_data.current_index|add:1 }})">Next →</button>
+              {% else %}
+              <button class="btn btn-success" onclick="completeLab()">Complete Lab</button>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        {% endwith %}
+
+      {% elif content_data.type == 'quiz' %}
+        <div class="content-panel text-center py-5">
+          <i class="bi bi-question-circle" style="font-size: 4rem; color: var(--accent);"></i>
+          <h3 class="mt-3">{{ content_data.quiz.title }}</h3>
+          <p class="text-muted">{{ content_data.quiz.description }}</p>
+          <div class="row mt-4 justify-content-center">
+            <div class="col-md-4">
+              <div class="p-3 bg-light rounded">{{ content_data.quiz.question_count }} Questions</div>
+            </div>
+            <div class="col-md-4">
+              <div class="p-3 bg-light rounded">{{ content_data.quiz.duration_minutes }} Minutes</div>
+            </div>
+            <div class="col-md-4">
+              <div class="p-3 bg-light rounded">{{ content_data.quiz.difficulty|title }} Level</div>
+            </div>
+          </div>
+          <a href="{% url 'quiz:attempt' content_data.quiz.id %}" class="btn btn-primary btn-lg mt-4">Start Quiz</a>
+        </div>
+
+      {% elif content_data.type == 'project' %}
+        <div class="content-panel">
+          <div class="panel-header">Project Milestones</div>
+          <div class="panel-body">
+            {% for m in content_data.milestones %}
+            <div class="card mb-3">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <h5 class="mb-1">{{ m.title }}</h5>
+                    <p class="text-muted mb-0">{{ m.description }}</p>
+                  </div>
+                  <span class="badge bg-primary fs-6">+{{ m.xp }} XP</span>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+
+    </div>
+
+    <!-- Completion Banner -->
+    {% if is_completed %}
+    <div class="alert alert-success mt-4 text-center" role="alert">
+      <i class="bi bi-trophy-fill me-2"></i>
+      <strong>Topic Completed!</strong> You earned <strong>{{ topic.xp_reward }} XP</strong>.
+      <a href="{% url 'materials:learning_path' subject=path.subject %}" class="btn btn-sm btn-outline-success ms-3">Back to {{ path.name }}</a>
+    </div>
+    {% endif %}
+
+  </main>
+</div>
+
+{% block extra_js %}
+<script>
+const topicSlug = "{{ topic.slug }}";
+const subject = "{{ subject }}";
+const csrfToken = "{{ csrf_token }}";
+const topicType = "{{ content_data.type }}";
+const totalSteps = {{ content_data.total|default:content_data.sections|length }};
+const currentStep = {{ completion.current_step|default:0 }};
+const isCompleted = {{ is_completed|yesno:"true,false" }};
+
+// Progress bar on load
+document.addEventListener('DOMContentLoaded', () => {
+  const progress = currentStep / totalSteps * 100;
+  document.getElementById('overallProgress').style.width = progress + '%';
+  document.getElementById('stepCurrent').textContent = currentStep + 1;
+  document.getElementById('stepTotal').textContent = totalSteps;
+
+  // Highlight active sidebar item
+  document.querySelectorAll('.task-item.active').forEach(el => {
+    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  });
+});
+
+// ─── Sidebar Toggle ───
+function toggleSidebar() {
+  document.getElementById('roomSidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('open');
+}
+
+// ─── Filter Tasks ───
+function filterTasks(query) {
+  const q = query.toLowerCase().trim();
+  document.querySelectorAll('.task-item').forEach(item => {
+    const text = item.textContent.toLowerCase();
+    item.style.display = !q || text.includes(q) ? 'flex' : 'none';
+  });
+}
+
+// ─── Copy Formula ───
+function copyFormula(btn) {
+  const box = btn.closest('.formula-box');
+  const text = box.innerText.replace('Copy\n','').trim();
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✓ Copied!';
+    btn.style.background = 'var(--accent)';
+    btn.style.color = '#fff';
+    setTimeout(() => { btn.textContent = 'Copy'; btn.style.background = ''; btn.style.color = ''; }, 2000);
+  });
+}
+
+// ─── Exercise Answer Submission ───
+document.addEventListener('submit', async (e) => {
+  if (!e.target.matches('#answerForm')) return;
+  e.preventDefault();
+
+  const form = e.target;
+  const qindex = parseInt(form.dataset.qindex);
+  const answer = form.querySelector('[name="answer"]')?.value
+    || Array.from(form.querySelectorAll('input[name="answer"]:checked')).map(i => i.value).join(',');
+
+  const submitBtn = form.querySelector('.submit-btn');
+  const feedback = form.querySelector('.result-feedback');
+  const hintBox = form.querySelector('.hint-box');
+  const input = form.querySelector('.answer-input, .mcq-option.selected');
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Checking...';
+
+  try {
+    const response = await fetch(`/materials/learn/${subject}/${topicSlug}/submit/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrfToken,
+      },
+      body: JSON.stringify({ question_index: qindex, answer: answer })
+    });
+
+    const data = await response.json();
+
+    if (data.correct) {
+      submitBtn.classList.add('success');
+      submitBtn.textContent = '✓ Correct!';
+      if (input) input.classList.add('correct');
+      feedback.className = 'result-feedback correct show';
+      feedback.innerHTML = '<i class="bi bi-check-circle-fill me-2"></i>' + (data.message || 'Correct!');
+
+      if (data.completed) {
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
+      } else if (data.next_question) {
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      }
+    } else {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Try Again';
+      if (input) input.classList.add('incorrect');
+      feedback.className = 'result-feedback incorrect show';
+      feedback.innerHTML = '<i class="bi bi-x-circle-fill me-2"></i> Incorrect. ' + (data.hint ? 'Hint: ' + data.hint : 'Try again!');
+      if (data.hint) hintBox.classList.add('show');
+    }
+
+    // Update progress display
+    if (data.progress) {
+      document.getElementById('stepCurrent').textContent = data.progress.current;
+      document.getElementById('overallProgress').style.width = (data.progress.current / totalSteps * 100) + '%';
+    }
+
+  } catch (err) {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Submit Answer';
+    console.error('Submit error:', err);
+  }
+});
+
+// ─── MCQ Option Selection ───
+document.querySelectorAll('.mcq-option').forEach(opt => {
+  opt.addEventListener('click', () => {
+    document.querySelectorAll('.mcq-option').forEach(o => o.classList.remove('selected'));
+    opt.classList.add('selected');
+    opt.querySelector('input').checked = true;
+  });
+});
+
+// ─── Theory Section Scroll ───
+document.querySelectorAll('[data-section]').forEach(item => {
+  item.addEventListener('click', () => {
+    const idx = item.dataset.section;
+    const target = document.getElementById('section-' + idx);
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document.querySelectorAll('.task-item').forEach(i => i.classList.remove('active'));
+    item.classList.add('active');
+  });
+});
+
+// ─── Lab Step Navigation ───
+function nextLabStep(stepIndex) {
+  window.location.href = `?step=${stepIndex}`;
+}
+
+function validateLabStep(stepIndex) {
+  // Would validate terminal output
+  alert('Lab validation would check terminal output against expected result');
+}
+
+function submitFlag(expectedFlag) {
+  const input = document.getElementById('flagInput');
+  const flag = input.value.trim();
+  if (flag === expectedFlag) {
+    alert('🎉 Flag correct!');
+    nextLabStep({{ content_data.current_index|add:1 }});
+  } else {
+    alert('Incorrect flag. Try again!');
+  }
+}
+
+function validateLabAnswer(expected) {
+  const input = document.getElementById('labAnswer');
+  if (input.value.trim().toLowerCase() === expected.toLowerCase()) {
+    alert('Correct!');
+  } else {
+    alert('Incorrect. Try again!');
+  }
+}
+
+function completeLab() {
+  if (confirm('Complete this lab and earn XP?')) {
+    window.location.reload();
+  }
+}
+
+// ─── Keyboard Shortcuts ───
+document.addEventListener('keydown', (e) => {
+  // Ctrl+Enter to submit
+  if (e.ctrlKey && e.key === 'Enter') {
+    const form = document.getElementById('answerForm');
+    if (form) form.dispatchEvent(new Event('submit'));
+  }
+  // Escape to close sidebar on mobile
+  if (e.key === 'Escape') {
+    document.getElementById('roomSidebar').classList.remove('open');
+    document.getElementById('sidebarOverlay').classList.remove('open');
+  }
+});
+</script>
+{% endblock %}

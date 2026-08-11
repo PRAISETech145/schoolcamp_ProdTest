@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}{% if editing %}Edit Question{% else %}Ask a Question{% endif %}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="card">
+      <div class="card-header">
+        <i class="bi bi-{% if editing %}pencil{% else %}plus-circle{% endif %}"></i>
+        {% if editing %}Edit Question{% else %}Ask a Question{% endif %}
+      </div>
+      <div class="card-body p-4">
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          {{ form|crispy }}
+          <div class="d-flex gap-2 mt-3">
+            <button type="submit" class="btn btn-primary">
+              {% if editing %}Save Changes{% else %}Post Question{% endif %}
+            </button>
+            <a href="{% url 'forum:home' %}" class="btn btn-outline-secondary">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="card mt-3 p-3">
+      <h6 class="fw-bold">💡 Tips for a great question</h6>
+      <ul class="small text-muted mb-0">
+        <li>Be specific about what you're struggling with</li>
+        <li>Show what you've already tried</li>
+        <li>Add tags like <code>math</code>, <code>physics</code>, <code>chemistry</code> so others can find it</li>
+        <li>Use clear language — English or French both welcome!</li>
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

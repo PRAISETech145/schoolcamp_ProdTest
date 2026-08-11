@@ -1,0 +1,271 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ group.name }}{% endblock %}
+
+{% block content %}
+
+<!-- Cover + Header -->
+<div class="card mb-4 overflow-hidden">
+  {% if group.cover_image %}
+    <img src="{{ group.cover_image.url }}" style="height:200px;object-fit:cover;width:100%">
+  {% else %}
+    <div style="height:120px;background:linear-gradient(135deg,#1a9e5a,#0d6b3c);display:flex;align-items:center;justify-content:center;font-size:4rem">👥</div>
+  {% endif %}
+  <div class="card-body">
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+      <div>
+        <div class="d-flex align-items-center gap-2 mb-1">
+          <h2 class="fw-bold mb-0">{{ group.name }}</h2>
+          {% if group.is_public %}
+            <span class="badge bg-success">🌍 Public</span>
+          {% else %}
+            <span class="badge bg-secondary">🔒 Private</span>
+          {% endif %}
+        </div>
+        {% if group.description %}
+          <p class="text-muted mb-1">{{ group.description }}</p>
+        {% endif %}
+        <small class="text-muted">
+          Created by <a href="{% url 'accounts:profile' group.creator.username %}" class="fw-bold">{{ group.creator.username }}</a>
+          · {{ group.created_at|date:"d M Y" }}
+          · <i class="bi bi-people"></i> {{ group.member_count }} member{{ group.member_count|pluralize }}
+        </small>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="d-flex gap-2 flex-wrap">
+        {% if user.is_authenticated %}
+          {% if membership and membership.status == 'active' %}
+            {% if is_creator %}
+              <a href="{% url 'groups:edit' group.pk %}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-gear"></i> Settings</a>
+            {% endif %}
+            <form method="post" action="{% url 'groups:leave' group.pk %}">
+              {% csrf_token %}
+              <button class="btn btn-outline-danger btn-sm" onclick="return confirm('Leave this group?')">Leave Group</button>
+            </form>
+          {% elif membership and membership.status == 'pending' %}
+            <span class="btn btn-outline-warning btn-sm disabled">⏳ Request Pending</span>
+          {% elif membership and membership.status == 'invited' %}
+            <form method="post" action="{% url 'groups:respond_invite' group.pk %}" class="d-flex gap-1">
+              {% csrf_token %}
+              <button name="action" value="accept" class="btn btn-success btn-sm">✓ Accept Invite</button>
+              <button name="action" value="decline" class="btn btn-outline-danger btn-sm">✕</button>
+            </form>
+          {% elif membership and membership.status == 'banned' %}
+            <span class="btn btn-outline-danger btn-sm disabled">🚫 Banned</span>
+          {% else %}
+            <form method="post" action="{% url 'groups:join' group.pk %}">
+              {% csrf_token %}
+              <button class="btn btn-primary btn-sm">
+                {% if group.is_public %}Join Group{% else %}Request to Join{% endif %}
+              </button>
+            </form>
+          {% endif %}
+        {% else %}
+          <a href="{% url 'accounts:login' %}" class="btn btn-primary btn-sm">Login to Join</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Private group lock -->
+{% if not can_see_content %}
+<div class="text-center py-5 card p-5">
+  <div style="font-size:4rem">🔒</div>
+  <h4>This is a private group</h4>
+  <p class="text-muted">Request to join to see posts and members.</p>
+  {% if user.is_authenticated and not membership %}
+    <form method="post" action="{% url 'groups:join' group.pk %}" class="d-inline">
+      {% csrf_token %}
+      <button class="btn btn-primary">Request to Join</button>
+    </form>
+  {% endif %}
+</div>
+{% else %}
+
+<div class="row g-4">
+  <!-- LEFT: Feed + Post box -->
+  <div class="col-lg-8">
+
+    <!-- Pending Join Requests (admins only) -->
+    {% if is_admin and join_requests %}
+    <div class="card mb-4 border-warning">
+      <div class="card-header bg-warning bg-opacity-10 fw-bold">
+        <i class="bi bi-bell"></i> Join Requests ({{ join_requests|length }})
+      </div>
+      <div class="list-group list-group-flush">
+        {% for req in join_requests %}
+        <div class="list-group-item d-flex justify-content-between align-items-center">
+          <a href="{% url 'accounts:profile' req.user.username %}" class="fw-bold text-decoration-none">{{ req.user.username }}</a>
+          <div class="d-flex gap-2">
+            <form method="post" action="{% url 'groups:approve_request' group.pk req.pk %}">
+              {% csrf_token %}
+              <button name="action" value="approve" class="btn btn-success btn-sm">✓ Approve</button>
+            </form>
+            <form method="post" action="{% url 'groups:approve_request' group.pk req.pk %}">
+              {% csrf_token %}
+              <button name="action" value="reject" class="btn btn-outline-danger btn-sm">✕ Reject</button>
+            </form>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Post box -->
+    {% if post_form %}
+    <div class="card mb-4">
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          {{ post_form|crispy }}
+          <button type="submit" name="action" value="post" class="btn btn-primary mt-2">
+            <i class="bi bi-send"></i> Post to Group
+          </button>
+        </form>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Posts feed -->
+    {% if posts %}
+      {% for post in posts %}
+      <div class="card mb-3">
+        <div class="card-body">
+          <div class="d-flex gap-3">
+            {% if post.author.avatar %}
+              <img src="{{ post.author.avatar.url }}" width="40" height="40" class="rounded-circle object-fit-cover flex-shrink-0">
+            {% else %}
+              <div class="rounded-circle bg-success d-flex align-items-center justify-content-center text-white fw-bold flex-shrink-0" style="width:40px;height:40px">{{ post.author.username.0|upper }}</div>
+            {% endif %}
+            <div class="flex-grow-1">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <a href="{% url 'accounts:profile' post.author.username %}" class="fw-bold text-decoration-none">{{ post.author.username }}</a>
+                  <!-- Role badges -->
+                  {% for m in members %}{% if m.user == post.author %}
+                    {% if m.role == 'creator' %}<span class="badge bg-warning text-dark ms-1">Creator</span>{% endif %}
+                    {% if m.role == 'admin' %}<span class="badge bg-primary ms-1">Admin</span>{% endif %}
+                  {% endif %}{% endfor %}
+                  <span class="text-muted small ms-2">{{ post.created_at|timesince }} ago</span>
+                </div>
+                {% if post.author == user or is_admin %}
+                  <form method="post" action="{% url 'groups:delete_post' group.pk post.pk %}">
+                    {% csrf_token %}
+                    <button class="btn btn-sm btn-link text-danger p-0" onclick="return confirm('Delete this post?')"><i class="bi bi-trash"></i></button>
+                  </form>
+                {% endif %}
+              </div>
+              <p class="mt-2 mb-0">{{ post.content|linebreaks }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="text-center py-5 text-muted card p-4">
+        <div style="font-size:3rem">💬</div>
+        <p>No posts yet. Be the first to post!</p>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- RIGHT: Members sidebar -->
+  <div class="col-lg-4">
+
+    <!-- Invite form -->
+    {% if invite_form %}
+    <div class="card mb-4">
+      <div class="card-header fw-bold"><i class="bi bi-person-plus"></i> Invite Member</div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          {{ invite_form|crispy }}
+          <button type="submit" name="action" value="invite" class="btn btn-primary btn-sm w-100">Send Invite</button>
+        </form>
+        {% if not group.is_public %}
+          <small class="text-muted mt-2 d-block">Private group: only admins can invite.</small>
+        {% else %}
+          <small class="text-muted mt-2 d-block">Any member can invite others to this public group.</small>
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Members list -->
+    <div class="card">
+      <div class="card-header fw-bold">
+        <i class="bi bi-people"></i> Members ({{ group.member_count }})
+      </div>
+      <div class="list-group list-group-flush" style="max-height:500px;overflow-y:auto">
+        {% for m in members %}
+        <div class="list-group-item d-flex justify-content-between align-items-center py-2">
+          <div class="d-flex align-items-center gap-2">
+            {% if m.user.avatar %}
+              <img src="{{ m.user.avatar.url }}" width="32" height="32" class="rounded-circle object-fit-cover">
+            {% else %}
+              <div class="rounded-circle bg-success bg-opacity-75 d-flex align-items-center justify-content-center text-white" style="width:32px;height:32px;font-size:0.85rem">{{ m.user.username.0|upper }}</div>
+            {% endif %}
+            <div>
+              <a href="{% url 'accounts:profile' m.user.username %}" class="text-decoration-none fw-bold small">{{ m.user.username }}</a>
+              <div>
+                {% if m.role == 'creator' %}
+                  <span class="badge bg-warning text-dark" style="font-size:10px">👑 Creator</span>
+                {% elif m.role == 'admin' %}
+                  <span class="badge bg-primary" style="font-size:10px">⭐ Admin</span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <!-- Admin actions (creator only) -->
+          {% if is_creator and m.user != user %}
+          <div class="dropdown">
+            <button class="btn btn-link btn-sm text-muted p-0" data-bs-toggle="dropdown">
+              <i class="bi bi-three-dots-vertical"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li>
+                <form method="post" action="{% url 'groups:set_admin' group.pk m.pk %}">
+                  {% csrf_token %}
+                  <button class="dropdown-item">
+                    {% if m.role == 'admin' %}
+                      <i class="bi bi-person-dash text-warning"></i> Remove Admin
+                    {% else %}
+                      <i class="bi bi-person-check text-primary"></i> Make Admin
+                    {% endif %}
+                  </button>
+                </form>
+              </li>
+              <li>
+                <form method="post" action="{% url 'groups:remove_member' group.pk m.pk %}">
+                  {% csrf_token %}
+                  <button class="dropdown-item text-danger" onclick="return confirm('Remove {{ m.user.username }} from group?')">
+                    <i class="bi bi-person-x"></i> Remove
+                  </button>
+                </form>
+              </li>
+            </ul>
+          </div>
+          {% elif is_admin and not is_creator and m.role == 'member' and m.user != user %}
+          <form method="post" action="{% url 'groups:remove_member' group.pk m.pk %}">
+            {% csrf_token %}
+            <button class="btn btn-link btn-sm text-danger p-0" title="Remove member"
+                    onclick="return confirm('Remove {{ m.user.username }}?')">
+              <i class="bi bi-person-x"></i>
+            </button>
+          </form>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div><!-- /col -->
+</div><!-- /row -->
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Shared With Me – SchoolCamp{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'timetable/css/timetable.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="tt-page-header">
+  <a href="{% url 'timetable:dashboard' %}" style="color:rgba(255,255,255,.75);font-size:.8rem;text-decoration:none;">← Dashboard</a>
+  <h1 style="margin-top:6px;">📬 Shared With Me</h1>
+  <p>Timetables your friends have shared with you.</p>
+</div>
+
+<div class="container-fluid px-3">
+
+  {% if share_requests %}
+    {% for share in share_requests %}
+    <a href="{% url 'timetable:shared_timetable_view' share.pk %}" style="text-decoration:none;">
+      <div class="tt-list-card" style="margin-bottom:10px;">
+        <div class="tt-icon">📅</div>
+        <div class="tt-meta">
+          <div class="tt-name">{{ share.timetable.name }}</div>
+          <div class="tt-sub">
+            Shared by <strong>{{ share.from_user.get_full_name|default:share.from_user.username }}</strong>
+            · {{ share.timetable.get_semester_display }} {{ share.timetable.academic_year }}
+            · {{ share.created_at|timesince }} ago
+          </div>
+        </div>
+        <div>
+          {% if not share.seen %}
+          <span class="tt-badge tt-badge-active">New</span>
+          {% endif %}
+          <span style="color:var(--sc-green);font-size:1.2rem;margin-left:8px;">›</span>
+        </div>
+      </div>
+    </a>
+    {% endfor %}
+
+  {% else %}
+  <div class="tt-card">
+    <div class="tt-empty-state">
+      <div class="empty-icon">📭</div>
+      <h3>No Shared Timetables Yet</h3>
+      <p>When a friend shares their timetable with you, it will appear here.</p>
+      <a href="{% url 'timetable:dashboard' %}" class="btn-sc-primary">Go to My Timetable</a>
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+
+{% endblock %}

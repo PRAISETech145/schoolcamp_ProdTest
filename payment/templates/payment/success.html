@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Payment Successful{% endblock %}
+
+{% block extra_css %}
+<style>
+  .success-card { max-width: 480px; margin: 0 auto; border-radius: 20px; overflow: hidden; }
+  .success-header {
+    background: linear-gradient(135deg, #1a9e5a, #0d6e3f);
+    padding: 50px 40px; text-align: center; color: #fff;
+    position: relative; overflow: hidden;
+  }
+  .success-header::before {
+    content: ''; position: absolute; top: -50px; right: -50px;
+    width: 180px; height: 180px; border-radius: 50%;
+    background: rgba(255,255,255,0.07);
+  }
+  .checkmark-circle {
+    width: 80px; height: 80px; border-radius: 50%;
+    background: rgba(255,255,255,.2);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 16px; font-size: 2.2rem;
+    animation: popIn .5s cubic-bezier(.175,.885,.32,1.275);
+  }
+  @keyframes popIn {
+    0% { transform: scale(0); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .confetti { font-size: 1.4rem; }
+  .active-until {
+    background: #f0fbf5;
+    border: 1px solid #b5d9c5;
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+  }
+  .active-until .date { font-size: 1.2rem; font-weight: 800; color: var(--sc-green); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-7 col-lg-5">
+    <div class="card success-card">
+      <div class="success-header">
+        <div class="checkmark-circle">✅</div>
+        <h3 class="fw-bold mb-1">Payment Successful!</h3>
+        <p style="opacity:.85; font-size:.92rem;">Welcome to SchoolCamp Premium 🎉</p>
+        <div class="confetti">🎊 🏕 🎊</div>
+      </div>
+      <div class="card-body p-4">
+        {% if sub.paid_until %}
+        <div class="active-until mb-4">
+          <div class="text-muted small mb-1">Your subscription is active until</div>
+          <div class="date">{{ sub.paid_until|date:"F j, Y" }}</div>
+        </div>
+        {% endif %}
+
+        <p class="text-muted text-center mb-4" style="font-size:.9rem;">
+          You now have full access to all SchoolCamp features for the next 30 days.
+        </p>
+
+        <div class="d-grid gap-2">
+          <a href="{% url 'forum:home' %}" class="btn btn-primary btn-lg">
+            <i class="bi bi-chat-dots me-2"></i> Go to Forum
+          </a>
+          <a href="{% url 'materials:list' %}" class="btn btn-outline-primary">
+            <i class="bi bi-book me-2"></i> Browse Materials
+          </a>
+          <a href="{% url 'quiz:list' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-trophy me-2"></i> Take a Quiz
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

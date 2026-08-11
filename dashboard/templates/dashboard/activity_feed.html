@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Activity Feed - SchoolCamp{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="fw-bold mb-1">
+        <i class="bi bi-clock-history text-primary me-2"></i>Activity Feed
+      </h1>
+      <p class="text-muted mb-0">Complete history of your learning activities</p>
+    </div>
+    <a href="{% url 'dashboard:home' %}" class="btn btn-outline-secondary">
+      <i class="bi bi-arrow-left me-1"></i>Dashboard
+    </a>
+  </div>
+
+  <!-- Filters -->
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+      <form method="get" class="row g-3 align-items-end">
+        <div class="col-12 col-md-4">
+          <label class="form-label small fw-medium">Activity Type</label>
+          <select name="type" class="form-select">
+            <option value="">All Activities</option>
+            {% for val, label in activity_types %}
+            <option value="{{ val }}" {% if active_type == val %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-12 col-md-4">
+          <label class="form-label small fw-medium">From Date</label>
+          <input type="date" name="from" value="{{ date_from }}" class="form-control">
+        </div>
+        <div class="col-12 col-md-4">
+          <label class="form-label small fw-medium">To Date</label>
+          <input type="date" name="to" value="{{ date_to }}" class="form-control">
+        </div>
+        <div class="col-12 col-md-4">
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary flex-grow-1">
+              <i class="bi bi-funnel me-1"></i>Filter
+            </button>
+            <a href="{% url 'dashboard:activity_feed' %}" class="btn btn-outline-secondary">
+              <i class="bi bi-x-lg"></i>
+            </a>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Activity List -->
+  <div class="card border-0 shadow-sm">
+    <div class="card-body p-0">
+      {% if activities %}
+        <div class="list-group list-group-flush">
+          {% for activity in activities %}
+          <div class="list-group-item list-group-item-action px-4 py-3 border-0 border-bottom">
+            <div class="d-flex align-items-start gap-3">
+              <!-- Icon -->
+              <div class="activity-icon rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                   style="width: 40px; height: 40px;">
+                {% if activity.activity_type == 'material_upload' %}<i class="bi bi-upload text-primary" style="background: #e0f2fe;"></i>
+                {% elif activity.activity_type == 'material_download' %}<i class="bi bi-download text-success" style="background: #dcfce7;"></i>
+                {% elif activity.activity_type == 'material_view' %}<i class="bi bi-eye text-info" style="background: #e0f2fe;"></i>
+                {% elif activity.activity_type == 'quiz_attempt' %}<i class="bi bi-clipboard-check text-warning" style="background: #fef3c7;"></i>
+                {% elif activity.activity_type == 'quiz_pass' %><i class="bi bi-trophy text-warning" style="background: #dcfce7;"></i>
+                {% elif activity.activity_type == 'question_post' %}<i class="bi bi-question-circle text-pink" style="background: #fce7f3;"></i>
+                {% elif activity.activity_type == 'question_reply' %}<i class="bi bi-chat text-purple" style="background: #ede9fe;"></i>
+                {% elif activity.activity_type == 'answer_accepted' %><i class="bi bi-check-circle text-success" style="background: #dcfce7;"></i>
+                {% elif activity.activity_type == 'timetable_create' %}<i class="bi bi-calendar-plus text-blue" style="background: #dbeafe;"></i>
+                {% elif activity.activity_type == 'course_add' %}<i class="bi bi-book text-indigo" style="background: #e0e7ff;"></i>
+                {% elif activity.activity_type == 'group_create' %}<i class="bi bi-people text-orange" style="background: #ffedd5;"></i>
+                {% elif activity.activity_type == 'group_join' %><i class="bi bi-person-plus text-teal" style="background: #ccfbf1;"></i>
+                {% elif activity.activity_type == 'group_post' %><i class="bi bi-chat text-cyan" style="background: #ecfeff;"></i>
+                {% else %}<i class="bi bi-lightning text-secondary" style="background: #f3f4f6;"></i>{% endif %}
+              </div>
+
+              <!-- Info -->
+              <div class="flex-grow-1 min-width-0">
+                <div class="d-flex justify-content-between align-items-start">
+                  <p class="fw-medium mb-1">{{ activity.description }}</p>
+                  {% if activity.xp_earned > 0 %}
+                    <span class="badge bg-success-subtle text-success fw-medium py-1 px-2">
+                      +{{ activity.xp_earned }} XP
+                    </span>
+                  {% endif %}
+                </div>
+                <div class="d-flex align-items-center gap-3 small text-muted">
+                  <span>{{ activity.created_at|naturaltime }}</span>
+                  <span>•</span>
+                  <span>{{ activity.created_at|date:"M d, Y" }}</span>
+                  {% if activity.content_object %}
+                    <span>•</span>
+                    <span>{{ activity.content_type.name|title }}</span>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if activities.has_other_pages %}
+        <div class="card-footer bg-white border-0">
+          <nav aria-label="Activity pagination">
+            <ul class="pagination pagination-sm justify-content-center mb-0">
+              {% if activities.has_previous %}
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ activities.previous_page_number }}{% if active_type %}&type={{ active_type }}{% endif %}{% if date_from %}&from={{ date_from }}{% endif %}{% if date_to %}&to={{ date_to }}{% endif %}">Previous</a>
+                </li>
+              {% endif %}
+              {% for num in activities.paginator.page_range %}
+                {% if activities.number == num %}
+                  <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                {% elif num > activities.number|add:'-3' and num < activities.number|add:'3' %}
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}{% if active_type %}&type={{ active_type }}{% endif %}{% if date_from %}&from={{ date_from }}{% endif %}{% if date_to %}&to={{ date_to }}{% endif %}">{{ num }}</a>
+                  </li>
+                {% endif %}
+              {% endfor %}
+              {% if activities.has_next %}
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ activities.next_page_number }}{% if active_type %}&type={{ active_type }}{% endif %}{% if date_from %}&from={{ date_from }}{% endif %}{% if date_to %}&to={{ date_to }}{% endif %}">Next</a>
+                </li>
+              {% endif %}
+            </ul>
+          </nav>
+        </div>
+        {% endif %}
+      {% else %}
+        <div class="text-center py-5 text-muted">
+          <div style="font-size: 3rem;">📭</div>
+          <p class="mb-0">No activities found matching your filters.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<style>
+.activity-icon i {
+  font-size: 1.1rem;
+}
+</style>
+{% endblock %}

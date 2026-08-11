@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ quiz.title }}{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+  <div class="col-lg-8">
+    <div class="card p-4">
+      <div class="d-flex gap-2 mb-3 flex-wrap">
+        <span class="badge bg-light text-dark border">{{ quiz.get_subject_display }}</span>
+        <span class="badge bg-light text-dark border">{{ quiz.get_level_display }}</span>
+        <span class="badge bg-{{ quiz.difficulty_color }} bg-opacity-10 text-{{ quiz.difficulty_color }} border">
+          {{ quiz.get_difficulty_display }}
+        </span>
+      </div>
+      <h2 class="fw-bold">{{ quiz.title }}</h2>
+      {% if quiz.description %}<p class="text-muted">{{ quiz.description }}</p>{% endif %}
+
+      <div class="row text-center my-3 g-3">
+        <div class="col-4">
+          <div class="bg-light rounded p-3">
+            <div class="fw-bold fs-4">{{ quiz.question_count }}</div>
+            <small class="text-muted">Questions</small>
+          </div>
+        </div>
+        <div class="col-4">
+          <div class="bg-light rounded p-3">
+            <div class="fw-bold fs-4">{{ quiz.duration_minutes }}'</div>
+            <small class="text-muted">Time Limit</small>
+          </div>
+        </div>
+        <div class="col-4">
+          <div class="bg-light rounded p-3">
+            <div class="fw-bold fs-4">{{ quiz.attempt_count }}</div>
+            <small class="text-muted">Attempts</small>
+          </div>
+        </div>
+      </div>
+
+      {% if user_best %}
+        <div class="alert alert-success">
+          Your best score: <strong>{{ user_best.score }}/{{ user_best.max_score }}</strong>
+          ({{ user_best.percentage|floatformat:1 }}%)
+        </div>
+      {% endif %}
+
+      {% if user.is_authenticated %}
+        {% if quiz.question_count > 0 %}
+          <a href="{% url 'quiz:start' quiz.pk %}" class="btn btn-primary btn-lg w-100">
+            <i class="bi bi-play-circle"></i>
+            {% if user_best %}Retake Quiz{% else %}Start Quiz{% endif %}
+          </a>
+        {% else %}
+          <div class="alert alert-warning">This quiz has no questions yet.</div>
+        {% endif %}
+        {% if user == quiz.created_by %}
+          <a href="{% url 'quiz:add_question' quiz.pk %}" class="btn btn-outline-secondary mt-2 w-100">
+            <i class="bi bi-plus"></i> Add Questions
+          </a>
+          <a href="{% url 'quiz:delete_quiz' quiz.pk %}" class="btn btn-outline-secondary mt-2 w-100">
+            <i class="bi bi-plus"></i> Delete
+          </a>
+          <a href="{% url 'quiz:Edit_quiz' quiz.pk %}" class="btn btn-outline-secondary mt-2 w-100">
+            <i class="bi bi-plus"></i> Edit
+          </a>
+        {% endif %}
+      {% else %}
+        <a href="{% url 'accounts:login' %}" class="btn btn-primary btn-lg w-100">Login to Take Quiz</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="card">
+      <div class="card-header"><i class="bi bi-trophy"></i> Leaderboard</div>
+      <div class="list-group list-group-flush">
+        {% for attempt in leaderboard %}
+        <div class="list-group-item d-flex justify-content-between align-items-center">
+          <div class="d-flex align-items-center gap-2">
+            <span class="text-muted fw-bold" style="min-width:20px">
+              {% if forloop.counter == 1 %}🥇{% elif forloop.counter == 2 %}🥈{% elif forloop.counter == 3 %}🥉{% else %}{{ forloop.counter }}{% endif %}
+            </span>
+            <a href="{% url 'accounts:profile' attempt.user.username %}" class="text-decoration-none">{{ attempt.user.username }}</a>
+          </div>
+          <span class="fw-bold text-success">{{ attempt.percentage|floatformat:0 }}%</span>
+        </div>
+        {% empty %}
+        <div class="list-group-item text-center text-muted py-3">No attempts yet. Be first!</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

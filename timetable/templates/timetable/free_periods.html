@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Free Periods – {{ timetable.name }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'timetable/css/timetable.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="tt-page-header">
+  <a href="{% url 'timetable:detail' timetable.pk %}" style="color:rgba(255,255,255,0.75);font-size:0.8rem;text-decoration:none;">← {{ timetable.name }}</a>
+  <h1 style="margin-top:6px;">🕐 Free Periods</h1>
+  <p>Gaps of 30+ minutes between 7am and 6pm</p>
+</div>
+
+<div class="container-fluid px-3">
+  {% for day_name, slots in free_by_day.items %}
+  {% if slots %}
+  <div class="tt-card" style="margin-bottom:12px;">
+    <div class="tt-card-header" style="margin-bottom:12px;">
+      <h3 class="tt-card-title">{{ day_name }}</h3>
+      <span style="font-size:0.78rem;color:var(--sc-text-muted);">{{ slots|length }} free slot{{ slots|length|pluralize }}</span>
+    </div>
+    {% for slot in slots %}
+    <div class="free-slot">
+      <div class="slot-time">{{ slot.start|time:"g:i A" }} – {{ slot.end|time:"g:i A" }}</div>
+      <div class="slot-duration">
+        {% if slot.duration >= 60 %}
+          {{ slot.duration|divisibleby:60|yesno:"," }}{% widthratio slot.duration 60 1 %}h
+          {% with slot.duration|divisibleby:60 as rem %}{% endwith %}
+        {% else %}
+          {{ slot.duration }} minutes free
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% empty %}
+  <div class="tt-card">
+    <div class="tt-empty-state">
+      <div class="empty-icon">📅</div>
+      <h3>No Free Periods Found</h3>
+      <p>Your week is fully packed, or you haven't added any courses yet.</p>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% endblock %}

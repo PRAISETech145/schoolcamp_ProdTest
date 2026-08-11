@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ title }} – SchoolCamp{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'timetable/css/timetable.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="tt-page-header">
+  <a href="{% url 'timetable:detail' timetable.pk %}" style="color:rgba(255,255,255,0.75);font-size:0.8rem;text-decoration:none;">← {{ timetable.name }}</a>
+  <h1 style="margin-top:6px;">{{ title }}</h1>
+</div>
+
+<div class="tt-form-section">
+
+  {% for message in messages %}
+  <div class="tt-alert {% if message.tags == 'error' %}tt-alert-error{% else %}tt-alert-success{% endif %}">
+    {{ message }}
+  </div>
+  {% endfor %}
+
+  <div class="tt-card">
+    <form method="post">
+      {% csrf_token %}
+
+      <!-- Course Name & Code -->
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:10px;margin-bottom:14px;">
+        <div>
+          <label class="tt-form-label">Course Name *</label>
+          {{ form.name }}
+          {% if form.name.errors %}<div style="color:#e53e3e;font-size:0.78rem;margin-top:3px;">{{ form.name.errors.0 }}</div>{% endif %}
+        </div>
+        <div>
+          <label class="tt-form-label">Code</label>
+          {{ form.code }}
+        </div>
+      </div>
+
+      <!-- Lecturer & Room -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+        <div>
+          <label class="tt-form-label">Lecturer</label>
+          {{ form.lecturer }}
+        </div>
+        <div>
+          <label class="tt-form-label">Room / Venue</label>
+          {{ form.room }}
+        </div>
+      </div>
+
+      <!-- Day -->
+      <div style="margin-bottom:14px;">
+        <label class="tt-form-label">Day of Week *</label>
+        {{ form.day_of_week }}
+        {% if form.day_of_week.errors %}<div style="color:#e53e3e;font-size:0.78rem;margin-top:3px;">{{ form.day_of_week.errors.0 }}</div>{% endif %}
+      </div>
+
+      <!-- Time -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+        <div>
+          <label class="tt-form-label">Start Time *</label>
+          {{ form.start_time }}
+        </div>
+        <div>
+          <label class="tt-form-label">End Time *</label>
+          {{ form.end_time }}
+        </div>
+      </div>
+
+      {% if form.non_field_errors %}
+      <div class="tt-alert tt-alert-error">{{ form.non_field_errors.0 }}</div>
+      {% endif %}
+
+      <!-- Color -->
+      <div style="margin-bottom:14px;">
+        <label class="tt-form-label">Color</label>
+        {{ form.color }}
+        <div class="tt-form-hint">Choose a color to identify this course in your timetable.</div>
+      </div>
+
+      <!-- Notes -->
+      <div style="margin-bottom:20px;">
+        <label class="tt-form-label">Notes (optional)</label>
+        {{ form.notes }}
+      </div>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button type="submit" class="btn-sc-primary">{{ action }}</button>
+        <a href="{% url 'timetable:detail' timetable.pk %}" class="btn-sc-outline">Cancel</a>
+        {% if course %}
+        <a href="{% url 'timetable:course_delete' course.pk %}" class="btn-sc-danger" style="margin-left:auto;" onclick="return confirm('Remove this course from your timetable?')">🗑️ Remove</a>
+        {% endif %}
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'timetable/js/timetable.js' %}"></script>
+{% endblock %}

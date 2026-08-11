@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}My Materials{% endblock %}
+{% block content %}
+<h2 class="fw-bold mb-4">📂 My Materials</h2>
+<div class="row g-4">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header"><i class="bi bi-upload"></i> Materials I Uploaded ({{ uploaded.count }})</div>
+      <div class="list-group list-group-flush">
+        {% for mat in uploaded %}
+        <div class="list-group-item d-flex justify-content-between align-items-center">
+          <div>
+            <a href="{% url 'materials:detail' mat.pk %}" class="fw-bold text-decoration-none">{{ mat.title }}</a>
+            <div class="small text-muted">{{ mat.get_subject_display }} ·  · <i class="bi bi-download"></i> {{ mat.download_count }} <b>Downloads</b></div>
+          </div>
+          <a href="{% url 'materials:delete' mat.pk %}" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash"></i></a>
+        </div>
+        {% empty %}
+        <div class="list-group-item text-center text-muted py-4">
+          No uploads yet. <a href="{% url 'materials:upload' %}">Upload your first material!</a>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header"><i class="bi bi-bag-check"></i> Materials I Purchased ({{ purchased.count }})</div>
+      <div class="list-group list-group-flush">
+        {% if purchased %}
+        {% for purchase in purchased %}
+        <div class="list-group-item d-flex justify-content-between align-items-center">
+          <div>
+            <a href="{% url 'materials:detail' purchase.material.pk %}" class="fw-bold text-decoration-none">{{ purchase.material.title }}</a>
+            <div class="small text-muted">{{ purchase.amount_paid|floatformat:0 }} XAF · {{ purchase.purchased_at|date:"d M Y" }}</div>
+          </div>
+          <a href="{% url 'materials:download' purchase.material.pk %}" class="btn btn-success btn-sm"><i class="bi bi-download"></i></a>
+        </div>
+          {% endfor %}
+          {% else %}
+        <div class="list-group-item text-center text-muted py-4">No purchases yet.</div>
+           {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

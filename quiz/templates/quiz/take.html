@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ quiz.title }} – Q{{ question_order }}/{{ total }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+
+    <!-- Progress header -->
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <span class="fw-bold text-muted">Question {{ question_order }} of {{ total }}</span>
+      <span class="badge bg-danger fs-6" id="timer">⏱ {{ quiz.duration_minutes }}:00</span>
+    </div>
+    <div class="progress mb-4" style="height:8px">
+      <div class="progress-bar bg-success" style="width:{{ progress_pct }}%"></div>
+    </div>
+
+    <!-- Question card -->
+    <div class="card p-4">
+      <div class="d-flex gap-2 mb-3">
+        <span class="badge bg-light text-dark border">{{ question.get_question_type_display }}</span>
+        <span class="badge bg-light text-dark border">{{ question.points }} pt{{ question.points|pluralize }}</span>
+      </div>
+      <h4 class="fw-bold mb-4">{{ question.text }}</h4>
+
+      {% if existing %}
+        <!-- Already answered — show result -->
+        <div class="alert {% if existing.is_correct %}alert-success{% else %}alert-danger{% endif %}">
+          {% if existing.is_correct %}
+            ✅ Correct! You selected: <strong>{{ existing.selected_answer.text }}</strong>
+          {% else %}
+            ❌ Wrong. You selected: <strong>{{ existing.selected_answer.text|default:"No answer" }}</strong>
+          {% endif %}
+        </div>
+        {% if question.explanation %}
+          <div class="alert alert-info"><strong>Explanation:</strong> {{ question.explanation }}</div>
+        {% endif %}
+        <a href="{% url 'quiz:take' attempt_pk=attempt.pk question_order=question_order|add:1 %}"
+           class="btn btn-primary w-100">Next Question →</a>
+      {% else %}
+        <!-- Answer form -->
+        <form method="post">
+          {% csrf_token %}
+          <div class="d-flex flex-column gap-2 mb-4">
+            {% for answer in answers %}
+              <label class="answer-option border rounded-3 p-3 d-flex align-items-center gap-3"
+                     style="cursor:pointer;transition:all 0.15s" onclick="selectOption(this)">
+                <input type="radio" name="answer" value="{{ answer.pk }}" class="form-check-input mt-0" required>
+                <span>{{ answer.text }}</span>
+              </label>
+            {% endfor %}
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg w-100">
+            {% if question_order == total %}Finish Quiz{% else %}Next Question →{% endif %}
+          </button>
+        </form>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Answer option highlight
+function selectOption(el) {
+  document.querySelectorAll('.answer-option').forEach(o => {
+    o.style.borderColor = '';
+    o.style.background = '';
+  });
+  el.style.borderColor = 'var(--sc-green)';
+  el.style.background = '#f0fbf5';
+}
+
+// Countdown timer
+let total = {{ duration_seconds }};
+const timerEl = document.getElementById('timer');
+if (timerEl) {
+  const interval = setInterval(() => {
+    total--;
+    const m = Math.floor(total / 60).toString().padStart(2,'0');
+    const s = (total % 60).toString().padStart(2,'0');
+    timerEl.textContent = `⏱ ${m}:${s}`;
+    if (total <= 60) timerEl.classList.replace('bg-danger', 'bg-danger');
+    if (total <= 0) {
+      clearInterval(interval);
+      document.querySelector('form')?.submit();
+    }
+  }, 1000);
+}
+</script>
+{% endblock %}

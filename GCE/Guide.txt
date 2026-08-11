@@ -1,0 +1,46 @@
+# ═══════════════════════════════════════════════════════════════
+#  SCHOOLCAMP MATERIALS APP — Integration Guide
+# ═══════════════════════════════════════════════════════════════
+
+# 1. Add to INSTALLED_APPS in settings.py
+INSTALLED_APPS_ADD = "'materials',"
+
+# 2. Add to project urls.py
+URLS_ADD = "path('materials/', include('materials.urls', namespace='materials')),"
+
+# 3. Run migrations
+MIGRATIONS = """
+python manage.py makemigrations materials
+python manage.py migrate
+"""
+
+# 4. Add PDFs via Django Admin
+ADMIN_STEPS = """
+a) Go to /admin/materials/subject/ → Add subjects (e.g. Mathematics 📐, Biology 🔬, French 📝)
+b) Go to /admin/materials/material/ → Upload your PDFs
+   - Set price = 25
+   - Set subject, level, pages
+   - Upload the PDF file
+   - is_active = True
+"""
+
+# 5. Protect media files in Nginx (IMPORTANT for production)
+# PDFs must NOT be served directly — only through secure_download view
+NGINX_CONFIG = """
+# In your Nginx config — block direct access to materials folder
+location /media/materials/pdfs/ {
+    deny all;
+    return 403;
+}
+# All other media files are fine
+location /media/ {
+    alias /home/ubuntu/schoolcamp/media/;
+}
+"""
+
+# 6. For Railway (using Cloudinary for media)
+# PDFs are stored on Cloudinary — they are NOT publicly accessible
+# because secure_download view generates signed URLs on the fly
+
+# 7. Make sure payment/momo.py is available (already built earlier)
+DEPENDENCY = "Requires payment app with momo.py (MTN/Orange API calls)"

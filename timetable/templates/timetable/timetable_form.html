@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ title }} – SchoolCamp{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'timetable/css/timetable.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="tt-page-header">
+  <a href="{% url 'timetable:dashboard' %}" style="color:rgba(255,255,255,0.75);font-size:0.8rem;text-decoration:none;">← Dashboard</a>
+  <h1 style="margin-top:6px;">{{ title }}</h1>
+</div>
+
+<div class="tt-form-section">
+
+  {% for message in messages %}
+  <div class="tt-alert {% if message.tags == 'error' %}tt-alert-error{% else %}tt-alert-success{% endif %}">
+    {{ message }}
+  </div>
+  {% endfor %}
+
+  <div class="tt-card">
+    <form method="post">
+      {% csrf_token %}
+
+      <div style="margin-bottom:16px;">
+        <label class="tt-form-label" for="{{ form.name.id_for_label }}">Timetable Name</label>
+        {{ form.name }}
+        {% if form.name.errors %}<div class="tt-alert tt-alert-error" style="margin-top:6px;">{{ form.name.errors.0 }}</div>{% endif %}
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+        <div>
+          <label class="tt-form-label" for="{{ form.semester.id_for_label }}">Semester</label>
+          {{ form.semester }}
+        </div>
+        <div>
+          <label class="tt-form-label" for="{{ form.academic_year.id_for_label }}">Academic Year</label>
+          {{ form.academic_year }}
+        </div>
+      </div>
+
+      <div style="margin-bottom:20px;display:flex;align-items:center;gap:10px;">
+        {{ form.is_shared }}
+        <label for="{{ form.is_shared.id_for_label }}" style="font-size:0.88rem;margin:0;">Make this timetable publicly shareable</label>
+      </div>
+
+      {% if not timetable %}
+      <div style="margin-bottom:20px;display:flex;align-items:center;gap:10px;">
+        <input type="checkbox" name="set_active" id="id_set_active" class="form-check-input" checked>
+        <label for="id_set_active" style="font-size:0.88rem;margin:0;">Set as active timetable</label>
+      </div>
+      {% endif %}
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button type="submit" class="btn-sc-primary">{{ action }}</button>
+        <a href="{% url 'timetable:dashboard' %}" class="btn-sc-outline">Cancel</a>
+        {% if timetable %}
+        <a href="{% url 'timetable:delete' timetable.pk %}" class="btn-sc-danger" style="margin-left:auto;" onclick="return confirm('Delete this timetable?')">🗑️ Delete</a>
+        {% endif %}
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'timetable/js/timetable.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,407 @@
+{% extends 'base.html' %}
+{% block title %}{{ material.title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+  .det-wrap { max-width: 800px; margin: 0 auto; }
+
+  /* ── Top card ── */
+  .det-card {
+    background: #fff; border-radius: 20px;
+    box-shadow: 0 2px 16px rgba(0,0,0,.08);
+    overflow: hidden; margin-bottom: 24px;
+  }
+  .det-banner {
+    background: linear-gradient(135deg, #0f1c14, #1a3323);
+    padding: 40px 32px; display: flex; gap: 24px; align-items: center;
+  }
+  .det-icon {
+    width: 80px; height: 80px; border-radius: 16px;
+    background: rgba(76,217,138,.15); border: 2px solid rgba(76,217,138,.3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.8rem; flex-shrink: 0;
+  }
+  .det-banner h1 { color: #fff; font-size: 1.3rem; font-weight: 900; margin-bottom: 6px; }
+  .det-banner .sub-label {
+    color: #4cd98a; font-size: .8rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .8px; margin-bottom: 8px;
+  }
+  .det-meta { display: flex; flex-wrap: wrap; gap: 10px; }
+  .det-chip {
+    background: rgba(255,255,255,.1); color: #a8d5be;
+    border-radius: 20px; padding: 3px 12px; font-size: .78rem; font-weight: 600;
+  }
+
+  /* Solution chip — clickable anchor that scrolls to the solution section */
+  .det-chip-solution {
+    background: rgba(76,217,138,.25);
+    border: 1.5px solid rgba(76,217,138,.55);
+    color: #4cd98a;
+    border-radius: 20px; padding: 4px 14px;
+    font-size: .78rem; font-weight: 700;
+    text-decoration: none;
+    display: inline-flex; align-items: center; gap: 5px;
+    cursor: pointer; transition: background .2s;
+  }
+  .det-chip-solution:hover {
+    background: rgba(76,217,138,.4); color: #fff;
+  }
+
+  .det-body { padding: 24px 32px; }
+  .det-desc { color: #4a7a5a; line-height: 1.7; margin-bottom: 20px; }
+
+  /* ── Payment box (shared style) ── */
+  .pay-box {
+    background: #f8fbf9; border: 1.5px solid #d2e8db;
+    border-radius: 16px; padding: 24px; margin-bottom: 20px;
+  }
+  .pay-box-title {
+    font-size: 1rem; font-weight: 800; color: #0f1c14;
+    margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+  }
+  .pay-price {
+    font-size: 2.2rem; font-weight: 900; color: var(--sc-green);
+    margin-bottom: 4px;
+  }
+  .pay-price small { font-size: 1rem; font-weight: 600; color: #7aaa8a; }
+
+  /* Provider cards */
+  .provider-card {
+    border: 2px solid #e0e0e0; border-radius: 12px;
+    padding: 14px; cursor: pointer; transition: all .2s;
+    background: #fff; position: relative;
+  }
+  .provider-card:hover { border-color: var(--sc-green); }
+  .provider-card.selected {
+    border-color: var(--sc-green); background: #f0fbf5;
+  }
+  .provider-card input[type=radio] { display: none; }
+  .provider-logo {
+    width: 44px; height: 44px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem; font-weight: 900;
+  }
+  .mtn-logo { background: #FFCB00; color: #000; }
+  .orange-logo { background: #FF6600; color: #fff; }
+  .check-badge {
+    position: absolute; top: 10px; right: 10px;
+    width: 20px; height: 20px; border-radius: 50%;
+    background: var(--sc-green); color: #fff; font-size: 11px;
+    display: none; align-items: center; justify-content: center;
+  }
+  .provider-card.selected .check-badge { display: flex; }
+
+  .phone-wrap { display: flex; border-radius: 10px; overflow: hidden; border: 1.5px solid #b5d9c5; }
+  .phone-prefix {
+    background: #f0fbf5; padding: 0 14px;
+    display: flex; align-items: center;
+    color: var(--sc-green); font-weight: 700; font-size: .9rem;
+    border-right: 1.5px solid #b5d9c5;
+  }
+  .phone-wrap input {
+    flex: 1; border: none; outline: none;
+    padding: 12px 14px; font-size: .95rem;
+  }
+  .btn-pay {
+    width: 100%; padding: 14px;
+    background: linear-gradient(135deg, #1a9e5a, #4cd98a);
+    border: none; border-radius: 12px; color: #fff;
+    font-weight: 800; font-size: 1rem; cursor: pointer;
+    box-shadow: 0 4px 16px rgba(26,158,90,.3); transition: all .2s;
+  }
+  .btn-pay:hover { transform: translateY(-2px); box-shadow: 0 6px 22px rgba(26,158,90,.4); }
+
+  /* Already owned */
+  .owned-box {
+    background: linear-gradient(135deg, #1a9e5a, #0d6e3f);
+    border-radius: 16px; padding: 28px; text-align: center; color: #fff;
+  }
+  .owned-box h4 { font-weight: 800; margin-bottom: 6px; }
+  .owned-box p  { opacity: .85; font-size: .9rem; margin-bottom: 16px; }
+  .btn-dl {
+    background: rgba(255,255,255,.2);
+    border: 2px solid rgba(255,255,255,.4);
+    border-radius: 12px; padding: 12px 28px;
+    color: #fff; font-weight: 800; font-size: 1rem;
+    text-decoration: none; display: inline-block; transition: all .2s;
+  }
+  .btn-dl:hover { background: rgba(255,255,255,.3); color: #fff; }
+
+  /* ── Solution section divider ── */
+  .section-divider {
+    display: flex; align-items: center; gap: 12px;
+    margin: 28px 0 20px;
+  }
+  .section-divider hr { flex: 1; border-color: #d2e8db; }
+  .section-divider span {
+    font-weight: 800; font-size: .88rem; color: #1a9e5a;
+    text-transform: uppercase; letter-spacing: .6px;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  /* Solution info banner inside the body */
+  .sol-info {
+    background: linear-gradient(135deg, #0f1c14, #1a3323);
+    border-radius: 14px; padding: 18px 22px;
+    display: flex; align-items: center; gap: 16px;
+    margin-bottom: 18px;
+  }
+  .sol-info-icon { font-size: 2rem; flex-shrink: 0; }
+  .sol-info-text h5 { color: #fff; font-weight: 800; margin-bottom: 2px; font-size: .95rem; }
+  .sol-info-text p  { color: #7aaa8a; font-size: .82rem; margin: 0; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="det-wrap">
+
+  <!-- Back link -->
+  <a href="{% url 'materials:list' %}" style="color:var(--sc-green); text-decoration:none; font-size:.85rem; font-weight:700; display:inline-flex; align-items:center; gap:5px; margin-bottom:16px;">
+    <i class="bi bi-arrow-left"></i> All Materials
+  </a>
+
+  <div class="det-card">
+    <!-- ── Banner ── -->
+    <div class="det-banner">
+      <div class="det-icon">{{ material.subject.icon|default:"📄" }}</div>
+      <div>
+        {% if material.subject %}
+          <div class="sub-label">{{ material.subject.name }}</div>
+        {% endif %}
+        <h1>{{ material.title }}</h1>
+        <div class="det-meta">
+          {% if material.pages %}
+            <span class="det-chip"><i class="bi bi-file-text"></i> {{ material.pages }} pages</span>
+          {% endif %}
+          {% if material.file_size_mb %}
+            <span class="det-chip"><i class="bi bi-hdd"></i> {{ material.file_size_mb }} MB</span>
+          {% endif %}
+          <span class="det-chip"><i class="bi bi-download"></i> {{ material.downloads }} downloads</span>
+          <span class="det-chip">{{ material.get_level_display }}</span>
+
+          {# ── Solution chip — only shown when a solution exists ── #}
+          {% if solution %}
+            <a href="#solution-section" class="det-chip-solution">
+              <i class="bi bi-lightbulb-fill"></i> SOLUTION AVAILABLE
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Body ── -->
+    <div class="det-body">
+      {% if material.description %}
+        <p class="det-desc">{{ material.description }}</p>
+      {% endif %}
+
+      {% if has_access %}
+      <div class="owned-box">
+        <div style="font-size:2.5rem; margin-bottom:10px;">✅</div>
+        <h4>You own this material!</h4>
+        <p>Click below to download your copy.</p>
+        <a href="{% url 'GCE:download_ready' material.pk %}" class="btn-dl">
+          <i class="bi bi-download me-2"></i> Download Now
+        </a>
+      </div>
+
+      {% elif user.is_authenticated %}
+      <div class="pay-box">
+        <div class="pay-box-title">
+          <i class="bi bi-phone" style="color:var(--sc-green)"></i>
+          Pay with Mobile Money
+        </div>
+        <div class="pay-price">{{ material.price }} <small>XAF</small></div>
+        <p style="font-size:.83rem; color:#7aaa8a; margin-bottom:20px;">
+          One-time payment · Instant access · Secure download link
+        </p>
+
+        <form method="post" action="{% url 'GCE:buy' material.pk %}">
+          {% csrf_token %}
+
+          <p class="fw-bold mb-2" style="font-size:.88rem;">Choose operator</p>
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <label class="provider-card w-100" id="card-mtn">
+                <input type="radio" name="provider" value="mtn" required>
+                <div class="check-badge"><i class="bi bi-check"></i></div>
+                <div class="provider-logo mtn-logo">M</div>
+                <div style="font-weight:700; font-size:.85rem; margin-top:8px;">MTN MoMo</div>
+              </label>
+            </div>
+            <div class="col-6">
+              <label class="provider-card w-100" id="card-orange">
+                <input type="radio" name="provider" value="orange" required>
+                <div class="check-badge"><i class="bi bi-check"></i></div>
+                <div class="provider-logo orange-logo">O</div>
+                <div style="font-weight:700; font-size:.85rem; margin-top:8px;">Orange Money</div>
+              </label>
+            </div>
+          </div>
+          {% if form.provider.errors %}
+            <div class="text-danger small mb-2">{{ form.provider.errors.0 }}</div>
+          {% endif %}
+
+          <p class="fw-bold mb-2" style="font-size:.88rem;">Mobile money number</p>
+          <div class="phone-wrap mb-1">
+            <div class="phone-prefix">🇨🇲 +237</div>
+            <input type="text" name="phone_number"
+                   placeholder="6 XX XX XX XX"
+                   value="{{ form.phone_number.value|default:'' }}"
+                   maxlength="9" required>
+          </div>
+          {% if form.phone_number.errors %}
+            <div class="text-danger small mb-2">{{ form.phone_number.errors.0 }}</div>
+          {% endif %}
+          <p style="font-size:.78rem; color:#9abaaa; margin-bottom:20px;">
+            A payment request of <strong>{{ material.price }} XAF</strong> will be sent to this number.
+          </p>
+
+          <button type="submit" class="btn-pay">
+            <i class="bi bi-lock-fill me-2"></i> Pay {{ material.price }} XAF & Download
+          </button>
+        </form>
+      </div>
+
+      {% else %}
+      <div class="pay-box text-center">
+        <div style="font-size:2.5rem; margin-bottom:12px;">🔒</div>
+        <h5 style="font-weight:800; color:#0f1c14;">Login to purchase</h5>
+        <p style="color:#7aaa8a; font-size:.88rem;">
+          Create a free account to buy and download this material.
+        </p>
+        <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="btn btn-primary me-2">Login</a>
+        <a href="{% url 'accounts:register' %}" class="btn btn-outline-primary">Register Free</a>
+      </div>
+      {% endif %}
+
+      
+      {% if solution %}
+      <div id="solution-section">
+        <div class="section-divider">
+          <hr>
+          <span><i class="bi bi-lightbulb-fill"></i> Solution</span>
+          <hr>
+        </div>
+
+        <!-- Solution info card -->
+        <div class="sol-info">
+          <div class="sol-info-icon">{{ solution.file_icon }}</div>
+          <div class="sol-info-text">
+            <h5>{{ solution.title }}</h5>
+            <p>{{ solution.description }}</p>
+          </div>
+        </div>
+
+        {# ── User already paid for solution ── #}
+        {% if solution_access %}
+        <div class="owned-box">
+          <div style="font-size:2.5rem; margin-bottom:10px;">✅</div>
+          <h4>You already have this solution!</h4>
+          <p>Click below to download it.</p>
+          <a href="{% url 'GCE:solution_download' solution.pk %}" class="btn-dl">
+            <i class="bi bi-download me-2"></i> Download Solution
+          </a>
+        </div>
+
+        {# ── Logged-in user, needs to pay 50 XAF ── #}
+        {% elif user.is_authenticated %}
+        <div class="pay-box">
+          <div class="pay-box-title">
+            <i class="bi bi-lightbulb" style="color:var(--sc-green)"></i>
+            Get the Full Solution
+          </div>
+          <div class="pay-price">50 <small>XAF</small></div>
+          <p style="font-size:.83rem; color:#7aaa8a; margin-bottom:20px;">
+            One-time payment · Secure download · Step-by-step answers
+          </p>
+
+          <form method="post" action="{% url 'GCE:buy_solution' solution.pk %}">
+            {% csrf_token %}
+
+            <p class="fw-bold mb-2" style="font-size:.88rem;">Choose operator</p>
+            <div class="row g-2 mb-3">
+              <div class="col-6">
+                <label class="provider-card w-100" id="sol-card-mtn">
+                  <input type="radio" name="provider" value="mtn" required>
+                  <div class="check-badge"><i class="bi bi-check"></i></div>
+                  <div class="provider-logo mtn-logo">M</div>
+                  <div style="font-weight:700; font-size:.85rem; margin-top:8px;">MTN MoMo</div>
+                </label>
+              </div>
+              <div class="col-6">
+                <label class="provider-card w-100" id="sol-card-orange">
+                  <input type="radio" name="provider" value="orange" required>
+                  <div class="check-badge"><i class="bi bi-check"></i></div>
+                  <div class="provider-logo orange-logo">O</div>
+                  <div style="font-weight:700; font-size:.85rem; margin-top:8px;">Orange Money</div>
+                </label>
+              </div>
+            </div>
+
+            <p class="fw-bold mb-2" style="font-size:.88rem;">Mobile money number</p>
+            <div class="phone-wrap mb-1">
+              <div class="phone-prefix">🇨🇲 +237</div>
+              <input type="text" name="phone_number"
+                     placeholder="6 XX XX XX XX"
+                     maxlength="9" required>
+            </div>
+            <p style="font-size:.78rem; color:#9abaaa; margin-bottom:20px;">
+              A payment request of <strong>50 XAF</strong> will be sent to this number.
+            </p>
+
+            <button type="submit" class="btn-pay">
+              <i class="bi bi-lightbulb-fill me-2"></i> Pay 50 XAF & Get Solution
+            </button>
+          </form>
+        </div>
+
+        {# ── Not logged in ── #}
+        {% else %}
+        <div class="pay-box text-center">
+          <div style="font-size:2.5rem; margin-bottom:12px;">🔒</div>
+          <h5 style="font-weight:800; color:#0f1c14;">Login to get the solution</h5>
+          <p style="color:#7aaa8a; font-size:.88rem;">
+            The solution costs only <strong>50 XAF</strong>. Login to pay and download.
+          </p>
+          <a href="{% url 'accounts:login' %}?next={{ request.path }}#solution-section" class="btn btn-primary me-2">Login</a>
+          <a href="{% url 'accounts:register' %}" class="btn btn-outline-primary">Register Free</a>
+        </div>
+        {% endif %}
+
+      </div><!-- /#solution-section -->
+      {% endif %}
+
+    </div><!-- /.det-body -->
+  </div><!-- /.det-card -->
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Provider card selection — works for BOTH the material form and the solution form
+  document.querySelectorAll('.provider-card').forEach(card => {
+    card.addEventListener('click', () => {
+      // Only deselect siblings inside the same row
+      const row = card.closest('.row');
+      row.querySelectorAll('.provider-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      card.querySelector('input[type=radio]').checked = true;
+    });
+  });
+
+  // Strip non-digits from all phone inputs
+  document.querySelectorAll('input[name=phone_number]').forEach(input => {
+    input.addEventListener('input', function () {
+      this.value = this.value.replace(/\D/g, '').slice(0, 9);
+    });
+  });
+
+  // Smooth-scroll the solution chip into view
+  document.querySelector('a[href="#solution-section"]')?.addEventListener('click', e => {
+    e.preventDefault();
+    document.getElementById('solution-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Biology Library | SchoolCamp</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Fira+Code:wght@400;500&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--sc-green:#1a9e5a;--sc-dark:#0f1c14;--sc-light:#e8f5ee;--sc-accent:#4cd98a;--sw:270px}
+    *{box-sizing:border-box}
+    body{background:#f4f7f5;font-family:'Nunito',sans-serif;margin:0}
+    .navbar{background:var(--sc-dark)!important;position:sticky;top:0;z-index:1030}
+    .navbar-brand{color:#fff!important;font-weight:800;font-size:1.4rem}
+    .navbar-brand span{color:var(--sc-accent)}
+    .nav-link{color:#cde8d8!important}
+    .page-wrapper{display:flex;min-height:calc(100vh - 56px)}
+    #sidebar{width:var(--sw);min-width:var(--sw);background:var(--sc-dark);position:sticky;top:56px;height:calc(100vh - 56px);overflow-y:auto;transition:transform .3s ease;z-index:1020;flex-shrink:0}
+    #sidebar::-webkit-scrollbar{width:5px}
+    #sidebar::-webkit-scrollbar-thumb{background:#2a5c3a;border-radius:10px}
+    .sb-head{background:#0a1510;padding:16px 20px;font-weight:800;font-size:.85rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--sc-accent);border-bottom:1px solid #1e3828;display:flex;align-items:center;gap:8px}
+    .sb-search{padding:12px 14px;border-bottom:1px solid #1e3828}
+    .sb-search input{background:#1a2e20;border:1px solid #2a5c3a;color:#cde8d8;border-radius:8px;padding:7px 12px;width:100%;font-size:13px;outline:none}
+    .sb-search input::placeholder{color:#6aad82}
+    .sb-search input:focus{border-color:var(--sc-accent)}
+    .sb-nav .cl{display:flex;align-items:center;gap:10px;padding:10px 20px;color:#9ecfb0;text-decoration:none;font-size:.88rem;font-weight:600;border-left:3px solid transparent;transition:all .2s;cursor:pointer}
+    .sb-nav .cl:hover,.sb-nav .cl.active{color:#fff;background:rgba(76,217,138,.1);border-left-color:var(--sc-accent)}
+    .sb-nav .cl i{font-size:1rem;color:var(--sc-accent)}
+    #sbOvl{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1019}
+    #mc{flex:1;padding:28px 24px;overflow-x:hidden;min-width:0}
+    .pg-title{font-family:'Merriweather',serif;font-size:1.9rem;font-weight:700;color:var(--sc-dark);margin-bottom:4px}
+    .pg-sub{color:#5a8a6a;font-size:.95rem;margin-bottom:28px}
+    .fsec{margin-bottom:44px;scroll-margin-top:80px}
+    .fsec.hidden{display:none}
+    .stitle{font-family:'Merriweather',serif;font-size:1.25rem;font-weight:700;color:var(--sc-dark);border-left:4px solid var(--sc-green);padding-left:12px;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+    .stitle i{color:var(--sc-green)}
+    .fcard{background:#fff;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,.07);overflow:hidden;margin-bottom:14px;border:none;transition:box-shadow .2s}
+    .fcard:hover{box-shadow:0 4px 20px rgba(26,158,90,.15)}
+    .fcard-h{background:var(--sc-light);border-bottom:1px solid #d2e8db;padding:10px 16px;font-weight:700;font-size:.92rem;color:#0f3d22;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px}
+    .fcard-b{padding:14px 16px}
+    .fbox{background:#0f1c14;border-radius:8px;padding:14px 18px;font-family:'Fira Code',monospace;font-size:.9rem;color:#4cd98a;margin:8px 0;position:relative;overflow-x:auto;line-height:1.9}
+    .fbox .k{color:#f6d365;font-weight:bold}.fbox .v{color:#fda085}.fbox .s{color:#89d8ff}.fbox .p{color:#9effc8}.fbox .u{color:#c8a8ff;font-size:.82rem}
+    .cpb{position:absolute;top:8px;right:8px;background:rgba(76,217,138,.15);border:1px solid rgba(76,217,138,.3);color:var(--sc-accent);border-radius:6px;padding:2px 8px;font-size:11px;cursor:pointer;transition:all .2s}
+    .cpb:hover{background:var(--sc-green);color:#fff;border-color:var(--sc-green)}
+    .fnote{font-size:.83rem;color:#5a8a6a;margin-top:6px;font-style:italic}
+    .fnote strong{color:#1a7a42;font-style:normal}
+    .ftbl{width:100%;border-collapse:collapse;font-size:.88rem}
+    .ftbl th{background:var(--sc-light);color:#0f3d22;padding:8px 12px;text-align:left;font-weight:700;border-bottom:2px solid #d2e8db}
+    .ftbl td{padding:8px 12px;border-bottom:1px solid #eef5f1;vertical-align:middle}
+    .ftbl tr:hover td{background:#f8fbf9}
+    .ftbl code{background:#0f1c14;color:#4cd98a;border-radius:5px;padding:2px 7px;font-family:'Fira Code',monospace;font-size:.85rem}
+    #sbToggle{display:none;background:var(--sc-green);color:#fff;border:none;border-radius:8px;padding:6px 12px;font-size:.85rem;font-weight:700;cursor:pointer;align-items:center;gap:6px}
+    .lp{font-size:10px;border-radius:20px;padding:2px 9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+    .lb{background:#d4edda;color:#155724}.li{background:#fff3cd;color:#856404}.la{background:#f8d7da;color:#721c24}
+    .crumb{font-size:.82rem;color:#7aad92;margin-bottom:20px}
+    .crumb a{color:var(--sc-green);text-decoration:none}
+    footer{background:var(--sc-dark);color:#7aad92;padding:30px 0;margin-top:20px}
+    footer a{color:var(--sc-accent);text-decoration:none}
+
+    /* CELL DIAGRAM */
+    .cell-wrap{position:relative;width:100%;max-width:680px;margin:0 auto}
+    .cell-wrap svg{width:100%;height:auto;display:block}
+    .cell-part{cursor:pointer;transition:opacity .2s}
+    .cell-part:hover{opacity:.75}
+    .org-info{background:#0f1c14;border-radius:8px;padding:12px 16px;margin-top:10px;font-size:.85rem;color:#4cd98a;min-height:54px;font-family:'Fira Code',monospace;border:1px solid #2a5c3a;display:flex;align-items:center;gap:10px}
+    .org-info .oi-name{color:#f6d365;font-weight:700;font-size:.92rem}
+    .org-info .oi-fn{color:#9effc8}
+
+    /* CYCLE DIAGRAMS */
+    .cycle-svg-wrap{overflow-x:auto;padding:10px 0}
+    .cycle-step{fill:#e8f5ee;stroke:var(--sc-green);stroke-width:2;rx:10}
+    .cycle-txt{font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;fill:#0f3d22}
+    .cycle-arrow{fill:var(--sc-green)}
+    .cycle-label{font-family:'Nunito',sans-serif;font-size:11px;fill:#5a8a6a;font-style:italic}
+
+    /* PUNNETT SQUARE */
+    .punnett-wrap{max-width:360px}
+    .punnett-controls{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;align-items:flex-end}
+    .punnett-controls label{font-size:.82rem;font-weight:700;color:#0f3d22}
+    .punnett-controls input{background:#fff;border:2px solid #b5d9c5;border-radius:6px;padding:4px 8px;font-size:.9rem;font-family:'Fira Code',monospace;width:68px;font-weight:700;text-align:center}
+    .punnett-controls input:focus{border-color:var(--sc-green);outline:none}
+    .punnett-controls button{background:var(--sc-green);color:#fff;border:none;border-radius:7px;padding:6px 14px;font-weight:700;cursor:pointer;font-size:.85rem}
+    .punnett-table{border-collapse:collapse;width:100%;max-width:300px}
+    .punnett-table td,.punnett-table th{border:2px solid #b5d9c5;padding:10px;text-align:center;font-family:'Fira Code',monospace;font-weight:700;font-size:1rem}
+    .punnett-table th{background:var(--sc-light);color:var(--sc-green);font-size:1.1rem}
+    .punnett-table td.homo-dom{background:#d4edda;color:#155724}
+    .punnett-table td.hetero{background:#fff3cd;color:#856404}
+    .punnett-table td.homo-rec{background:#f8d7da;color:#721c24}
+    .punnett-result{margin-top:10px;font-size:.85rem;color:#0f3d22;background:var(--sc-light);border-radius:8px;padding:10px 14px}
+
+    /* BIOCHEM TESTS */
+    .bt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+    .bt-card{background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.07)}
+    .bt-head{background:var(--sc-dark);padding:8px 14px;font-weight:700;font-size:.88rem;color:var(--sc-accent);display:flex;justify-content:space-between;align-items:center}
+    .bt-body{padding:12px 14px;font-size:.85rem}
+    .bt-row{margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid #eef5f1}
+    .bt-row:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none}
+    .bt-name{font-weight:700;color:#1a7a42;font-size:.82rem;margin-bottom:2px}
+    .bt-obs{font-size:.82rem;color:#555;margin-bottom:2px}
+    .bt-eq{background:#0f1c14;border-radius:5px;padding:5px 8px;font-family:'Fira Code',monospace;font-size:.75rem;color:#4cd98a;overflow-x:auto}
+    .pp{display:inline-block;background:#d4edda;border:1px solid #28a745;color:#155724;border-radius:6px;padding:1px 8px;font-size:.78rem;font-weight:700}
+    .pn{display:inline-block;background:#f8d7da;border:1px solid #dc3545;color:#721c24;border-radius:6px;padding:1px 8px;font-size:.78rem;font-weight:700}
+
+    /* DISEASE TABLE */
+    .dis-badge{display:inline-block;border-radius:20px;padding:1px 9px;font-size:11px;font-weight:700}
+    .dis-b{background:#f8d7da;color:#721c24}.dis-v{background:#fff3cd;color:#856404}.dis-f{background:#d4edda;color:#155724}.dis-p{background:#e2d9f3;color:#3d1a8f}
+
+    /* BODY SYSTEMS GRID */
+    .sys-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+    .sys-card{background:#fff;border-radius:10px;border-left:4px solid var(--sc-green);padding:12px 14px;box-shadow:0 1px 8px rgba(0,0,0,.06)}
+    .sys-card h6{font-weight:800;color:var(--sc-dark);margin-bottom:6px;font-size:.9rem;display:flex;align-items:center;gap:6px}
+    .sys-card h6 i{color:var(--sc-green)}
+    .sys-card ul{margin:0;padding-left:16px;font-size:.82rem;color:#444;line-height:1.7}
+
+    @media(max-width:768px){
+      #sidebar{position:fixed;top:56px;left:0;height:calc(100vh - 56px);transform:translateX(-100%);box-shadow:4px 0 20px rgba(0,0,0,.3)}
+      #sidebar.open{transform:translateX(0)}
+      #sbOvl.open{display:block}
+      #sbToggle{display:flex}
+      #mc{padding:20px 16px}
+      .pg-title{font-size:1.45rem}
+      .fbox{font-size:.78rem}
+      .bt-grid,.sys-grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark">
+  <div class="container-fluid px-3">
+    <a class="navbar-brand" href="#">🏕 School<span>Camp</span></a>
+    <div class="ms-auto d-flex align-items-center gap-3">
+      <button id="sbToggle" onclick="toggleSB()"><i class="bi bi-list"></i> Topics</button>
+      <a class="nav-link d-none d-lg-block" href="{% url 'forum:home' %}"><i class="bi bi-house"></i> Home</a>
+    </div>
+  </div>
+</nav>
+<div id="sbOvl" onclick="toggleSB()"></div>
+<div class="page-wrapper">
+  <aside id="sidebar">
+    <div class="sb-head"><i class="bi bi-flower1"></i> Biology Topics</div>
+    <div class="sb-search"><input type="text" placeholder="Search topics..." oninput="filterSecs(this.value)"></div>
+    <nav class="sb-nav">
+      <a class="cl active" onclick="goTo('cell',event)" href="#"><i class="bi bi-circle-square"></i> Cell Biology</a>
+      <a class="cl" onclick="goTo('genetics',event)" href="#"><i class="bi bi-diagram-2"></i> Genetics &amp; DNA</a>
+      <a class="cl" onclick="goTo('cycles',event)" href="#"><i class="bi bi-arrow-repeat"></i> Important Cycles</a>
+      <a class="cl" onclick="goTo('ecology',event)" href="#"><i class="bi bi-tree"></i> Ecology</a>
+      <a class="cl" onclick="goTo('plant',event)" href="#"><i class="bi bi-flower2"></i> Plant Biology</a>
+      <a class="cl" onclick="goTo('systems',event)" href="#"><i class="bi bi-person-fill"></i> Human Body Systems</a>
+      <a class="cl" onclick="goTo('biochem',event)" href="#"><i class="bi bi-search"></i> Biochemical Tests</a>
+      <a class="cl" onclick="goTo('evolution',event)" href="#"><i class="bi bi-bezier2"></i> Evolution &amp; Classification</a>
+      <a class="cl" onclick="goTo('micro',event)" href="#"><i class="bi bi-virus"></i> Microbiology</a>
+      <a class="cl" onclick="goTo('diseases',event)" href="#"><i class="bi bi-bandaid"></i> Diseases</a>
+      <a class="cl" onclick="goTo('equations',event)" href="#"><i class="bi bi-calculator"></i> Key Equations</a>
+      <a class="cl" onclick="goTo('microscopy',event)" href="#"><i class="bi bi-zoom-in"></i> Microscopy &amp; Practicals</a>
+    </nav>
+  </aside>
+
+  <main id="mc">
+     
+    <h1 class="pg-title">🧬 Biology Library</h1>
+    <p class="pg-sub">Cell biology, genetics, important cycles, biochemical tests, body systems, ecology, and all key equations — complete biology reference.</p>
+
+    <!-- CELL BIOLOGY -->
+    <section class="fsec" id="cell" data-title="Cell Biology organelles animal plant prokaryote eukaryote mitosis meiosis">
+      <div class="stitle"><i class="bi bi-circle-square"></i> Cell Biology</div>
+      <div class="fcard">
+        <div class="fcard-h">Interactive Cell Diagram — Click any organelle</div>
+        <div class="fcard-b">
+          <div class="cell-wrap">
+            <svg viewBox="0 0 680 380" xmlns="http://www.w3.org/2000/svg">
+              <!-- Cell membrane -->
+              <ellipse cx="340" cy="195" rx="320" ry="175" fill="#e8f5ee" stroke="#1a9e5a" stroke-width="4" stroke-dasharray="8,4" class="cell-part" onclick="showOrg('membrane')" title="Cell Membrane"/>
+              <!-- Nucleus -->
+              <ellipse cx="290" cy="185" rx="72" ry="60" fill="#c8e6fa" stroke="#1565c0" stroke-width="2.5" class="cell-part" onclick="showOrg('nucleus')" title="Nucleus"/>
+              <ellipse cx="290" cy="185" rx="72" ry="60" fill="none" stroke="#1976d2" stroke-width="1.5" stroke-dasharray="5,3"/>
+              <ellipse cx="290" cy="185" rx="30" ry="22" fill="#90caf9" stroke="#1565c0" stroke-width="1.5" class="cell-part" onclick="showOrg('nucleolus')" title="Nucleolus"/>
+              <text x="290" y="190" text-anchor="middle" font-family="Nunito" font-size="11" font-weight="700" fill="#0d47a1">Nucleus</text>
+              <!-- Mitochondria -->
+              <ellipse cx="480" cy="130" rx="48" ry="26" fill="#ffe0b2" stroke="#e65100" stroke-width="2" class="cell-part" onclick="showOrg('mito')" title="Mitochondria"/>
+              <path d="M445,130 Q462,118 480,130 Q462,142 445,130" fill="none" stroke="#e65100" stroke-width="1.2"/>
+              <text x="480" y="134" text-anchor="middle" font-family="Nunito" font-size="9.5" font-weight="700" fill="#bf360c">Mitochondria</text>
+              <!-- Ribosome dots -->
+              <circle cx="420" cy="210" r="5" fill="#ff7043" class="cell-part" onclick="showOrg('ribo')" title="Ribosome"/>
+              <circle cx="435" cy="225" r="5" fill="#ff7043"/>
+              <circle cx="415" cy="240" r="5" fill="#ff7043"/>
+              <circle cx="450" cy="215" r="5" fill="#ff7043"/>
+              <text x="442" y="255" text-anchor="middle" font-family="Nunito" font-size="9.5" font-weight="700" fill="#bf360c">Ribosomes</text>
+              <!-- Endoplasmic Reticulum -->
+              <path d="M370,215 Q390,195 380,235 Q360,255 370,275 Q390,290 380,310" fill="none" stroke="#7b1fa2" stroke-width="2.5" class="cell-part" onclick="showOrg('er')" title="Endoplasmic Reticulum"/>
+              <text x="355" y="308" text-anchor="middle" font-family="Nunito" font-size="9" font-weight="700" fill="#7b1fa2">ER</text>
+              <!-- Golgi -->
+              <path d="M175,240 Q200,232 225,240" fill="none" stroke="#388e3c" stroke-width="3.5" class="cell-part" onclick="showOrg('golgi')" title="Golgi Apparatus"/>
+              <path d="M172,252 Q200,244 228,252" fill="none" stroke="#388e3c" stroke-width="3"/>
+              <path d="M175,264 Q200,256 225,264" fill="none" stroke="#388e3c" stroke-width="2.5"/>
+              <path d="M178,276 Q200,268 222,276" fill="none" stroke="#388e3c" stroke-width="2"/>
+              <text x="200" y="295" text-anchor="middle" font-family="Nunito" font-size="9.5" font-weight="700" fill="#1b5e20">Golgi Body</text>
+              <!-- Vacuole -->
+              <ellipse cx="530" cy="250" rx="45" ry="38" fill="#e3f2fd" stroke="#1976d2" stroke-width="2" class="cell-part" onclick="showOrg('vacuole')" title="Vacuole"/>
+              <text x="530" y="254" text-anchor="middle" font-family="Nunito" font-size="9.5" font-weight="700" fill="#0d47a1">Vacuole</text>
+              <!-- Lysosome -->
+              <circle cx="185" cy="155" r="20" fill="#fce4ec" stroke="#c62828" stroke-width="2" class="cell-part" onclick="showOrg('lyso')" title="Lysosome"/>
+              <text x="185" y="159" text-anchor="middle" font-family="Nunito" font-size="8.5" font-weight="700" fill="#b71c1c">Lysosome</text>
+              <!-- Centrosome -->
+              <circle cx="400" cy="310" r="14" fill="#f3e5f5" stroke="#6a1b9a" stroke-width="2" class="cell-part" onclick="showOrg('centro')" title="Centrosome"/>
+              <circle cx="400" cy="310" r="5" fill="#ba68c8"/>
+              <text x="400" y="338" text-anchor="middle" font-family="Nunito" font-size="9" font-weight="700" fill="#4a148c">Centrosome</text>
+              <!-- Cell membrane label -->
+              <text x="620" y="60" text-anchor="middle" font-family="Nunito" font-size="9" fill="#1a9e5a" font-weight="700">Cell</text>
+              <text x="620" y="72" text-anchor="middle" font-family="Nunito" font-size="9" fill="#1a9e5a" font-weight="700">Membrane</text>
+              <line x1="600" y1="68" x2="570" y2="95" stroke="#1a9e5a" stroke-width="1.5"/>
+            </svg>
+          </div>
+          <div class="org-info" id="orgInfo">
+            <span>👆 <span class="oi-fn">Click on any organelle above to learn about its structure and function.</span></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="fcard">
+        <div class="fcard-h">Animal vs Plant Cell Comparison <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <table class="ftbl">
+            <tr><th>Feature</th><th>Animal Cell</th><th>Plant Cell</th></tr>
+            <tr><td>Cell wall</td><td>✗ Absent</td><td>✓ Present (cellulose)</td></tr>
+            <tr><td>Chloroplasts</td><td>✗ Absent</td><td>✓ Present</td></tr>
+            <tr><td>Vacuole</td><td>Small / absent</td><td>Large central vacuole</td></tr>
+            <tr><td>Centrosome/Centrioles</td><td>✓ Present</td><td>✗ Absent (most)</td></tr>
+            <tr><td>Shape</td><td>Irregular / round</td><td>Regular / rectangular</td></tr>
+            <tr><td>Lysosome</td><td>✓ Present</td><td>Rare</td></tr>
+            <tr><td>Starch storage</td><td>Glycogen granules</td><td>Starch grains</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="fcard">
+        <div class="fcard-h">Prokaryote vs Eukaryote <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <table class="ftbl">
+            <tr><th>Feature</th><th>Prokaryote</th><th>Eukaryote</th></tr>
+            <tr><td>Nucleus</td><td>No membrane-bound nucleus</td><td>True nucleus with envelope</td></tr>
+            <tr><td>Size</td><td>1–10 μm</td><td>10–100 μm</td></tr>
+            <tr><td>DNA</td><td>Circular, in cytoplasm</td><td>Linear, in nucleus</td></tr>
+            <tr><td>Ribosomes</td><td>70S</td><td>80S (cytoplasm)</td></tr>
+            <tr><td>Organelles</td><td>None (no membrane-bound)</td><td>Mitochondria, ER, Golgi etc.</td></tr>
+            <tr><td>Cell wall</td><td>Usually present (peptidoglycan)</td><td>Plants: cellulose; Fungi: chitin</td></tr>
+            <tr><td>Examples</td><td>Bacteria, Archaea</td><td>Animals, plants, fungi, protists</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="fcard">
+        <div class="fcard-h">Mitosis vs Meiosis <span class="lp li">Intermediate</span></div>
+        <div class="fcard-b">
+          <table class="ftbl">
+            <tr><th>Feature</th><th>Mitosis</th><th>Meiosis</th></tr>
+            <tr><td>Purpose</td><td>Growth, repair, asexual repro.</td><td>Sexual reproduction (gametes)</td></tr>
+            <tr><td>Divisions</td><td>1</td><td>2 (Meiosis I + II)</td></tr>
+            <tr><td>Daughter cells</td><td>2 identical diploid (2n)</td><td>4 genetically unique haploid (n)</td></tr>
+            <tr><td>Crossing over</td><td>No</td><td>Yes — in Prophase I</td></tr>
+            <tr><td>Where</td><td>All body (somatic) cells</td><td>Gonads (testes/ovaries)</td></tr>
+          </table>
+          <div class="fbox" style="margin-top:10px">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">Mitosis stages:</span>  PMAT — Prophase, Metaphase, Anaphase, Telophase<br>
+            <span class="k">Meiosis stages:</span>  Prophase I, Metaphase I, Anaphase I, Telophase I<br>
+                              then Prophase II, Metaphase II, Anaphase II, Telophase II<br>
+            <span class="k">Interphase (S-phase):</span>  DNA replication (2n → 4n DNA content)
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- GENETICS -->
+    <section class="fsec" id="genetics" data-title="Genetics DNA RNA protein synthesis Mendel Punnett inheritance mutation">
+      <div class="stitle"><i class="bi bi-diagram-2"></i> Genetics &amp; DNA</div>
+      <div class="fcard">
+        <div class="fcard-h">DNA Structure &amp; Replication <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">DNA:</span>  Double helix; sugar-phosphate backbone; bases inside<br>
+            <span class="k">Base pairs:</span>  A=T (2 H-bonds)  |  G≡C (3 H-bonds)<br>
+            <span class="k">Nucleotide =</span>  phosphate + deoxyribose sugar + nitrogenous base<br>
+            <span class="k">Replication:</span>  Semi-conservative; DNA polymerase + helicase<br>
+            <span class="k">Gene:</span>  section of DNA coding for a protein/polypeptide<br>
+            <span class="k">Genome:</span>  complete set of genetic material in an organism
+          </div>
+        </div>
+      </div>
+
+      <div class="fcard">
+        <div class="fcard-h">Protein Synthesis <span class="lp li">Intermediate</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">Transcription (nucleus):</span><br>
+            DNA --&gt; mRNA  (RNA polymerase; template strand read 3' to 5')<br>
+            T in DNA --&gt; A in mRNA  |  A --&gt; U  |  G --&gt; C  |  C --&gt; G<br><br>
+            <span class="k">Translation (ribosome):</span><br>
+            mRNA codon (3 bases) --&gt; tRNA anticodon --&gt; amino acid<br>
+            Start codon: AUG (methionine)<br>
+            Stop codons: UAA, UAG, UGA
+          </div>
+        </div>
+      </div>
+
+      <div class="fcard">
+        <div class="fcard-h">Mendel's Laws <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">Law of Segregation:</span>  alleles separate during gamete formation<br>
+            <span class="k">Law of Independent Assortment:</span>  genes on different chromosomes assort independently<br>
+            <span class="k">Dominant (A):</span>  expressed when 1 or 2 copies present<br>
+            <span class="k">Recessive (a):</span>  only expressed when 2 copies present (aa)<br>
+            <span class="k">Genotype:</span>  genetic makeup (AA, Aa, aa)<br>
+            <span class="k">Phenotype:</span>  physical expression of genotype
+          </div>
+        </div>
+      </div>
+
+      <div class="fcard">
+        <div class="fcard-h">Interactive Punnett Square Generator <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <div class="punnett-wrap">
+            <div class="punnett-controls">
+              <div>
+                <label>Parent 1 (e.g. Aa)</label><br>
+                <input type="text" id="p1" value="Aa" maxlength="2" oninput="buildPunnett()">
+              </div>
+              <div>
+                <label>Parent 2 (e.g. Aa)</label><br>
+                <input type="text" id="p2" value="Aa" maxlength="2" oninput="buildPunnett()">
+              </div>
+              <button onclick="buildPunnett()">Generate</button>
+            </div>
+            <table class="punnett-table" id="punnettTable"></table>
+            <div class="punnett-result" id="punnettResult"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="fcard">
+        <div class="fcard-h">Inheritance Patterns <span class="lp li">Intermediate</span></div>
+        <div class="fcard-b">
+          <table class="ftbl">
+            <tr><th>Pattern</th><th>Description</th><th>Example</th></tr>
+            <tr><td>Dominant</td><td>One allele masks the other</td><td>Brown eyes (B) over blue (b)</td></tr>
+            <tr><td>Recessive</td><td>Only expressed as homozygous</td><td>Cystic fibrosis (ff)</td></tr>
+            <tr><td>Codominance</td><td>Both alleles expressed equally</td><td>AB blood type (IAIB)</td></tr>
+            <tr><td>Incomplete dominance</td><td>Blended phenotype</td><td>Red × White = Pink flower</td></tr>
+            <tr><td>Sex-linked</td><td>Gene on X chromosome</td><td>Haemophilia, colour blindness</td></tr>
+            <tr><td>Multiple alleles</td><td>3+ alleles for one gene</td><td>ABO blood groups (IA, IB, i)</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="fcard">
+        <div class="fcard-h">Mutations <span class="lp li">Intermediate</span></div>
+        <div class="fcard-b">
+          <table class="ftbl">
+            <tr><th>Type</th><th>Description</th><th>Effect/Example</th></tr>
+            <tr><td>Substitution</td><td>One base replaced by another</td><td>Sickle cell anaemia</td></tr>
+            <tr><td>Insertion</td><td>Extra base added</td><td>Frameshift — alters all downstream codons</td></tr>
+            <tr><td>Deletion</td><td>Base removed</td><td>Frameshift mutation</td></tr>
+            <tr><td>Chromosomal</td><td>Whole chromosome affected</td><td>Down syndrome (trisomy 21)</td></tr>
+            <tr><td>Mutagen</td><td>Cause of mutation</td><td>UV light, X-rays, chemicals</td></tr>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- IMPORTANT CYCLES -->
+    <section class="fsec" id="cycles" data-title="Cycles carbon nitrogen water cell cycle Krebs Calvin menstrual cardiac">
+      <div class="stitle"><i class="bi bi-arrow-repeat"></i> Important Cycles in Biology</div>
+
+      <!-- CARBON CYCLE -->
+      <div class="fcard">
+        <div class="fcard-h">The Carbon Cycle <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <div class="cycle-svg-wrap">
+            <svg viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg" style="min-width:500px">
+              <!-- Nodes -->
+              <rect x="275" y="10" width="150" height="44" rx="10" fill="#e8f5ee" stroke="#1a9e5a" stroke-width="2"/>
+              <text x="350" y="37" text-anchor="middle" font-family="Nunito" font-size="13" font-weight="700" fill="#0f3d22">CO₂ in Atmosphere</text>
+              <rect x="10" y="130" width="140" height="44" rx="10" fill="#d4edda" stroke="#388e3c" stroke-width="2"/>
+              <text x="80" y="157" text-anchor="middle" font-family="Nunito" font-size="12" font-weight="700" fill="#1b5e20">Plants/Algae</text>
+              <rect x="275" y="250" width="150" height="44" rx="10" fill="#fff3cd" stroke="#f57f17" stroke-width="2"/>
+              <text x="350" y="277" text-anchor="middle" font-family="Nunito" font-size="12" font-weight="700" fill="#e65100">Organic Matter</text>
+              <rect x="550" y="130" width="140" height="44" rx="10" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="2"/>
+              <text x="620" y="152" text-anchor="middle" font-family="Nunito" font-size="12" font-weight="700" fill="#4a148c">Animals/</text>
+              <text x="620" y="166" text-anchor="middle" font-family="Nunito" font-size="12" font-weight="700" fill="#4a148c">Consumers</text>
+              <!-- Arrows -->
+              <path d="M150,140 Q200,100 275,50" fill="none" stroke="#1a9e5a" stroke-width="2" marker-end="url(#arr)"/>
+              <text x="185" y="90" font-family="Nunito" font-size="10" fill="#388e3c" font-style="italic">Photosynthesis</text>
+              <path d="M275,40 Q200,40 150,140" fill="none" stroke="#c62828" stroke-width="2" marker-end="url(#arr2)"/>
+              <text x="160" y="120" font-family="Nunito" font-size="10" fill="#c62828" font-style="italic">Respiration</text>
+              <path d="M150,165 Q200,230 275,270" fill="none" stroke="#f57f17" stroke-width="2" marker-end="url(#arr3)"/>
+              <text x="180" y="225" font-family="Nunito" font-size="10" fill="#e65100" font-style="italic">Feeding</text>
+              <path d="M425,270 Q490,240 550,170" fill="none" stroke="#7b1fa2" stroke-width="2" marker-end="url(#arr4)"/>
+              <text x="510" y="235" font-family="Nunito" font-size="10" fill="#7b1fa2" font-style="italic">Feeding</text>
+              <path d="M620,130 Q590,60 430,30" fill="none" stroke="#c62828" stroke-width="2" marker-end="url(#arr2)"/>
+              <text x="555" y="65" font-family="Nunito" font-size="10" fill="#c62828" font-style="italic">Respiration</text>
+              <path d="M350,250 Q350,160 350,58" fill="none" stroke="#795548" stroke-width="2" stroke-dasharray="6,3" marker-end="url(#arr5)"/>
+              <text x="358" y="170" font-family="Nunito" font-size="10" fill="#795548" font-style="italic">Decomposition</text>
+              <!-- Fossil fuels note -->
+              <rect x="270" y="140" width="130" height="36" rx="8" fill="#e8eaf6" stroke="#3f51b5" stroke-width="1.5"/>
+              <text x="335" y="157" text-anchor="middle" font-family="Nunito" font-size="10" font-weight="700" fill="#1a237e">Fossil Fuels</text>
+              <text x="335" y="170" text-anchor="middle" font-family="Nunito" font-size="9" fill="#3f51b5">Combustion → CO₂</text>
+              <defs>
+                <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#1a9e5a"/></marker>
+                <marker id="arr2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#c62828"/></marker>
+                <marker id="arr3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#f57f17"/></marker>
+                <marker id="arr4" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#7b1fa2"/></marker>
+                <marker id="arr5" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#795548"/></marker>
+              </defs>
+            </svg>
+          </div>
+          <div class="fbox" style="margin-top:8px">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">Carbon enters atmosphere via:</span>  respiration, combustion, decomposition, volcanic eruption<br>
+            <span class="k">Carbon removed from atmosphere via:</span>  photosynthesis, dissolved in oceans<br>
+            <span class="k">Photosynthesis:</span>  6CO₂ + 6H₂O + light energy → C₆H₁₂O₆ + 6O₂<br>
+            <span class="k">Respiration:</span>    C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O + ATP
+          </div>
+        </div>
+      </div>
+
+      <!-- NITROGEN CYCLE -->
+      <div class="fcard">
+        <div class="fcard-h">The Nitrogen Cycle <span class="lp li">Intermediate</span></div>
+        <div class="fcard-b">
+          <div class="cycle-svg-wrap">
+            <svg viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg" style="min-width:500px">
+              <rect x="270" y="10" width="160" height="44" rx="10" fill="#e3f2fd" stroke="#1565c0" stroke-width="2"/>
+              <text x="350" y="37" text-anchor="middle" font-family="Nunito" font-size="13" font-weight="700" fill="#0d47a1">N₂ in Atmosphere (78%)</text>
+              <rect x="10" y="130" width="150" height="44" rx="10" fill="#d4edda" stroke="#388e3c" stroke-width="2"/>
+              <text x="85" y="157" text-anchor="middle" font-family="Nunito" font-size="11" font-weight="700" fill="#1b5e20">Ammonia / NH₃</text>
+              <rect x="270" y="240" width="160" height="44" rx="10" fill="#fff3cd" stroke="#f9a825" stroke-width="2"/>
+              <text x="350" y="262" text-anchor="middle" font-family="Nunito" font-size="11" font-weight="700" fill="#e65100">Nitrates (NO₃⁻)</text>
+              <text x="350" y="276" text-anchor="middle" font-family="Nunito" font-size="10" fill="#e65100">in soil — absorbed by plants</text>
+              <rect x="540" y="130" width="150" height="44" rx="10" fill="#fce4ec" stroke="#c62828" stroke-width="2"/>
+              <text x="615" y="152" text-anchor="middle" font-family="Nunito" font-size="11" font-weight="700" fill="#b71c1c">Nitrites (NO₂⁻)</text>
+              <text x="615" y="166" text-anchor="middle" font-family="Nunito" font-size="10" fill="#c62828">in soil</text>
+              <!-- arrows -->
+              <path d="M350,54 Q200,90 160,130" fill="none" stroke="#1565c0" stroke-width="2" marker-end="url(#nb)"/>
+              <text x="220" y="88" font-family="Nunito" font-size="9.5" fill="#1565c0" font-style="italic">N-fixation</text>
+              <text x="200" y="100" font-family="Nunito" font-size="9" fill="#1565c0">(Rhizobium bacteria)</text>
+              <path d="M85,174 Q160,230 270,260" fill="none" stroke="#388e3c" stroke-width="2" marker-end="url(#ng)"/>
+              <text x="140" y="220" font-family="Nunito" font-size="9.5" fill="#388e3c" font-style="italic">Nitrification</text>
+              <text x="130" y="233" font-family="Nunito" font-size="9" fill="#388e3c">(Nitrosomonas)</text>
+              <path d="M430,260 Q500,230 545,170" fill="none" stroke="#f9a825" stroke-width="2" marker-end="url(#ny)"/>
+              <text x="510" y="220" font-family="Nunito" font-size="9.5" fill="#e65100" font-style="italic">Nitrification</text>
+              <text x="505" y="233" font-family="Nunito" font-size="9" fill="#e65100">(Nitrobacter)</text>
+              <path d="M540,140 Q450,60 430,54" fill="none" stroke="#c62828" stroke-width="2" marker-end="url(#nr)"/>
+              <text x="510" y="85" font-family="Nunito" font-size="9.5" fill="#c62828" font-style="italic">Denitrification</text>
+              <path d="M160,140 Q200,80 270,40" fill="none" stroke="#9c27b0" stroke-width="2" marker-end="url(#np)"/>
+              <text x="185" y="78" font-family="Nunito" font-size="9.5" fill="#9c27b0" font-style="italic">Decomposition</text>
+              <defs>
+                <marker id="nb" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#1565c0"/></marker>
+                <marker id="ng" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#388e3c"/></marker>
+                <marker id="ny" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#f9a825"/></marker>
+                <marker id="nr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#c62828"/></marker>
+                <marker id="np" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#9c27b0"/></marker>
+              </defs>
+            </svg>
+          </div>
+          <div class="fbox" style="margin-top:8px">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">Nitrogen fixation:</span>  N₂ → NH₃  (Rhizobium in root nodules; lightning)<br>
+            <span class="k">Nitrification:</span>      NH₃ → NO₂⁻ → NO₃⁻  (Nitrosomonas → Nitrobacter)<br>
+            <span class="k">Denitrification:</span>    NO₃⁻ → N₂  (anaerobic bacteria, e.g. Pseudomonas)<br>
+            <span class="k">Ammonification:</span>    Organic N → NH₃  (decomposers/bacteria)<br>
+            <span class="k">Assimilation:</span>      Plants absorb NO₃⁻ → amino acids → proteins
+          </div>
+        </div>
+      </div>
+
+      <!-- WATER CYCLE -->
+      <div class="fcard">
+        <div class="fcard-h">The Water Cycle <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <div class="cycle-svg-wrap">
+            <svg viewBox="0 0 700 280" xmlns="http://www.w3.org/2000/svg" style="min-width:500px">
+              <!-- Sun -->
+              <circle cx="640" cy="45" r="32" fill="#fff9c4" stroke="#f9a825" stroke-width="2"/>
+              <text x="640" y="49" text-anchor="middle" font-family="Nunito" font-size="12" font-weight="700" fill="#e65100">☀️ Sun</text>
+              <!-- Cloud -->
+              <ellipse cx="350" cy="55" rx="90" ry="38" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+              <ellipse cx="300" cy="65" rx="60" ry="28" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.5"/>
+              <ellipse cx="400" cy="62" rx="65" ry="28" fill="#e3f2fd" stroke="#1976d2" stroke-width="1.5"/>
+              <text x="350" y="58" text-anchor="middle" font-family="Nunito" font-size="12" font-weight="700" fill="#0d47a1">Clouds</text>
+              <!-- Ocean/Sea -->
+              <rect x="10" y="230" width="680" height="50" rx="5" fill="#bbdefb" stroke="#1976d2" stroke-width="2"/>
+              <text x="100" y="260" font-family="Nunito" font-size="12" font-weight="700" fill="#0d47a1">Ocean / Sea / Lake</text>
+              <!-- Mountain/land -->
+              <polygon points="480,230 560,130 640,230" fill="#c8e6c9" stroke="#388e3c" stroke-width="2"/>
+              <text x="560" y="200" text-anchor="middle" font-family="Nunito" font-size="10" font-weight="700" fill="#1b5e20">Mountain</text>
+              <!-- Arrows and labels -->
+              <path d="M150,230 Q100,180 200,100" fill="none" stroke="#42a5f5" stroke-width="2.5" marker-end="url(#wa)"/>
+              <text x="100" y="170" font-family="Nunito" font-size="10" fill="#1565c0" font-weight="700">Evaporation</text>
+              <path d="M260,90 Q200,140 160,230" fill="none" stroke="#1976d2" stroke-width="2.5" stroke-dasharray="5,3" marker-end="url(#wb)"/>
+              <text x="170" y="165" font-family="Nunito" font-size="10" fill="#0d47a1" font-weight="700">Precipitation</text>
+              <text x="165" y="178" font-family="Nunito" font-size="9" fill="#0d47a1">(rain/snow)</text>
+              <path d="M440,90 Q480,130 500,230" fill="none" stroke="#1976d2" stroke-width="2.5" stroke-dasharray="5,3" marker-end="url(#wb)"/>
+              <text x="495" y="155" font-family="Nunito" font-size="10" fill="#0d47a1" font-weight="700">Precipitation</text>
+              <path d="M580,230 Q450,200 440,100" fill="none" stroke="#43a047" stroke-width="2" marker-end="url(#wc)"/>
+              <text x="535" y="175" font-family="Nunito" font-size="9.5" fill="#2e7d32" font-weight="700">Transpiration</text>
+              <path d="M160,230 Q240,240 260,230" fill="none" stroke="#8d6e63" stroke-width="2" marker-end="url(#wd)"/>
+              <text x="195" y="248" font-family="Nunito" font-size="9.5" fill="#5d4037" font-weight="700">Run-off</text>
+              <defs>
+                <marker id="wa" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#42a5f5"/></marker>
+                <marker id="wb" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#1976d2"/></marker>
+                <marker id="wc" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#43a047"/></marker>
+                <marker id="wd" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#8d6e63"/></marker>
+              </defs>
+            </svg>
+          </div>
+          <div class="fbox" style="margin-top:8px">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">Evaporation:</span>    water → water vapour (heat energy from sun)<br>
+            <span class="k">Condensation:</span>   water vapour cools → liquid water droplets → clouds<br>
+            <span class="k">Precipitation:</span>  rain, snow, sleet, hail fall to Earth<br>
+            <span class="k">Transpiration:</span>  plants release water vapour through stomata<br>
+            <span class="k">Surface run-off:</span> water flows over land into rivers/oceans<br>
+            <span class="k">Infiltration:</span>   water soaks into soil → groundwater
+          </div>
+        </div>
+      </div>
+
+      <!-- KREBS CYCLE -->
+      <div class="fcard">
+        <div class="fcard-h">Krebs Cycle (Citric Acid Cycle) <span class="lp la">Advanced</span></div>
+        <div class="fcard-b">
+          <div class="cycle-svg-wrap">
+            <svg viewBox="0 0 640 340" xmlns="http://www.w3.org/2000/svg" style="min-width:480px">
+              <!-- Circle path -->
+              <circle cx="320" cy="175" r="115" fill="none" stroke="#e8f5ee" stroke-width="30"/>
+              <circle cx="320" cy="175" r="115" fill="none" stroke="#1a9e5a" stroke-width="3" stroke-dasharray="6,4"/>
+              <!-- Molecules on ring -->
+              <rect x="260" y="20" width="120" height="36" rx="8" fill="#e8f5ee" stroke="#1a9e5a" stroke-width="2"/>
+              <text x="320" y="43" text-anchor="middle" font-family="Nunito" font-size="11" font-weight="700" fill="#0f3d22">Acetyl-CoA (2C)</text>
+              <rect x="455" y="80" width="115" height="36" rx="8" fill="#fff3cd" stroke="#f57f17" stroke-width="2"/>
+              <text x="512" y="103" text-anchor="middle" font-family="Nunito" font-size="11" font-weight="700" fill="#e65100">Citrate (6C)</text>
+              <rect x="490" y="190" width="130" height="36" rx="8" fill="#fce4ec" stroke="#c62828" stroke-width="2"/>
+              <text x="555" y="213" text-anchor="middle" font-family="Nunito" font-size="11" font-weight="700" fill="#b71c1c">Isocitrate (6C)</text>
+              <rect x="390" y="280" width="140" height="36" rx="8" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="2"/>
+              <text x="460" y="303" text-anchor="middle" font-family="Nunito" font-size="11" font-weight="700" fill="#4a148c">a-ketoglutarate(5C)</text>
+              <rect x="100" y="280" width="130" height="36" rx="8" fill="#e3f2fd" stroke="#1565c0" stroke-width="2"/>
+              <text x="165" y="303" text-anchor="middle" font-family="Nunito" font-size="11" font-weight="700" fill="#0d47a1">Succinyl-CoA(4C)</text>
+              <rect x="20" y="190" width="120" height="36" rx="8" fill="#d4edda" stroke="#388e3c" stroke-width="2"/>
+              <text x="80" y="213" text-anchor="middle" font-family="Nunito" font-size="11" font-weight="700" fill="#1b5e20">Succinate (4C)</text>
+              <rect x="20" y="80" width="120" height="36" rx="8" fill="#e8eaf6" stroke="#3f51b5" stroke-width="2"/>
+              <text x="80" y="103" text-anchor="middle" font-family="Nunito" font-size="11" font-weight="700" fill="#1a237e">Oxaloacetate(4C)</text>
+              <!-- Outputs labels -->
+              <text x="320" y="180" text-anchor="middle" font-family="Nunito" font-size="12" font-weight="800" fill="#1a9e5a">Per turn:</text>
+              <text x="320" y="198" text-anchor="middle" font-family="Nunito" font-size="10" fill="#555">2×CO₂, 3×NADH</text>
+              <text x="320" y="213" text-anchor="middle" font-family="Nunito" font-size="10" fill="#555">1×FADH₂, 1×ATP</text>
+            </svg>
+          </div>
+          <div class="fbox" style="margin-top:8px">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">Location:</span>  Matrix of mitochondria<br>
+            <span class="k">Input per turn:</span>  1 Acetyl-CoA (2C) + Oxaloacetate (4C)<br>
+            <span class="k">Output per turn:</span>  2 CO₂ + 3 NADH + 1 FADH₂ + 1 ATP (GTP)<br>
+            <span class="k">Per glucose (x2 turns):</span>  4 CO₂ + 6 NADH + 2 FADH₂ + 2 ATP<br>
+            <span class="k">Oxaloacetate:</span>  regenerated each turn to accept next Acetyl-CoA
+          </div>
+        </div>
+      </div>
+
+      <!-- CELL CYCLE -->
+      <div class="fcard">
+        <div class="fcard-h">The Cell Cycle <span class="lp li">Intermediate</span></div>
+        <div class="fcard-b">
+          <div class="cycle-svg-wrap">
+            <svg viewBox="0 0 500 280" xmlns="http://www.w3.org/2000/svg" style="min-width:400px">
+              <!-- Pie sections -->
+              <path d="M250,140 L250,30 A110,110 0 0,1 346,85 Z" fill="#c8e6c9" stroke="#fff" stroke-width="2"/>
+              <path d="M250,140 L346,85 A110,110 0 0,1 360,195 Z" fill="#bbdefb" stroke="#fff" stroke-width="2"/>
+              <path d="M250,140 L360,195 A110,110 0 0,1 140,195 Z" fill="#fff9c4" stroke="#fff" stroke-width="2"/>
+              <path d="M250,140 L140,195 A110,110 0 0,1 154,85 Z" fill="#fce4ec" stroke="#fff" stroke-width="2"/>
+              <path d="M250,140 L154,85 A110,110 0 0,1 250,30 Z" fill="#e8eaf6" stroke="#fff" stroke-width="2"/>
+              <circle cx="250" cy="140" r="50" fill="#f4f7f5" stroke="#1a9e5a" stroke-width="2"/>
+              <text x="250" y="135" text-anchor="middle" font-family="Nunito" font-size="11" font-weight="800" fill="#1a9e5a">CELL</text>
+              <text x="250" y="150" text-anchor="middle" font-family="Nunito" font-size="11" font-weight="800" fill="#1a9e5a">CYCLE</text>
+              <!-- Labels -->
+              <text x="310" y="62" font-family="Nunito" font-size="11" font-weight="700" fill="#1b5e20">G₁ Phase</text>
+              <text x="312" y="74" font-family="Nunito" font-size="9" fill="#388e3c">Cell growth</text>
+              <text x="365" y="148" font-family="Nunito" font-size="11" font-weight="700" fill="#0d47a1">S Phase</text>
+              <text x="362" y="160" font-family="Nunito" font-size="9" fill="#1565c0">DNA replicated</text>
+              <text x="230" y="270" font-family="Nunito" font-size="11" font-weight="700" fill="#e65100">G₂ Phase</text>
+              <text x="220" y="282" font-family="Nunito" font-size="9" fill="#f57f17">Growth + prep</text>
+              <text x="60" y="185" font-family="Nunito" font-size="11" font-weight="700" fill="#b71c1c">M Phase</text>
+              <text x="48" y="197" font-family="Nunito" font-size="9" fill="#c62828">Mitosis/Meiosis</text>
+              <text x="80" y="100" font-family="Nunito" font-size="11" font-weight="700" fill="#1a237e">G₀ Phase</text>
+              <text x="68" y="112" font-family="Nunito" font-size="9" fill="#3f51b5">Resting/quiescent</text>
+            </svg>
+          </div>
+          <div class="fbox" style="margin-top:8px">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">G₁ (Gap 1):</span>  cell grows; produces proteins and organelles<br>
+            <span class="k">S (Synthesis):</span>  DNA replication — genome duplicated<br>
+            <span class="k">G₂ (Gap 2):</span>  further growth; prepares for division; checks DNA<br>
+            <span class="k">M (Mitotic):</span>  nuclear division (mitosis) + cytokinesis<br>
+            <span class="k">G₀:</span>          cells exit cycle; resting or specialised
+          </div>
+        </div>
+      </div>
+
+      <!-- MENSTRUAL CYCLE -->
+      <div class="fcard">
+        <div class="fcard-h">The Menstrual Cycle <span class="lp li">Intermediate</span></div>
+        <div class="fcard-b">
+          <table class="ftbl">
+            <tr><th>Phase</th><th>Days</th><th>Events</th><th>Hormones</th></tr>
+            <tr><td>Menstruation</td><td>1–5</td><td>Uterus lining shed (bleeding)</td><td>FSH rises; oestrogen low</td></tr>
+            <tr><td>Follicular</td><td>1–13</td><td>Follicle develops in ovary; lining rebuilds</td><td>FSH → oestrogen rises</td></tr>
+            <tr><td>Ovulation</td><td>~Day 14</td><td>Egg released from follicle</td><td>LH surge triggers ovulation</td></tr>
+            <tr><td>Luteal</td><td>15–28</td><td>Corpus luteum forms; lining thickens</td><td>Progesterone; if no fertilisation → falls</td></tr>
+          </table>
+          <p class="fnote"><strong>FSH</strong> = Follicle Stimulating Hormone | <strong>LH</strong> = Luteinising Hormone | <strong>Oestrogen</strong> = rebuilds lining | <strong>Progesterone</strong> = maintains lining</p>
+        </div>
+      </div>
+
+      <!-- CARDIAC CYCLE -->
+      <div class="fcard">
+        <div class="fcard-h">The Cardiac Cycle <span class="lp li">Intermediate</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">Diastole:</span>     heart muscle relaxes; chambers fill with blood<br>
+            <span class="k">Atrial systole:</span> atria contract → push blood into ventricles<br>
+            <span class="k">Ventricular systole:</span> ventricles contract → blood pumped to lungs (right) and body (left)<br>
+            <span class="k">Heart rate:</span>    ~72 beats/min at rest<br>
+            <span class="k">Cardiac output:</span> CO = heart rate × stroke volume  [L/min]<br>
+            <span class="k">Blood pressure:</span> systolic / diastolic  (normal ≈ 120/80 mmHg)
+          </div>
+        </div>
+      </div>
+
+      <!-- CALVIN CYCLE -->
+      <div class="fcard">
+        <div class="fcard-h">The Calvin Cycle (Light-Independent Reactions) <span class="lp la">Advanced</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">Location:</span>  Stroma of chloroplast<br>
+            <span class="k">Step 1 — Carbon fixation:</span>  CO₂ + RuBP (5C) → 2 × 3-PGA (3C)  [RuBisCO enzyme]<br>
+            <span class="k">Step 2 — Reduction:</span>        3-PGA + ATP + NADPH → G3P<br>
+            <span class="k">Step 3 — Regeneration:</span>     5 G3P + ATP → 3 RuBP (cycle continues)<br>
+            <span class="k">Net output per 3 CO₂:</span>  1 G3P (used for glucose synthesis)<br>
+            <span class="k">For 1 glucose (6C):</span>        6 CO₂ + 18 ATP + 12 NADPH
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ECOLOGY -->
+    <section class="fsec" id="ecology" data-title="Ecology food chain web pyramid energy flow population">
+      <div class="stitle"><i class="bi bi-tree"></i> Ecology</div>
+      <div class="fcard">
+        <div class="fcard-h">Energy Flow &amp; Pyramids <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">Food chain:</span>  Producer → Primary consumer → Secondary → Tertiary<br>
+            <span class="k">Trophic levels:</span>  L1=Producers | L2=Herbivores | L3=Carnivores | L4=Top carnivores<br>
+            <span class="k">10% rule:</span>  only ~10% of energy passed to next trophic level<br>
+            <span class="k">Energy lost as:</span>  heat, excretion, respiration, uneaten biomass<br>
+            <span class="k">Pyramid of biomass:</span>  total dry mass at each trophic level<br>
+            <span class="k">Pyramid of numbers:</span>  number of organisms at each level
+          </div>
+        </div>
+      </div>
+      <div class="fcard">
+        <div class="fcard-h">Population Ecology <span class="lp li">Intermediate</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">Exponential growth:</span>  dN/dt = rN  (unlimited resources)<br>
+            <span class="k">Logistic growth:</span>      dN/dt = rN(1 - N/K)<br>
+            <span class="k">K =</span>  carrying capacity<br>
+            <span class="k">r =</span>  intrinsic rate of natural increase<br>
+            <span class="k">Biotic factors:</span>  predation, competition, disease, food supply<br>
+            <span class="k">Abiotic factors:</span>  temperature, light, water, pH, salinity
+          </div>
+        </div>
+      </div>
+      <div class="fcard">
+        <div class="fcard-h">Biomes &amp; Biodiversity <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <table class="ftbl">
+            <tr><th>Biome</th><th>Key Features</th><th>Examples</th></tr>
+            <tr><td>Tropical rainforest</td><td>High rainfall, warm, high biodiversity</td><td>Amazon, Congo</td></tr>
+            <tr><td>Desert</td><td>Low rainfall (&lt;250mm/yr), extreme temps</td><td>Sahara, Kalahari</td></tr>
+            <tr><td>Tundra</td><td>Permafrost, very cold, low biodiversity</td><td>Arctic, Antarctic</td></tr>
+            <tr><td>Savanna</td><td>Tropical grassland, seasonal rain</td><td>Cameroon, East Africa</td></tr>
+            <tr><td>Temperate forest</td><td>Deciduous trees, 4 seasons</td><td>Europe, Eastern USA</td></tr>
+            <tr><td>Ocean</td><td>Covers 71% Earth; photic/aphotic zones</td><td>Pacific, Atlantic</td></tr>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- PLANT BIOLOGY -->
+    <section class="fsec" id="plant" data-title="Plant Biology photosynthesis respiration transpiration tropism leaf structure">
+      <div class="stitle"><i class="bi bi-flower2"></i> Plant Biology</div>
+      <div class="fcard">
+        <div class="fcard-h">Photosynthesis <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">Overall equation:</span><br>
+            6CO₂ + 6H₂O <span class="s">→</span> <span class="p">C₆H₁₂O₆ + 6O₂</span>  <span class="u">(light + chlorophyll)</span><br><br>
+            <span class="k">Light-dependent (thylakoid membrane):</span><br>
+            H₂O + light <span class="s">→</span> <span class="p">ATP + NADPH + O₂</span>  (photolysis of water)<br><br>
+            <span class="k">Light-independent / Calvin cycle (stroma):</span><br>
+            CO₂ + ATP + NADPH <span class="s">→</span> <span class="p">G3P → Glucose</span>
+          </div>
+          <p class="fnote">Factors limiting photosynthesis: <strong>light intensity</strong>, <strong>CO₂ concentration</strong>, <strong>temperature</strong>.</p>
+        </div>
+      </div>
+      <div class="fcard">
+        <div class="fcard-h">Aerobic &amp; Anaerobic Respiration <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">Aerobic:</span><br>
+            C₆H₁₂O₆ + 6O₂ <span class="s">→</span> <span class="p">6CO₂ + 6H₂O + 38 ATP</span><br><br>
+            <span class="k">Anaerobic (animals/yeast):</span><br>
+            C₆H₁₂O₆ <span class="s">→</span> <span class="p">2 lactic acid + 2 ATP</span>  <span class="u">(animals)</span><br>
+            C₆H₁₂O₆ <span class="s">→</span> <span class="p">2 ethanol + 2CO₂ + 2 ATP</span>  <span class="u">(yeast)</span><br><br>
+            <span class="k">Glycolysis (cytoplasm):</span>  Glucose → 2 Pyruvate + 2 ATP + 2 NADH<br>
+            <span class="k">Link reaction (matrix):</span>  Pyruvate → Acetyl-CoA + CO₂ + NADH<br>
+            <span class="k">Krebs cycle (matrix):</span>   2 ATP + 6 NADH + 2 FADH₂ per glucose<br>
+            <span class="k">Oxidative phosphorylation (inner membrane):</span>  ~34 ATP
+          </div>
+        </div>
+      </div>
+      <div class="fcard">
+        <div class="fcard-h">Transpiration &amp; Tropisms <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">Transpiration:</span>  loss of water vapour through stomata<br>
+            <span class="k">TACT mechanism:</span>  Transpiration, Adhesion, Cohesion, Tension<br>
+            <span class="k">Factors increasing transpiration:</span>  high temp, low humidity, wind, light<br><br>
+            <span class="k">Phototropism:</span>   growth towards light (IAA migrates away from light)<br>
+            <span class="k">Gravitropism:</span>  roots grow down; shoots grow up<br>
+            <span class="k">Hydrotropism:</span>  roots grow towards water<br>
+            <span class="k">Thigmotropism:</span> response to touch (tendrils coil)
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HUMAN BODY SYSTEMS -->
+    <section class="fsec" id="systems" data-title="Human Body Systems digestive circulatory respiratory nervous reproductive immune excretory">
+      <div class="stitle"><i class="bi bi-person-fill"></i> Human Body Systems</div>
+      <div class="fcard">
+        <div class="fcard-h">Overview of All Body Systems <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <div class="sys-grid">
+            <div class="sys-card">
+              <h6><i class="bi bi-egg-fried"></i>Digestive System</h6>
+              <ul>
+                <li>Mouth → oesophagus → stomach → small intestine → large intestine → rectum</li>
+                <li>Enzymes: amylase (starch), protease (protein), lipase (fat)</li>
+                <li>Absorption: villi in small intestine</li>
+              </ul>
+            </div>
+            <div class="sys-card">
+              <h6><i class="bi bi-heart-pulse"></i>Circulatory System</h6>
+              <ul>
+                <li>Double circulation: pulmonary + systemic</li>
+                <li>Heart: 4 chambers (RA, LA, RV, LV)</li>
+                <li>Blood: plasma, RBC, WBC, platelets</li>
+                <li>CO = HR × SV</li>
+              </ul>
+            </div>
+            <div class="sys-card">
+              <h6><i class="bi bi-lungs"></i>Respiratory System</h6>
+              <ul>
+                <li>Nose → trachea → bronchi → bronchioles → alveoli</li>
+                <li>Gas exchange: O₂ in, CO₂ out across alveoli</li>
+                <li>Tidal volume ~500 mL; VC ~4.8 L</li>
+              </ul>
+            </div>
+            <div class="sys-card">
+              <h6><i class="bi bi-lightning-charge"></i>Nervous System</h6>
+              <ul>
+                <li>CNS: brain + spinal cord</li>
+                <li>PNS: sensory + motor nerves</li>
+                <li>Reflex arc: receptor → sensory → relay → motor → effector</li>
+              </ul>
+            </div>
+            <div class="sys-card">
+              <h6><i class="bi bi-droplet"></i>Excretory System</h6>
+              <ul>
+                <li>Kidneys: filter blood → urine</li>
+                <li>Filtration → reabsorption → secretion</li>
+                <li>ADH controls water reabsorption</li>
+              </ul>
+            </div>
+            <div class="sys-card">
+              <h6><i class="bi bi-shield-check"></i>Immune System</h6>
+              <ul>
+                <li>Non-specific: skin, phagocytes, inflammation</li>
+                <li>Specific: B-cells (antibodies), T-cells (cell-mediated)</li>
+                <li>Memory cells → immunity</li>
+              </ul>
+            </div>
+            <div class="sys-card">
+              <h6><i class="bi bi-gender-ambiguous"></i>Reproductive System</h6>
+              <ul>
+                <li>Male: testes → sperm (spermatogenesis)</li>
+                <li>Female: ovaries → eggs (oogenesis)</li>
+                <li>Fertilisation → zygote → embryo</li>
+              </ul>
+            </div>
+            <div class="sys-card">
+              <h6><i class="bi bi-activity"></i>Endocrine System</h6>
+              <ul>
+                <li>Hormones: chemical messengers in blood</li>
+                <li>Insulin/glucagon: blood glucose control</li>
+                <li>ADH, oestrogen, testosterone, adrenaline</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BIOCHEMICAL TESTS -->
+    <section class="fsec" id="biochem" data-title="Biochemical Tests food tests carbohydrate protein lipid reducing sugar starch Benedict Biuret iodine emulsion">
+      <div class="stitle"><i class="bi bi-search"></i> Biochemical Tests for Food Molecules</div>
+      <div class="fcard">
+        <div class="fcard-h">Tests for Biological Molecules</div>
+        <div class="fcard-b">
+          <div class="bt-grid">
+            <div class="bt-card">
+              <div class="bt-head"><span>Reducing Sugars</span><span class="lp lb">Basic</span></div>
+              <div class="bt-body">
+                <div class="bt-row">
+                  <div class="bt-name">Benedict's Test</div>
+                  <div class="bt-obs">Add Benedict's reagent, heat in water bath — blue → <strong>orange/brick-red precipitate</strong> <span class="pp">+ve</span></div>
+                  <div class="bt-eq">Reducing sugar + Cu2+(blue) → Cu2O↓(red) + oxidised sugar</div>
+                </div>
+                <div class="bt-row">
+                  <div class="bt-name">Examples</div>
+                  <div class="bt-obs">Glucose, maltose, lactose, fructose (all monosaccharides)</div>
+                </div>
+              </div>
+            </div>
+            <div class="bt-card">
+              <div class="bt-head"><span>Non-Reducing Sugars</span><span class="lp lb">Basic</span></div>
+              <div class="bt-body">
+                <div class="bt-row">
+                  <div class="bt-name">Sucrose Test</div>
+                  <div class="bt-obs">1. Benedict's → <strong>blue (negative)</strong> <span class="pn">-ve</span></div>
+                  <div class="bt-obs">2. Hydrolyse with HCl + heat, neutralise with NaHCO₃</div>
+                  <div class="bt-obs">3. Benedict's → <strong>orange/red precipitate</strong> <span class="pp">+ve after hydrolysis</span></div>
+                  <div class="bt-eq">Sucrose + H2O → glucose + fructose (then Benedict's +ve)</div>
+                </div>
+              </div>
+            </div>
+            <div class="bt-card">
+              <div class="bt-head"><span>Starch</span><span class="lp lb">Basic</span></div>
+              <div class="bt-body">
+                <div class="bt-row">
+                  <div class="bt-name">Iodine Test</div>
+                  <div class="bt-obs">Add iodine solution (I₂/KI) — orange-brown → <strong>dark blue/black</strong> <span class="pp">+ve</span></div>
+                  <div class="bt-obs">Blue-black colour due to iodine trapped in amylose helix</div>
+                  <div class="bt-eq">I₂ + amylose helix → blue-black complex</div>
+                </div>
+              </div>
+            </div>
+            <div class="bt-card">
+              <div class="bt-head"><span>Proteins</span><span class="lp lb">Basic</span></div>
+              <div class="bt-body">
+                <div class="bt-row">
+                  <div class="bt-name">Biuret Test</div>
+                  <div class="bt-obs">Add NaOH(aq) + dilute CuSO₄ — blue → <strong>purple/violet</strong> <span class="pp">+ve</span></div>
+                  <div class="bt-obs">Tests for peptide bonds (-CO-NH-)</div>
+                  <div class="bt-eq">Cu2+ + peptide bonds → purple complex (biuret reaction)</div>
+                </div>
+                <div class="bt-row">
+                  <div class="bt-name">Ninhydrin Test</div>
+                  <div class="bt-obs">Add ninhydrin + heat — colourless → <strong>purple/blue</strong> (amino acids) <span class="pp">+ve</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="bt-card">
+              <div class="bt-head"><span>Lipids / Fats</span><span class="lp lb">Basic</span></div>
+              <div class="bt-body">
+                <div class="bt-row">
+                  <div class="bt-name">Emulsion Test (Sudan III)</div>
+                  <div class="bt-obs">Dissolve in ethanol, add water — <strong>white milky emulsion</strong> forms <span class="pp">+ve</span></div>
+                  <div class="bt-obs">Or: add Sudan III/IV stain → <strong>red/orange layer</strong></div>
+                  <div class="bt-eq">Fat + ethanol → solution; + H₂O → milky emulsion</div>
+                </div>
+                <div class="bt-row">
+                  <div class="bt-name">Translucent spot test</div>
+                  <div class="bt-obs">Rub food on paper — <strong>translucent/greasy spot</strong> remains <span class="pp">+ve</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="bt-card">
+              <div class="bt-head"><span>Vitamin C (Ascorbic Acid)</span><span class="lp li">Intermediate</span></div>
+              <div class="bt-body">
+                <div class="bt-row">
+                  <div class="bt-name">DCPIP Test</div>
+                  <div class="bt-obs">Add DCPIP (blue dye) — blue → <strong>colourless</strong> (decolourises) <span class="pp">+ve</span></div>
+                  <div class="bt-obs">More vitamin C → fewer drops needed to decolourise</div>
+                  <div class="bt-eq">DCPIP (blue) + ascorbic acid → DCPIP-H₂ (colourless)</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="fbox" style="margin-top:14px">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">Summary of Positive Results:</span><br>
+            Reducing sugar (Benedict's):  blue <span class="s">→</span> <span class="p">orange/brick-red ppt</span><br>
+            Non-reducing sugar (after hydrolysis): blue <span class="s">→</span> <span class="p">orange/brick-red ppt</span><br>
+            Starch (Iodine):              orange-brown <span class="s">→</span> <span class="p">dark blue/black</span><br>
+            Protein (Biuret):             blue <span class="s">→</span> <span class="p">purple/violet</span><br>
+            Lipid (Emulsion):             clear <span class="s">→</span> <span class="p">white milky emulsion</span><br>
+            Vitamin C (DCPIP):            blue <span class="s">→</span> <span class="p">colourless</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EVOLUTION & CLASSIFICATION -->
+    <section class="fsec" id="evolution" data-title="Evolution Classification natural selection Darwin kingdoms taxonomy binomial">
+      <div class="stitle"><i class="bi bi-bezier2"></i> Evolution &amp; Classification</div>
+      <div class="fcard">
+        <div class="fcard-h">Natural Selection (Darwin) <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">Key principles:</span><br>
+            1. Variation exists within a population<br>
+            2. Offspring compete for limited resources (struggle for existence)<br>
+            3. Better-adapted individuals survive and reproduce (survival of the fittest)<br>
+            4. Favourable traits are inherited by offspring<br>
+            5. Over many generations → evolution of new species (speciation)
+          </div>
+        </div>
+      </div>
+      <div class="fcard">
+        <div class="fcard-h">Taxonomy &amp; Classification <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">Hierarchy (Domain → Kingdom → ...Species):</span><br>
+            Domain <span class="s">→</span> Kingdom <span class="s">→</span> Phylum <span class="s">→</span> Class <span class="s">→</span> Order <span class="s">→</span> Family <span class="s">→</span> Genus <span class="s">→</span> Species<br>
+            <span class="k">Mnemonic:</span>  Dear King Philip Came Over For Good Soup<br>
+            <span class="k">Binomial nomenclature:</span>  Genus species (e.g. Homo sapiens)<br>
+            <span class="k">5 Kingdoms:</span>  Monera | Protista | Fungi | Plantae | Animalia
+          </div>
+        </div>
+      </div>
+      <div class="fcard">
+        <div class="fcard-h">Animal Phyla Comparison <span class="lp li">Intermediate</span></div>
+        <div class="fcard-b">
+          <table class="ftbl">
+            <tr><th>Phylum</th><th>Key Feature</th><th>Example</th></tr>
+            <tr><td>Porifera</td><td>Pores; no tissues</td><td>Sponge</td></tr>
+            <tr><td>Cnidaria</td><td>Stinging cells (nematocysts)</td><td>Jellyfish, coral</td></tr>
+            <tr><td>Platyhelminthes</td><td>Flat body; no coelom</td><td>Tapeworm, planaria</td></tr>
+            <tr><td>Annelida</td><td>Segmented worm</td><td>Earthworm, leech</td></tr>
+            <tr><td>Mollusca</td><td>Soft body; mantle</td><td>Snail, squid, clam</td></tr>
+            <tr><td>Arthropoda</td><td>Exoskeleton; jointed limbs</td><td>Insects, crabs, spiders</td></tr>
+            <tr><td>Echinodermata</td><td>Spiny skin; radial symmetry</td><td>Starfish, sea urchin</td></tr>
+            <tr><td>Chordata</td><td>Notochord at some stage</td><td>Fish, amphibians, reptiles, birds, mammals</td></tr>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- MICROBIOLOGY -->
+    <section class="fsec" id="micro" data-title="Microbiology bacteria virus fungi pathogen infection reproduction">
+      <div class="stitle"><i class="bi bi-virus"></i> Microbiology</div>
+      <div class="fcard">
+        <div class="fcard-h">Bacteria vs Virus <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <table class="ftbl">
+            <tr><th>Feature</th><th>Bacteria</th><th>Virus</th></tr>
+            <tr><td>Size</td><td>1–10 μm</td><td>20–300 nm (smaller)</td></tr>
+            <tr><td>Cell type</td><td>Prokaryote (no nucleus)</td><td>Not a cell</td></tr>
+            <tr><td>Genetic material</td><td>DNA (circular)</td><td>DNA or RNA</td></tr>
+            <tr><td>Cell wall</td><td>Present (peptidoglycan)</td><td>Protein coat (capsid)</td></tr>
+            <tr><td>Reproduction</td><td>Binary fission</td><td>Needs host cell (lytic/lysogenic)</td></tr>
+            <tr><td>Treatment</td><td>Antibiotics</td><td>Antivirals/vaccines</td></tr>
+            <tr><td>Examples</td><td>E. coli, Salmonella, Streptococcus</td><td>HIV, influenza, SARS-CoV-2</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="fcard">
+        <div class="fcard-h">Immune Response &amp; Vaccines <span class="lp li">Intermediate</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">Non-specific (innate):</span><br>
+            Skin barrier → phagocytosis (neutrophils/macrophages) → inflammation → fever<br><br>
+            <span class="k">Specific (adaptive):</span><br>
+            B lymphocytes: produce antibodies (humoral immunity)<br>
+            T lymphocytes: kill infected cells (cell-mediated immunity)<br>
+            Memory cells: rapid response on second exposure<br><br>
+            <span class="k">Vaccination:</span>  introduce antigen → primary immune response → memory cells formed<br>
+            <span class="k">Herd immunity:</span>  when enough population vaccinated to protect whole community
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DISEASES -->
+    <section class="fsec" id="diseases" data-title="Diseases malaria HIV tuberculosis cholera pathogens transmission prevention">
+      <div class="stitle"><i class="bi bi-bandaid"></i> Important Diseases</div>
+      <div class="fcard">
+        <div class="fcard-h">Major Infectious Diseases <span class="lp li">Intermediate</span></div>
+        <div class="fcard-b">
+          <table class="ftbl">
+            <tr><th>Disease</th><th>Pathogen</th><th>Type</th><th>Transmission</th><th>Symptoms</th><th>Prevention</th></tr>
+            <tr><td><strong>Malaria</strong></td><td>Plasmodium</td><td><span class="dis-badge dis-p">Protozoan</span></td><td>Female Anopheles mosquito (vector)</td><td>Fever, chills, anaemia</td><td>Mosquito nets, insecticides, antimalarial drugs</td></tr>
+            <tr><td><strong>HIV/AIDS</strong></td><td>HIV</td><td><span class="dis-badge dis-v">Virus</span></td><td>Blood, sexual contact, breast milk</td><td>Weakened immune system, opportunistic infections</td><td>Condoms, no needle sharing, ARV drugs</td></tr>
+            <tr><td><strong>Tuberculosis</strong></td><td>M. tuberculosis</td><td><span class="dis-badge dis-b">Bacterium</span></td><td>Airborne droplets (coughing)</td><td>Persistent cough, night sweats, weight loss</td><td>BCG vaccine, antibiotics</td></tr>
+            <tr><td><strong>Cholera</strong></td><td>V. cholerae</td><td><span class="dis-badge dis-b">Bacterium</span></td><td>Contaminated water/food</td><td>Severe diarrhoea, dehydration</td><td>Clean water, sanitation, oral rehydration</td></tr>
+            <tr><td><strong>COVID-19</strong></td><td>SARS-CoV-2</td><td><span class="dis-badge dis-v">Virus</span></td><td>Airborne droplets, contact</td><td>Fever, cough, loss of taste/smell</td><td>Vaccination, masks, handwashing</td></tr>
+            <tr><td><strong>Sickle cell</strong></td><td>Genetic mutation</td><td><span class="dis-badge dis-f">Genetic</span></td><td>Inherited (recessive HbS allele)</td><td>Anaemia, painful crises, organ damage</td><td>Genetic counselling, hydroxyurea</td></tr>
+            <tr><td><strong>Diabetes</strong></td><td>Insulin deficit</td><td><span class="dis-badge dis-f">Non-infect.</span></td><td>Type 1: autoimmune; Type 2: lifestyle</td><td>High blood glucose, thirst, fatigue</td><td>Insulin injections (T1), diet, exercise (T2)</td></tr>
+            <tr><td><strong>Schistosomiasis</strong></td><td>Schistosoma</td><td><span class="dis-badge dis-p">Protozoan</span></td><td>Contact with contaminated freshwater</td><td>Abdominal pain, blood in urine</td><td>Avoid stagnant water, Praziquantel</td></tr>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- KEY EQUATIONS -->
+    <section class="fsec" id="equations" data-title="Key Equations formulas biology calculations magnification cardiac output BMI">
+      <div class="stitle"><i class="bi bi-calculator"></i> Key Biology Equations</div>
+      <div class="fcard">
+        <div class="fcard-h">All Essential Biology Equations <span class="lp lb">All levels</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">Photosynthesis:</span>    6CO₂ + 6H₂O → C₆H₁₂O₆ + 6O₂  (light + chlorophyll)<br>
+            <span class="k">Aerobic resp.:</span>     C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O + 38 ATP<br>
+            <span class="k">Anaerobic (yeast):</span> C₆H₁₂O₆ → 2C₂H₅OH + 2CO₂ + 2 ATP<br>
+            <span class="k">Magnification:</span>     M = image size / actual size<br>
+            <span class="k">Actual size:</span>       A = image size / magnification<br>
+            <span class="k">Cardiac output:</span>    CO = heart rate × stroke volume  [L/min]<br>
+            <span class="k">BMI:</span>               BMI = mass (kg) / height² (m²)<br>
+            <span class="k">Population growth:</span> dN/dt = rN(1 - N/K)<br>
+            <span class="k">RQ (resp. quotient):</span> RQ = CO₂ produced / O₂ consumed<br>
+            <span class="k">% water loss:</span>      (initial - final) / initial × 100<br>
+            <span class="k">Relative freq.:</span>    allele freq. = no. of allele / total alleles in pop.<br>
+            <span class="k">Hardy-Weinberg:</span>    p + q = 1  |  p² + 2pq + q² = 1
+          </div>
+        </div>
+      </div>
+      <div class="fcard">
+        <div class="fcard-h">ATP &amp; Energy Summary <span class="lp li">Intermediate</span></div>
+        <div class="fcard-b">
+          <table class="ftbl">
+            <tr><th>Stage</th><th>Location</th><th>ATP yield (per glucose)</th></tr>
+            <tr><td>Glycolysis</td><td>Cytoplasm</td><td>2 ATP (net)</td></tr>
+            <tr><td>Link reaction</td><td>Mitochondrial matrix</td><td>0 ATP (2 NADH)</td></tr>
+            <tr><td>Krebs cycle</td><td>Mitochondrial matrix</td><td>2 ATP</td></tr>
+            <tr><td>Oxidative phosphorylation</td><td>Inner mitochondrial membrane</td><td>~34 ATP</td></tr>
+            <tr><td><strong>Total (aerobic)</strong></td><td>—</td><td><strong>~38 ATP</strong></td></tr>
+            <tr><td>Anaerobic</td><td>Cytoplasm</td><td>2 ATP only</td></tr>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- MICROSCOPY -->
+    <section class="fsec" id="microscopy" data-title="Microscopy magnification scale bar staining practical skills">
+      <div class="stitle"><i class="bi bi-zoom-in"></i> Microscopy &amp; Practical Skills</div>
+      <div class="fcard">
+        <div class="fcard-h">Magnification &amp; Scale <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">Magnification:</span>  M = image size / actual size<br>
+            <span class="k">Actual size:</span>    A = image size / magnification<br>
+            <span class="k">Image size:</span>     I = magnification × actual size<br>
+            <span class="k">Scale bar:</span>      magnification = scale bar length (mm) / scale bar value (mm)<br>
+            <span class="k">Total magnification:</span>  eyepiece lens × objective lens<br>
+            <span class="k">Units:</span>  1 mm = 1000 μm | 1 μm = 1000 nm
+          </div>
+        </div>
+      </div>
+      <div class="fcard">
+        <div class="fcard-h">Staining Techniques <span class="lp li">Intermediate</span></div>
+        <div class="fcard-b">
+          <table class="ftbl">
+            <tr><th>Stain</th><th>Stains</th><th>Colour</th><th>Used for</th></tr>
+            <tr><td>Methylene blue</td><td>Nuclei, cell walls</td><td>Blue</td><td>Animal cells, general</td></tr>
+            <tr><td>Iodine solution</td><td>Starch</td><td>Blue-black</td><td>Plant cells, starch</td></tr>
+            <tr><td>Eosin</td><td>Cytoplasm, cell walls</td><td>Pink/red</td><td>Animal tissues</td></tr>
+            <tr><td>Crystal violet</td><td>Cell wall (Gram+)</td><td>Purple</td><td>Gram staining of bacteria</td></tr>
+            <tr><td>Haematoxylin</td><td>Nuclei</td><td>Blue/purple</td><td>Histology</td></tr>
+            <tr><td>Safranin</td><td>Cell walls, nuclei</td><td>Red/orange</td><td>Plant tissues</td></tr>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="container text-center">
+    <p class="mb-1">🏕 <strong style="color:#fff">SchoolCamp</strong> — The student community for Cameroon 🇨🇲</p>
+    <small><a href="{% url 'forum:home' %}">Forum</a> · <a href="{% url 'groups:list' %}">Groups</a> · <a href="{% url 'materials:list' %}">Materials</a> · <a href="{% url 'quiz:list' %}">Quiz</a></small>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+/* ORGANELLE INFO */
+const orgData={
+  membrane:{name:"Cell Membrane",fn:"Phospholipid bilayer — controls what enters/exits the cell (selective permeability). Contains receptor proteins and channel proteins."},
+  nucleus:{name:"Nucleus",fn:"Control centre of the cell. Contains DNA (chromosomes) and directs protein synthesis via transcription. Surrounded by a double nuclear envelope with pores."},
+  nucleolus:{name:"Nucleolus",fn:"Found inside the nucleus. Synthesises ribosomal RNA (rRNA) and assembles ribosome subunits."},
+  mito:{name:"Mitochondria",fn:"Site of aerobic respiration. Produces ATP via the Krebs cycle and oxidative phosphorylation. Has inner cristae and matrix. Contains its own DNA."},
+  ribo:{name:"Ribosome",fn:"Site of protein synthesis (translation). Free ribosomes make proteins for cytoplasm; rough ER ribosomes make proteins for export. Made of rRNA + proteins (70S prokaryote / 80S eukaryote)."},
+  er:{name:"Endoplasmic Reticulum (ER)",fn:"Rough ER: studded with ribosomes; folds/modifies proteins. Smooth ER: no ribosomes; synthesises lipids and detoxifies substances."},
+  golgi:{name:"Golgi Apparatus",fn:"Sorts, modifies, and packages proteins and lipids from the ER. Produces lysosomes and secretory vesicles. The 'post office' of the cell."},
+  vacuole:{name:"Vacuole",fn:"In animal cells: small, temporary. In plant cells: large central vacuole filled with cell sap; provides turgor pressure and stores waste products."},
+  lyso:{name:"Lysosome",fn:"Contains hydrolytic (digestive) enzymes. Breaks down old organelles (autophagy), pathogens (phagocytosis), and cellular waste. Abundant in white blood cells."},
+  centro:{name:"Centrosome / Centriole",fn:"Organises the mitotic spindle during cell division (mitosis/meiosis). Present in animal cells; absent in most plant cells. Contains two centrioles at right angles."},
+};
+function showOrg(id){
+  const d=orgData[id];
+  if(!d)return;
+  document.getElementById('orgInfo').innerHTML=`<div><div class="oi-name">🔬 ${d.name}</div><div class="oi-fn" style="margin-top:4px">${d.fn}</div></div>`;
+}
+
+/* PUNNETT SQUARE */
+function buildPunnett(){
+  const p1=document.getElementById('p1').value.trim().toUpperCase();
+  const p2=document.getElementById('p2').value.trim().toUpperCase();
+  if(p1.length!==2||p2.length!==2){return;}
+  const g1=[p1[0],p1[1]];
+  const g2=[p2[0],p2[1]];
+  const table=document.getElementById('punnettTable');
+  const result=document.getElementById('punnettResult');
+  let html=`<tr><th></th><th>${g1[0]}</th><th>${g1[1]}</th></tr>`;
+  const combos=[];
+  for(let i=0;i<2;i++){
+    html+=`<tr><th>${g2[i]}</th>`;
+    for(let j=0;j<2;j++){
+      const combo=sortAlleles(g1[j]+g2[i]);
+      combos.push(combo);
+      const cls=getClass(combo);
+      html+=`<td class="${cls}">${combo}</td>`;
+    }
+    html+='</tr>';
+  }
+  table.innerHTML=html;
+  // Stats
+  const counts={};
+  combos.forEach(c=>{counts[c]=(counts[c]||0)+1;});
+  const phen={};
+  combos.forEach(c=>{const ph=getPhenotype(c);phen[ph]=(phen[ph]||0)+1;});
+  let rs=`<strong>Genotype ratio:</strong> `;
+  rs+=Object.entries(counts).map(([g,n])=>`${g} (${n})`).join(' : ');
+  rs+=`<br><strong>Phenotype ratio:</strong> `;
+  rs+=Object.entries(phen).map(([p,n])=>`${p} (${n})`).join(' : ');
+  result.innerHTML=rs;
+}
+function sortAlleles(pair){
+  const a=pair[0],b=pair[1];
+  if(a===a.toUpperCase()&&b===b.toLowerCase())return a+b;
+  if(b===b.toUpperCase()&&a===a.toLowerCase())return b+a;
+  if(a===b)return a+b;
+  return a<b?a+b:b+a;
+}
+function getClass(g){
+  if(g[0]===g[1]&&g[0]===g[0].toUpperCase())return 'homo-dom';
+  if(g[0]===g[1]&&g[0]===g[0].toLowerCase())return 'homo-rec';
+  return 'hetero';
+}
+function getPhenotype(g){
+  if(g[0]===g[1]&&g[0]===g[0].toUpperCase())return 'Homozygous Dominant';
+  if(g[0]===g[1]&&g[0]===g[0].toLowerCase())return 'Homozygous Recessive';
+  return 'Heterozygous';
+}
+buildPunnett();
+
+/* SIDEBAR */
+function toggleSB(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sbOvl').classList.toggle('open');}
+function goTo(id,e){if(e)e.preventDefault();const el=document.getElementById(id);if(!el)return;el.scrollIntoView({behavior:'smooth',block:'start'});if(window.innerWidth<=768)toggleSB();document.querySelectorAll('.cl').forEach(l=>l.classList.remove('active'));if(e&&e.currentTarget)e.currentTarget.classList.add('active');}
+function filterSecs(q){q=q.toLowerCase().trim();document.querySelectorAll('.fsec').forEach(s=>{s.classList.toggle('hidden',q&&!s.textContent.toLowerCase().includes(q));});}
+function cpf(btn){const b=btn.closest('.fbox');const t=b.innerText.replace(/^Copy\n|^Copied!\n/,'').trim();navigator.clipboard.writeText(t).then(()=>{btn.textContent='Copied!';btn.style.cssText='background:var(--sc-green);color:#fff;border-color:var(--sc-green)';setTimeout(()=>{btn.textContent='Copy';btn.style.cssText='';},2000);});}
+const secs=document.querySelectorAll('.fsec');
+window.addEventListener('scroll',()=>{let cur='';secs.forEach(s=>{if(window.scrollY+100>=s.offsetTop)cur=s.id;});document.querySelectorAll('.cl').forEach(l=>{l.classList.remove('active');if((l.getAttribute('onclick')||'').includes("'"+cur+"'"))l.classList.add('active');});});
+</script>
+</body>
+</html>

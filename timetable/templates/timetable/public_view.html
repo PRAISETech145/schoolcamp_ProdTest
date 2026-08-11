@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% load static timetable_tags %}
+
+{% block title %}{{ timetable.name }} – SchoolCamp{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'timetable/css/timetable.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="tt-page-header">
+  <h1>{{ timetable.name }}</h1>
+  <p>Shared by <strong>{{ timetable.user.get_full_name|default:timetable.user.username }}</strong> · {{ timetable.get_semester_display }} {{ timetable.academic_year }}</p>
+</div>
+
+<div class="container-fluid px-3">
+
+  <div class="tt-alert tt-alert-info">
+    👀 You're viewing a shared timetable — read only.
+  </div>
+
+  <!-- Weekly Grid -->
+  <div class="tt-card hide-mobile" style="padding:12px;">
+    <div class="tt-week-grid">
+      <table class="tt-grid-table">
+        <thead>
+          <tr>
+            {% for day_idx, day_name in days_list %}
+            <th class="{% if day_idx == today_index %}today-col{% endif %}">
+              {{ day_name|slice:":3" }}
+            </th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            {% for day_idx, day_name in days_list %}
+            <td>
+              {% with courses_by_day|get_item:day_idx as day_courses %}
+              {% if day_courses %}
+                {% for course in day_courses %}
+                <div class="tt-grid-course-block" style="background:{{ course.color }};">
+                  <span class="block-name">{{ course.name }}</span>
+                  <span class="block-time">{{ course.start_time|time:"g:i A" }}</span>
+                  {% if course.room %}<span class="block-room">📍 {{ course.room }}</span>{% endif %}
+                </div>
+                {% endfor %}
+              {% else %}
+                <div class="tt-empty-day">—</div>
+              {% endif %}
+              {% endwith %}
+            </td>
+            {% endfor %}
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Mobile List -->
+  <div class="hide-desktop">
+    {% for day_idx, day_name in days_list %}
+    {% with courses_by_day|get_item:day_idx as day_courses %}
+    {% if day_courses %}
+    <div class="tt-card">
+      <div class="tt-card-header">
+        <h3 class="tt-card-title">{{ day_name }}</h3>
+      </div>
+      {% for course in day_courses %}
+      <div class="tt-course-pill" style="cursor:default;">
+        <div class="course-color-bar" style="background:{{ course.color }};"></div>
+        <div class="course-info">
+          <div class="course-name">{{ course.name }}</div>
+          <div class="course-meta">{% if course.room %}📍 {{ course.room }}{% endif %}</div>
+        </div>
+        <div class="course-time">{{ course.start_time|time:"g:i A" }}</div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+    {% endfor %}
+  </div>
+
+  <!-- Sign up CTA -->
+  <div class="tt-card" style="text-align:center;padding:24px;">
+    <div style="font-size:1.3rem;margin-bottom:8px;">🎓</div>
+    <h3 style="font-size:1rem;margin-bottom:8px;">Build your own timetable on SchoolCamp</h3>
+    <p style="font-size:0.875rem;color:var(--sc-text-muted);margin-bottom:16px;">Organize your semester, find free periods, and share with study buddies.</p>
+    <a href="{% url 'account_signup' %}" class="btn-sc-primary">Join SchoolCamp Free</a>
+  </div>
+
+</div>
+
+{% endblock %}

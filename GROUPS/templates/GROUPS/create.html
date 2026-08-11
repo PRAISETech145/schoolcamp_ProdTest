@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Create Group{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-6">
+    <div class="card">
+      <div class="card-header fw-bold"><i class="bi bi-plus-circle"></i> Create a New Group</div>
+      <div class="card-body p-4">
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+
+          <div class="mb-3">
+            <label class="form-label fw-bold">Group Name</label>
+            {{ form.name }}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-bold">Description <span class="text-muted fw-normal">(optional)</span></label>
+            {{ form.description }}
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label fw-bold">Visibility</label>
+            <div class="row g-3">
+              <div class="col-6">
+                <label class="d-block border rounded-3 p-3" style="cursor:pointer" id="opt-public">
+                  <input type="radio" name="visibility" value="public" class="form-check-input me-2" checked
+                         onchange="updateVisibility(this)">
+                  <strong>🌍 Public</strong>
+                  <div class="text-muted small mt-1">Anyone can join. All members can invite others.</div>
+                </label>
+              </div>
+              <div class="col-6">
+                <label class="d-block border rounded-3 p-3" style="cursor:pointer" id="opt-private">
+                  <input type="radio" name="visibility" value="private" class="form-check-input me-2"
+                         onchange="updateVisibility(this)">
+                  <strong>🔒 Private</strong>
+                  <div class="text-muted small mt-1">Join by invite or request only. Only admins can invite.</div>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label fw-bold">Cover Image <span class="text-muted fw-normal">(optional)</span></label>
+            {{ form.cover_image }}
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">Create Group</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function updateVisibility(radio) {
+  document.getElementById('opt-public').style.borderColor = '';
+  document.getElementById('opt-private').style.borderColor = '';
+  document.getElementById('opt-public').style.background = '';
+  document.getElementById('opt-private').style.background = '';
+  const chosen = document.getElementById('opt-' + radio.value);
+  chosen.style.borderColor = '#1a9e5a';
+  chosen.style.background = '#f0fbf5';
+}
+// Init highlight
+document.querySelector('input[name="visibility"]:checked')?.dispatchEvent(new Event('change'));
+</script>
+{% endblock %}

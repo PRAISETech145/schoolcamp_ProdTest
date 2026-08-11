@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Delete {{ timetable.name }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'timetable/css/timetable.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="tt-page-header" style="background:linear-gradient(135deg,#c53030,#e53e3e);">
+  <h1>🗑️ Delete Timetable</h1>
+</div>
+<div class="container-fluid px-3">
+  <div class="tt-card" style="text-align:center;padding:32px;">
+    <div style="font-size:2.5rem;margin-bottom:12px;">⚠️</div>
+    <h3>Delete "{{ timetable.name }}"?</h3>
+    <p style="color:var(--sc-text-muted);margin:12px 0 24px;">This will permanently delete this timetable and all <strong>{{ timetable.courses.count }} course{{ timetable.courses.count|pluralize }}</strong> in it. This cannot be undone.</p>
+    <form method="post" style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+      {% csrf_token %}
+      <button type="submit" class="btn-sc-danger">Yes, Delete</button>
+      <a href="{% url 'timetable:detail' timetable.pk %}" class="btn-sc-outline">Cancel</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+{% block title %}Download Ready — {{ material.title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+  .dl-card { max-width: 480px; margin: 0 auto; border-radius: 20px; overflow: hidden; }
+  .dl-header {
+    background: linear-gradient(135deg, #1a9e5a, #0d6e3f);
+    padding: 44px 32px; text-align: center; color: #fff;
+    position: relative; overflow: hidden;
+  }
+  .dl-header::before {
+    content: ''; position: absolute; top:-40px; right:-40px;
+    width: 150px; height: 150px; border-radius: 50%;
+    background: rgba(255,255,255,.07);
+  }
+  .dl-check {
+    width: 72px; height: 72px; border-radius: 50%;
+    background: rgba(255,255,255,.2);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 14px; font-size: 2rem;
+    animation: popIn .5s cubic-bezier(.175,.885,.32,1.275);
+  }
+  @keyframes popIn { 0%{transform:scale(0);opacity:0} 100%{transform:scale(1);opacity:1} }
+  .dl-header h3 { font-weight: 800; margin-bottom: 4px; }
+  .dl-header p  { opacity: .85; font-size: .88rem; margin: 0; }
+
+  .dl-body { padding: 28px; }
+
+  .dl-info {
+    background: #f8fbf9; border: 1px solid #d2e8db;
+    border-radius: 12px; padding: 16px; margin-bottom: 20px;
+  }
+  .dl-info .title { font-weight: 800; font-size: .97rem; color: #0f1c14; margin-bottom: 4px; }
+  .dl-info .meta  { font-size: .8rem; color: #7aaa8a; }
+
+  .btn-download-big {
+    width: 100%; padding: 15px;
+    background: linear-gradient(135deg, #1a9e5a, #4cd98a);
+    border: none; border-radius: 14px;
+    color: #fff; font-weight: 800; font-size: 1.05rem;
+    text-decoration: none; display: block; text-align: center;
+    box-shadow: 0 5px 18px rgba(26,158,90,.35); transition: all .2s;
+  }
+  .btn-download-big:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(26,158,90,.45); color: #fff;
+  }
+
+  .warning-box {
+    background: #fff8e1; border: 1px solid #ffc107;
+    border-radius: 10px; padding: 12px 16px;
+    font-size: .8rem; color: #7c5a00; margin-top: 14px;
+    display: flex; gap: 8px; align-items: flex-start;
+  }
+  .expire-timer {
+    text-align: center; margin-top: 14px;
+    font-size: .82rem; color: #9abaaa;
+  }
+  .expire-timer strong { color: #e74c3c; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dl-card card">
+  <div class="dl-header">
+    <div class="dl-check">✅</div>
+    <h3>Ready to Download!</h3>
+    <p>Your payment was confirmed. Download below.</p>
+  </div>
+
+  <div class="dl-body">
+    <div class="dl-info">
+      <div class="title">{{ material.title }}</div>
+      <div class="meta">
+        {% if material.subject %}{{ material.subject.icon }} {{ material.subject.name }} · {% endif %}
+        {% if material.pages %}{{ material.pages }} pages · {% endif %}
+        {% if material.file_size_mb %}{{ material.file_size_mb }} MB{% endif %}
+      </div>
+    </div>
+
+    <a href="{% url 'GCE:secure_download' token.token %}" class="btn-download-big">
+      <i class="bi bi-download me-2"></i> Download PDF
+    </a>
+
+    <div class="warning-box">
+      <i class="bi bi-exclamation-triangle-fill" style="color:#ffc107; flex-shrink:0; margin-top:1px;"></i>
+      <div>
+        <strong>One-time link</strong> — this download link expires in <strong>7 days</strong> and
+        can only be used <strong>once</strong>. Save the file to your device immediately.
+      </div>
+    </div>
+
+    <div class="expire-timer">
+      Link expires in: <strong id="countdown">24:00:00</strong>
+    </div>
+
+    <hr class="my-4">
+
+    <div class="d-flex gap-2">
+      <a href="{% url 'materials:list' %}" class="btn btn-outline-secondary flex-fill">
+        <i class="bi bi-grid me-1"></i> More Materials
+      </a>
+      <a href="{% url 'forum:home' %}" class="btn btn-primary flex-fill">
+        <i class="bi bi-chat-dots me-1"></i> Forum
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+// Countdown timer — 24 hours
+let secs = 7 * 24 * 3600;
+const el = document.getElementById('countdown');
+setInterval(() => {
+  secs--;
+  if (secs <= 0) { el.textContent = 'Expired'; return; }
+  const h = Math.floor(secs / 3600);
+  const m = Math.floor((secs % 3600) / 60);
+  const s = secs % 60;
+  el.textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}, 1000);
+</script>
+{% endblock %}

@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+{% block title %}Waiting for Payment{% endblock %}
+
+{% block extra_css %}
+<style>
+  .pending-card {
+    max-width: 520px; margin: 0 auto;
+    border-radius: 20px; overflow: hidden;
+  }
+  .pending-header {
+    background: linear-gradient(135deg, #0f1c14, #1a3323);
+    padding: 40px; text-align: center; color: #fff;
+  }
+  .pulse-ring {
+    width: 90px; height: 90px;
+    border-radius: 50%;
+    background: rgba(76,217,138,.15);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 20px;
+    animation: pulse 2s infinite;
+    position: relative;
+  }
+  .pulse-ring::before {
+    content: ''; position: absolute;
+    width: 90px; height: 90px;
+    border-radius: 50%;
+    border: 2px solid rgba(76,217,138,.5);
+    animation: ripple 2s infinite;
+  }
+  .pulse-ring .phone-icon { font-size: 2.5rem; }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+  @keyframes ripple {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(1.8); opacity: 0; }
+  }
+
+  .info-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 0; border-bottom: 1px solid #f0f0f0;
+    font-size: .92rem;
+  }
+  .info-row:last-child { border-bottom: none; }
+  .info-label { color: #777; }
+  .info-value { font-weight: 600; }
+
+  .provider-chip {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 4px 12px; border-radius: 20px;
+    font-weight: 700; font-size: .85rem;
+  }
+  .chip-mtn { background: #FFF3CD; color: #856404; }
+  .chip-orange { background: #FFE5CC; color: #7C3A00; }
+
+  .steps-list { list-style: none; padding: 0; margin: 0; }
+  .steps-list li {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 8px 0; font-size: .88rem; color: #555;
+  }
+  .steps-list li .num {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--sc-green); color: #fff;
+    font-size: 11px; font-weight: 700; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 1px;
+  }
+
+  /* Simulated confirm button (demo only) */
+  .demo-confirm {
+    background: #1a9e5a; color: #fff; border: none;
+    border-radius: 12px; padding: 12px 24px;
+    font-weight: 700; width: 100%; margin-top: 10px;
+    transition: all .2s;
+  }
+  .demo-confirm:hover { background: #158048; }
+  .demo-note {
+    background: #fff3cd; border: 1px solid #ffc107;
+    border-radius: 8px; padding: 10px 14px;
+    font-size: .8rem; color: #7c5a00; margin-top: 8px;
+  }
+
+  #status-indicator {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: .82rem; color: #888; margin-top: 8px;
+  }
+  .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #ffc107; animation: blink 1.2s infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-7 col-lg-5">
+    <div class="card pending-card">
+      <div class="pending-header">
+        <div class="pulse-ring">
+          <span class="phone-icon">📱</span>
+        </div>
+        <h4 class="fw-bold mb-1">Check your phone</h4>
+        <p class="mb-0" style="color:#a8d5be; font-size:.9rem;">
+          A payment request has been sent. Open it and enter your PIN.
+        </p>
+        <div id="status-indicator">
+          <span class="dot"></span> Waiting for confirmation…
+        </div>
+      </div>
+
+      <div class="card-body p-4">
+        <!-- Payment details -->
+        <div class="mb-4">
+          <div class="info-row">
+            <span class="info-label">Operator</span>
+            <span class="info-value">
+              {% if payment.provider == 'mtn' %}
+                <span class="provider-chip chip-mtn">📲 MTN Mobile Money</span>
+              {% else %}
+                <span class="provider-chip chip-orange">📲 Orange Money</span>
+              {% endif %}
+            </span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Number</span>
+            <span class="info-value">+237 {{ payment.phone_number }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Amount</span>
+            <span class="info-value" style="color:var(--sc-green)">{{ payment.amount }} XAF</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Reference</span>
+            <span class="info-value" style="font-family:monospace; font-size:.85rem;">{{ payment.reference }}</span>
+          </div>
+        </div>
+
+        <!-- Steps -->
+        <p class="fw-semibold mb-2">How to complete:</p>
+        <ul class="steps-list mb-4">
+          {% if payment.provider == 'mtn' %}
+            <li><span class="num">1</span> Open the MTN MoMo notification or dial <strong>*126#</strong></li>
+            <li><span class="num">2</span> Select <strong>Approve Payment</strong></li>
+            <li><span class="num">3</span> Enter your <strong>MoMo PIN</strong></li>
+          {% else %}
+            <li><span class="num">1</span> Open the Orange Money notification or dial <strong>#150*50#</strong></li>
+            <li><span class="num">2</span> Select <strong>Confirm Payment</strong></li>
+            <li><span class="num">3</span> Enter your <strong>OM PIN</strong></li>
+          {% endif %}
+          <li><span class="num">4</span> Return here — your access activates automatically ✅</li>
+        </ul>
+
+        <!-- Demo confirm (remove in production — use webhook instead) -->
+        <hr>
+        <p class="text-muted small mb-2 text-center"><i class="bi bi-tools"></i> Demo / Development Mode</p>
+        <a href="{% url 'payment:confirm' payment.pk %}" class="demo-confirm text-center d-block text-decoration-none">
+          ✅ Simulate Successful Payment
+        </a>
+        <a href="{% url 'payment:failed' payment.pk %}" class="btn btn-outline-danger btn-sm w-100 mt-2">
+          ❌ Simulate Failed Payment
+        </a>
+        <div class="demo-note">
+          ⚠️ In production, remove the buttons above. Payment status will update automatically via the MTN/Orange webhook callback.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Poll payment status every 5 seconds
+  const paymentId = {{ payment.pk }};
+  const statusUrl = "{% url 'payment:status' payment.pk %}";
+
+  function checkStatus() {
+    fetch(statusUrl)
+      .then(r => r.json())
+      .then(data => {
+        if (data.status === 'completed') {
+          window.location.href = "{% url 'payment:success' %}";
+        } else if (data.status === 'failed') {
+          window.location.href = "{% url 'payment:failed' payment.pk %}";
+        }
+      })
+      .catch(() => {});
+  }
+
+  const poller = setInterval(checkStatus, 5000);
+  // Stop polling after 10 minutes
+  setTimeout(() => clearInterval(poller), 600000);
+</script>
+{% endblock %}

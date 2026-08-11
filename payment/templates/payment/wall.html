@@ -1,0 +1,288 @@
+{% extends "base.html" %}
+{% block title %}Subscribe — SchoolCamp{% endblock %}
+
+{% block extra_css %}
+<style>
+  .paywall-hero {
+    background: linear-gradient(135deg, #0f1c14 0%, #1a3323 60%, #0f1c14 100%);
+    border-radius: 20px;
+    padding: 50px 40px 40px;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+  }
+  .paywall-hero::before {
+    content: '🏕';
+    position: absolute;
+    font-size: 200px;
+    opacity: 0.05;
+    right: -30px;
+    top: -20px;
+    line-height: 1;
+  }
+  .paywall-hero h1 { font-size: 2rem; font-weight: 800; }
+  .paywall-hero p { color: #a8d5be; font-size: 1.05rem; }
+
+  .price-badge {
+    background: linear-gradient(135deg, #1a9e5a, #4cd98a);
+    color: #fff;
+    font-size: 2.5rem;
+    font-weight: 900;
+    border-radius: 16px;
+    padding: 12px 28px;
+    display: inline-block;
+    box-shadow: 0 4px 20px rgba(26,158,90,0.4);
+    letter-spacing: -1px;
+  }
+  .price-badge small { font-size: 1rem; font-weight: 500; opacity: 0.85; }
+
+  /* Provider cards */
+  .provider-card {
+    border: 2px solid #e0e0e0;
+    border-radius: 14px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all .2s ease;
+    background: #fff;
+    position: relative;
+  }
+  .provider-card:hover { border-color: #1a9e5a; box-shadow: 0 4px 16px rgba(26,158,90,.15); }
+  .provider-card.selected {
+    border-color: #1a9e5a;
+    background: #f0fbf5;
+    box-shadow: 0 4px 20px rgba(26,158,90,.2);
+  }
+  .provider-card input[type=radio] { display: none; }
+  .provider-logo {
+    width: 60px; height: 60px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.8rem;
+    font-weight: 900;
+  }
+  .mtn-logo { background: #FFCB00; color: #000; }
+  .orange-logo { background: #FF6600; color: #fff; }
+  .provider-name { font-weight: 700; font-size: 1rem; margin-top: 10px; }
+  .provider-desc { font-size: 0.82rem; color: #666; }
+  .check-circle {
+    position: absolute; top: 14px; right: 14px;
+    width: 24px; height: 24px;
+    background: #1a9e5a; border-radius: 50%;
+    display: none; align-items: center; justify-content: center;
+    color: #fff; font-size: 13px;
+  }
+  .provider-card.selected .check-circle { display: flex; }
+
+  /* Benefit list */
+  .benefit-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; font-size: 0.93rem; }
+  .benefit-item i { color: #1a9e5a; font-size: 1rem; }
+
+  /* Step badge */
+  .step-badge {
+    width: 28px; height: 28px;
+    background: var(--sc-green); color: #fff;
+    border-radius: 50%; font-size: 13px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .trial-banner {
+    background: linear-gradient(90deg, #fff3cd, #ffe8a1);
+    border: 1px solid #ffc107;
+    border-radius: 12px;
+    padding: 14px 18px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .submit-btn {
+    background: linear-gradient(135deg, #1a9e5a, #4cd98a);
+    border: none; border-radius: 12px;
+    padding: 14px 32px;
+    font-size: 1.05rem; font-weight: 700;
+    color: #fff; width: 100%;
+    transition: all .2s; box-shadow: 0 4px 16px rgba(26,158,90,.3);
+  }
+  .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(26,158,90,.4); }
+  .phone-prefix {
+    background: #f0fbf5; border: 1px solid #b5d9c5; border-right: none;
+    border-radius: 10px 0 0 10px; padding: 0 14px;
+    display: flex; align-items: center; color: var(--sc-green); font-weight: 600;
+  }
+  .phone-input-group .form-control {
+    border-radius: 0 10px 10px 0 !important;
+    border-color: #b5d9c5;
+  }
+  .phone-input-group .form-control:focus { border-color: var(--sc-green); box-shadow: 0 0 0 3px rgba(26,158,90,.15); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-10">
+
+    <!-- Hero Banner -->
+    <div class="paywall-hero mb-4">
+      <div class="row align-items-center">
+        <div class="col-md-7">
+          {% if sub.is_trial_expired %}
+            <span class="badge bg-danger mb-2">⏰ Free Trial Expired</span>
+            <h1>Your trial has ended</h1>
+            <p>Unlock full access to SchoolCamp — the #1 student platform in Cameroon 🇨🇲</p>
+          {% else %}
+            <span class="badge" style="background:#4cd98a; color:#0f1c14;">✨ Trial Active — {{ sub.days_left_in_trial }} day(s) left</span>
+            <h1>Upgrade to SchoolCamp</h1>
+            <p>Keep the momentum going — subscribe now and never lose access.</p>
+          {% endif %}
+        </div>
+        <div class="col-md-5 text-md-end mt-3 mt-md-0">
+          <div class="price-badge">200 <small>XAF / month</small></div>
+          
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      <!-- Payment Form -->
+      <div class="col-lg-7">
+        <div class="card">
+          <div class="card-header">
+            <i class="bi bi-phone me-2"></i> Pay with Mobile Money
+          </div>
+          <div class="card-body p-4">
+            <form method="post" action="{% url 'payment:initiate' %}" id="payForm">
+              {% csrf_token %}
+
+              <!-- Step 1: Choose provider -->
+              <div class="mb-4">
+                <p class="fw-semibold mb-3 d-flex align-items-center gap-2">
+                  <span class="step-badge">1</span> Choose your operator
+                </p>
+                <div class="row g-3">
+                  <!-- MTN -->
+                  <div class="col-6">
+                    <label class="provider-card w-100" id="card-mtn">
+                      <input type="radio" name="provider" value="mtn" required>
+                      <div class="check-circle"><i class="bi bi-check"></i></div>
+                      <div class="provider-logo mtn-logo">M</div>
+                      <div class="provider-name">MTN MoMo</div>
+                      <div class="provider-desc">Mobile Money</div>
+                    </label>
+                  </div>
+                  <!-- Orange -->
+                  <div class="col-6">
+                    <label class="provider-card w-100" id="card-orange">
+                      <input type="radio" name="provider" value="orange" required>
+                      <div class="check-circle"><i class="bi bi-check"></i></div>
+                      <div class="provider-logo orange-logo">O</div>
+                      <div class="provider-name">Orange Money</div>
+                      <div class="provider-desc">OM · Orange</div>
+                    </label>
+                  </div>
+                </div>
+                {% if form.provider.errors %}
+                  <div class="text-danger small mt-1">{{ form.provider.errors.0 }}</div>
+                {% endif %}
+              </div>
+
+              <!-- Step 2: Phone number -->
+              <div class="mb-4">
+                <p class="fw-semibold mb-2 d-flex align-items-center gap-2">
+                  <span class="step-badge">2</span> Enter your mobile money number
+                </p>
+                <div class="input-group phone-input-group">
+                  <span class="phone-prefix">🇨🇲 +237</span>
+                  <input type="text" name="phone_number" class="form-control form-control-lg {% if form.phone_number.errors %}is-invalid{% endif %}"
+                         placeholder="6 XX XX XX XX" value="{{ form.phone_number.value|default:'' }}" required>
+                </div>
+                {% if form.phone_number.errors %}
+                  <div class="text-danger small mt-1">{{ form.phone_number.errors.0 }}</div>
+                {% endif %}
+                <div class="text-muted small mt-1">
+                  <i class="bi bi-info-circle"></i>
+                  A payment request of <strong>200 XAF</strong> will be sent to this number.
+                </div>
+              </div>
+
+              <!-- Step 3: Confirm -->
+              <div class="mb-4">
+                <p class="fw-semibold mb-2 d-flex align-items-center gap-2">
+                  <span class="step-badge">3</span> Confirm on your phone
+                </p>
+                <div class="bg-light rounded-3 p-3" style="font-size:.88rem; color:#555;">
+                  After clicking <strong>Pay Now</strong>, you'll receive a prompt on your phone. Enter your PIN to complete the payment. Keep this page open.
+                </div>
+              </div>
+
+              <button type="submit" class="submit-btn">
+                <i class="bi bi-lock-fill me-2"></i> Pay 200 XAF Now
+              </button>
+              <div class="text-center mt-2" style="font-size:.8rem; color:#aaa;">
+                <i class="bi bi-shield-check me-1"></i> Secure · No card needed · Instant activation
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Benefits sidebar -->
+      <div class="col-lg-5">
+        <div class="card mb-3">
+          <div class="card-header"><i class="bi bi-stars me-2"></i>What you get</div>
+          <div class="card-body">
+            <div class="benefit-item"><i class="bi bi-check-circle-fill"></i> Unlimited forum access</div>
+            <div class="benefit-item"><i class="bi bi-check-circle-fill"></i> Join & create study groups</div>
+            <div class="benefit-item"><i class="bi bi-check-circle-fill"></i> Download course materials</div>
+            <div class="benefit-item"><i class="bi bi-check-circle-fill"></i> Unlimited quiz attempts</div>
+            <div class="benefit-item"><i class="bi bi-check-circle-fill"></i> Direct messaging</div>
+            <div class="benefit-item"><i class="bi bi-check-circle-fill"></i> Earn XP & badges</div>
+            <div class="benefit-item"><i class="bi bi-check-circle-fill"></i> Priority support</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body">
+            <div class="d-flex align-items-center gap-2 mb-3">
+              <div style="font-size:1.5rem;">💬</div>
+              <div>
+                <div class="fw-bold" style="font-size:.9rem;">Trusted by students across Cameroon</div>
+                <div class="text-muted" style="font-size:.8rem;">GHS · UYI · UB · UYII · IRIC and more</div>
+              </div>
+            </div>
+            <div class="d-flex align-items-center gap-2 mb-2">
+              {% for i in "12345" %}
+                <i class="bi bi-star-fill text-warning" style="font-size:.8rem;"></i>
+              {% endfor %}
+              <span class="small text-muted">5.0 from students</span>
+            </div>
+            <div style="background:#f8f9fa; border-radius:10px; padding:12px; font-size:.85rem; font-style:italic; color:#444;">
+              "SchoolCamp helps me find past questions, connect with classmates and study smarter. 500F is nothing compared to the value!"
+            </div>
+            <div class="mt-2 small text-muted">— Muriel N., UYI Medicine</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Provider card selection
+  document.querySelectorAll('.provider-card').forEach(card => {
+    const radio = card.querySelector('input[type=radio]');
+    card.addEventListener('click', () => {
+      document.querySelectorAll('.provider-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      radio.checked = true;
+    });
+  });
+
+  // Phone number formatting — allow 9 digits (Cameroon) or 11 digits (sandbox)
+  const phoneInput = document.querySelector('input[name=phone_number]');
+  phoneInput.addEventListener('input', function() {
+    // Allow only digits, max 11 for sandbox test numbers
+    this.value = this.value.replace(/\D/g, '').slice(0, 11);
+  });
+</script>
+{% endblock %}

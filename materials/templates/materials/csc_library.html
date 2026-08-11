@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Computer Science Library | SchoolCamp 🏕</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Fira+Code:wght@400;500;600&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--sc-green:#1a9e5a;--sc-dark:#0f1c14;--sc-light:#e8f5ee;--sc-accent:#4cd98a;--sw:270px}
+    *{box-sizing:border-box}
+    body{background:#f4f7f5;font-family:'Nunito',sans-serif;margin:0}
+    .navbar{background:var(--sc-dark)!important;position:sticky;top:0;z-index:1030}
+    .navbar-brand{color:#fff!important;font-weight:800;font-size:1.4rem}
+    .navbar-brand span{color:var(--sc-accent)}
+    .nav-link{color:#cde8d8!important}
+    .page-wrapper{display:flex;min-height:calc(100vh - 56px)}
+    #sidebar{width:var(--sw);min-width:var(--sw);background:var(--sc-dark);position:sticky;top:56px;height:calc(100vh - 56px);overflow-y:auto;transition:transform .3s ease;z-index:1020;flex-shrink:0}
+    #sidebar::-webkit-scrollbar{width:5px}
+    #sidebar::-webkit-scrollbar-thumb{background:#2a5c3a;border-radius:10px}
+    .sb-head{background:#0a1510;padding:16px 20px;font-weight:800;font-size:.85rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--sc-accent);border-bottom:1px solid #1e3828;display:flex;align-items:center;gap:8px}
+    .sb-search{padding:12px 14px;border-bottom:1px solid #1e3828}
+    .sb-search input{background:#1a2e20;border:1px solid #2a5c3a;color:#cde8d8;border-radius:8px;padding:7px 12px;width:100%;font-size:13px;outline:none}
+    .sb-search input::placeholder{color:#6aad82}
+    .sb-search input:focus{border-color:var(--sc-accent)}
+    .sb-nav .cl{display:flex;align-items:center;gap:10px;padding:9px 20px;color:#9ecfb0;text-decoration:none;font-size:.87rem;font-weight:600;border-left:3px solid transparent;transition:all .2s;cursor:pointer}
+    .sb-nav .cl:hover,.sb-nav .cl.active{color:#fff;background:rgba(76,217,138,.1);border-left-color:var(--sc-accent)}
+    .sb-nav .cl i{font-size:.95rem;color:var(--sc-accent)}
+    #sbOvl{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1019}
+    #mc{flex:1;padding:28px 24px;overflow-x:hidden;min-width:0}
+    .pg-title{font-family:'Merriweather',serif;font-size:1.9rem;font-weight:700;color:var(--sc-dark);margin-bottom:4px}
+    .pg-sub{color:#5a8a6a;font-size:.95rem;margin-bottom:28px}
+    .fsec{margin-bottom:44px;scroll-margin-top:80px}
+    .fsec.hidden{display:none}
+    .stitle{font-family:'Merriweather',serif;font-size:1.25rem;font-weight:700;color:var(--sc-dark);border-left:4px solid var(--sc-green);padding-left:12px;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+    .stitle i{color:var(--sc-green)}
+    .fcard{background:#fff;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,.07);overflow:hidden;margin-bottom:14px;border:none;transition:box-shadow .2s}
+    .fcard:hover{box-shadow:0 4px 20px rgba(26,158,90,.15)}
+    .fcard-h{background:var(--sc-light);border-bottom:1px solid #d2e8db;padding:10px 16px;font-weight:700;font-size:.92rem;color:#0f3d22;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px}
+    .fcard-b{padding:14px 16px}
+    .fbox{background:#0f1c14;border-radius:8px;padding:14px 18px;font-family:'Fira Code',monospace;font-size:.88rem;color:#4cd98a;margin:8px 0;position:relative;overflow-x:auto;line-height:1.9}
+    .fbox .k{color:#f6d365;font-weight:bold}.fbox .v{color:#fda085}.fbox .s{color:#89d8ff}.fbox .c{color:#a8d8a8;font-style:italic}.fbox .str{color:#ff9eae}.fbox .kw2{color:#c8a8ff}
+    .cpb{position:absolute;top:8px;right:8px;background:rgba(76,217,138,.15);border:1px solid rgba(76,217,138,.3);color:var(--sc-accent);border-radius:6px;padding:2px 8px;font-size:11px;cursor:pointer;transition:all .2s}
+    .cpb:hover{background:var(--sc-green);color:#fff}
+    .fnote{font-size:.83rem;color:#5a8a6a;margin-top:6px;font-style:italic}
+    .fnote strong{color:#1a7a42;font-style:normal}
+    .ftbl{width:100%;border-collapse:collapse;font-size:.88rem}
+    .ftbl th{background:var(--sc-light);color:#0f3d22;padding:8px 12px;text-align:left;font-weight:700;border-bottom:2px solid #d2e8db}
+    .ftbl td{padding:8px 12px;border-bottom:1px solid #eef5f1;vertical-align:middle}
+    .ftbl tr:hover td{background:#f8fbf9}
+    .ftbl code{background:#0f1c14;color:#4cd98a;border-radius:5px;padding:2px 7px;font-family:'Fira Code',monospace;font-size:.85rem}
+    #sbToggle{display:none;background:var(--sc-green);color:#fff;border:none;border-radius:8px;padding:6px 12px;font-size:.85rem;font-weight:700;cursor:pointer;align-items:center;gap:6px}
+    .lp{font-size:10px;border-radius:20px;padding:2px 9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+    .lb{background:#d4edda;color:#155724}.li{background:#fff3cd;color:#856404}.la{background:#f8d7da;color:#721c24}
+    .crumb{font-size:.82rem;color:#7aad92;margin-bottom:20px}
+    .crumb a{color:var(--sc-green);text-decoration:none}
+    footer{background:var(--sc-dark);color:#7aad92;padding:30px 0;margin-top:20px}
+    footer a{color:var(--sc-accent);text-decoration:none}
+
+    /* ── CONVERTER TOOL ── */
+    .conv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:12px}
+    .conv-field label{font-size:.8rem;font-weight:700;color:#0f3d22;display:block;margin-bottom:4px}
+    .conv-field input{width:100%;padding:8px 12px;border:2px solid #d2e8db;border-radius:8px;font-family:'Fira Code',monospace;font-size:.9rem;outline:none;transition:border-color .2s;background:#fff}
+    .conv-field input:focus{border-color:var(--sc-green)}
+    .conv-field .base-tag{font-size:.72rem;color:#7aad92;margin-top:3px}
+    .conv-btn{background:var(--sc-green);color:#fff;border:none;border-radius:8px;padding:8px 20px;font-weight:700;cursor:pointer;font-size:.88rem;transition:background .2s}
+    .conv-btn:hover{background:#158048}
+
+    /* ── LOGIC GATE SIM ── */
+    .gate-sim{background:#0f1c14;border-radius:12px;padding:16px}
+    .gate-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+    .gate-chip{background:#1a3a28;border:1px solid #2a5c3a;border-radius:8px;padding:8px 14px;cursor:pointer;font-family:'Fira Code',monospace;font-size:.85rem;color:#4cd98a;transition:all .2s}
+    .gate-chip:hover,.gate-chip.selected{background:var(--sc-green);color:#fff;border-color:var(--sc-green)}
+    .gate-io{display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-top:10px}
+    .io-group{display:flex;flex-direction:column;gap:8px}
+    .io-toggle{display:flex;align-items:center;gap:10px;font-family:'Fira Code',monospace;font-size:.9rem;color:#cde8d8}
+    .toggle-btn{width:44px;height:24px;border-radius:12px;background:#1a3a28;border:2px solid #2a5c3a;cursor:pointer;position:relative;transition:background .2s}
+    .toggle-btn.on{background:var(--sc-green);border-color:var(--sc-accent)}
+    .toggle-btn::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .2s}
+    .toggle-btn.on::after{transform:translateX(20px)}
+    .gate-result{background:#1a3a28;border:2px solid;border-radius:10px;padding:12px 20px;font-family:'Fira Code',monospace;font-size:1.3rem;font-weight:800;min-width:80px;text-align:center;transition:all .3s}
+    .gate-result.out1{border-color:#4cd98a;color:#4cd98a;background:#0a2a18}
+    .gate-result.out0{border-color:#ff9eae;color:#ff9eae;background:#2a0a10}
+    .truth-mini{margin-top:12px}
+    .truth-mini table{border-collapse:collapse;font-family:'Fira Code',monospace;font-size:.82rem}
+    .truth-mini td,.truth-mini th{padding:4px 12px;border:1px solid #2a5c3a;color:#cde8d8;text-align:center}
+    .truth-mini th{background:#1a3a28;color:#4cd98a}
+    .truth-mini .row-hi{background:#0a2a18}
+
+    /* ── SORTING VISUALISER ── */
+    .sort-wrap{background:#0f1c14;border-radius:12px;padding:16px}
+    .sort-controls{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+    .sort-controls select,.sort-controls input{padding:7px 12px;border:1px solid #2a5c3a;border-radius:8px;background:#1a2e20;color:#cde8d8;font-family:'Fira Code',monospace;font-size:.85rem;outline:none}
+    .sort-btn{background:var(--sc-green);color:#fff;border:none;border-radius:8px;padding:7px 16px;font-weight:700;cursor:pointer;font-size:.85rem}
+    .sort-btn.secondary{background:#1a3a28;border:1px solid #2a5c3a;color:#4cd98a}
+    .bars-wrap{display:flex;align-items:flex-end;gap:3px;height:160px;margin:12px 0;padding:0 4px}
+    .bar{border-radius:4px 4px 0 0;transition:height .25s ease,background .25s ease;flex:1;min-width:10px;background:#2980b9;position:relative}
+    .bar.comparing{background:#f6d365}
+    .bar.swapping{background:#fda085}
+    .bar.sorted{background:#4cd98a}
+    .bar-val{position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);font-size:9px;color:#7aad92;font-family:'Fira Code',monospace}
+    .sort-info{font-family:'Fira Code',monospace;font-size:.82rem;color:#6aad82;margin-top:24px}
+    .sort-step{color:#f6d365;font-weight:600}
+
+    /* ── SQL PLAYGROUND ── */
+    .sql-wrap{display:flex;gap:14px;flex-wrap:wrap}
+    .sql-editor{flex:1;min-width:260px}
+    .sql-editor textarea{width:100%;padding:10px 14px;background:#0f1c14;border:2px solid #2a5c3a;border-radius:8px;color:#4cd98a;font-family:'Fira Code',monospace;font-size:.88rem;resize:vertical;outline:none;min-height:100px}
+    .sql-editor textarea:focus{border-color:var(--sc-accent)}
+    .sql-result{flex:2;min-width:260px}
+    .sql-result-table{width:100%;border-collapse:collapse;font-family:'Fira Code',monospace;font-size:.82rem}
+    .sql-result-table th{background:#1a3a28;color:#4cd98a;padding:6px 10px;text-align:left;border:1px solid #2a5c3a}
+    .sql-result-table td{padding:6px 10px;border:1px solid #1e3828;color:#cde8d8}
+    .sql-result-table tr:hover td{background:#1a2e20}
+    .sql-msg{font-family:'Fira Code',monospace;font-size:.82rem;color:#fda085;padding:8px;background:#2a1a0a;border-radius:6px;margin-top:8px}
+
+    /* ── TRUTH TABLE FULL ── */
+    .tt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+    .tt-card{background:#0f1c14;border-radius:10px;overflow:hidden}
+    .tt-card-h{background:#1a3a28;padding:8px 14px;font-weight:700;font-size:.9rem;color:var(--sc-accent);display:flex;align-items:center;gap:8px}
+    .tt-card-b{padding:10px;overflow-x:auto}
+    .tt-card table{border-collapse:collapse;font-family:'Fira Code',monospace;font-size:.82rem;width:100%}
+    .tt-card td,.tt-card th{padding:5px 10px;border:1px solid #1e3828;text-align:center;color:#cde8d8}
+    .tt-card th{background:#1a3a28;color:#4cd98a}
+    .tt-card .t1{color:#4cd98a;font-weight:700}
+    .tt-card .t0{color:#ff9eae}
+
+    /* ── CODE BLOCKS ── */
+    .code-block{background:#0f1c14;border-radius:8px;padding:16px 18px;font-family:'Fira Code',monospace;font-size:.85rem;color:#cde8d8;margin:8px 0;overflow-x:auto;line-height:1.8;position:relative}
+    .code-block .py-kw{color:#c8a8ff}.code-block .py-fn{color:#4cd98a}.code-block .py-str{color:#ff9eae}.code-block .py-num{color:#fda085}.code-block .py-cm{color:#5a8a6a;font-style:italic}.code-block .py-op{color:#89d8ff}
+
+    /* ── COMPLEXITY TABLE ── */
+    .complex-bad{color:#ff9eae;font-weight:700}
+    .complex-ok{color:#f6d365;font-weight:700}
+    .complex-good{color:#4cd98a;font-weight:700}
+
+    /* ── FLOWCHART ── */
+    .fc-wrap{overflow-x:auto;padding:8px 0}
+    .fc-wrap svg{display:block;margin:0 auto}
+
+    /* ── OSI LAYERS ── */
+    .osi-layer{display:flex;align-items:center;gap:12px;margin-bottom:6px;border-radius:8px;overflow:hidden}
+    .osi-num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.9rem;color:#fff;flex-shrink:0}
+    .osi-name{font-weight:700;font-size:.88rem;min-width:120px;color:#0f3d22}
+    .osi-desc{font-size:.82rem;color:#555}
+    .osi-proto{font-family:'Fira Code',monospace;font-size:.78rem;color:#1a7a42;margin-left:auto;background:var(--sc-light);padding:2px 8px;border-radius:20px}
+
+    @media(max-width:768px){
+      #sidebar{position:fixed;top:56px;left:0;height:calc(100vh - 56px);transform:translateX(-100%);box-shadow:4px 0 20px rgba(0,0,0,.3)}
+      #sidebar.open{transform:translateX(0)}
+      #sbOvl.open{display:block}
+      #sbToggle{display:flex}
+      #mc{padding:20px 16px}
+      .pg-title{font-size:1.45rem}
+      .fbox{font-size:.78rem}
+      .sql-wrap{flex-direction:column}
+      .gate-io{flex-direction:column}
+      .tt-grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark">
+  <div class="container-fluid px-3">
+    <a class="navbar-brand" href="#">🏕 School<span>Camp</span></a>
+    <div class="ms-auto d-flex align-items-center gap-3">
+      <button id="sbToggle" onclick="toggleSB()"><i class="bi bi-list"></i> Topics</button>
+      <a class="nav-link d-none d-lg-block" href="{% url 'forum:home' %}"><i class="bi bi-house"></i> Home</a>
+    </div>
+  </div>
+</nav>
+<div id="sbOvl" onclick="toggleSB()"></div>
+<div class="page-wrapper">
+  <aside id="sidebar">
+    <div class="sb-head"><i class="bi bi-cpu"></i> CS Topics</div>
+    <div class="sb-search"><input type="text" placeholder="Search topics..." oninput="filterSecs(this.value)"></div>
+    <nav class="sb-nav">
+      <a class="cl active" onclick="goTo('numbers',event)" href="#"><i class="bi bi-123"></i> Number Systems</a>
+      <a class="cl" onclick="goTo('data',event)" href="#"><i class="bi bi-file-binary"></i> Data Representation</a>
+      <a class="cl" onclick="goTo('logic',event)" href="#"><i class="bi bi-toggles"></i> Logic Gates</a>
+      <a class="cl" onclick="goTo('algorithms',event)" href="#"><i class="bi bi-sort-down"></i> Algorithms</a>
+      <a class="cl" onclick="goTo('sorting',event)" href="#"><i class="bi bi-bar-chart-steps"></i> Sorting Visualiser</a>
+      <a class="cl" onclick="goTo('programming',event)" href="#"><i class="bi bi-code-slash"></i> Programming</a>
+      <a class="cl" onclick="goTo('structures',event)" href="#"><i class="bi bi-diagram-3"></i> Data Structures</a>
+      <a class="cl" onclick="goTo('architecture',event)" href="#"><i class="bi bi-motherboard"></i> Computer Architecture</a>
+      <a class="cl" onclick="goTo('networking',event)" href="#"><i class="bi bi-router"></i> Networking</a>
+      <a class="cl" onclick="goTo('databases',event)" href="#"><i class="bi bi-database"></i> Databases &amp; SQL</a>
+      <a class="cl" onclick="goTo('security',event)" href="#"><i class="bi bi-shield-lock"></i> Cybersecurity</a>
+      <a class="cl" onclick="goTo('os',event)" href="#"><i class="bi bi-window-stack"></i> Operating Systems</a>
+      <a class="cl" onclick="goTo('compression',event)" href="#"><i class="bi bi-file-zip"></i> Compression</a>
+      <a class="cl" onclick="goTo('ascii',event)" href="#"><i class="bi bi-table"></i> ASCII Table</a>
+    </nav>
+  </aside>
+
+  <main id="mc">
+    
+    <h1 class="pg-title">💻 Computer Science Library</h1>
+    <p class="pg-sub">Number systems, logic gates, algorithms, programming, networking, databases, cybersecurity — with live interactive tools.</p>
+
+    <!-- ═══ NUMBER SYSTEMS ═══ -->
+    <section class="fsec" id="numbers" data-title="Number Systems binary denary hexadecimal octal conversion twos complement">
+      <div class="stitle"><i class="bi bi-123"></i> Number Systems &amp; Conversion</div>
+
+      <!-- LIVE CONVERTER -->
+      <div class="fcard">
+        <div class="fcard-h">⚡ Live Number Base Converter — Type in any box</div>
+        <div class="fcard-b">
+          <div class="conv-grid">
+            <div class="conv-field"><label>Denary (Base 10)</label><input type="text" id="cnvDec" placeholder="e.g. 255" oninput="convert('dec',this.value)"><div class="base-tag">Digits: 0–9</div></div>
+            <div class="conv-field"><label>Binary (Base 2)</label><input type="text" id="cnvBin" placeholder="e.g. 11111111" oninput="convert('bin',this.value)"><div class="base-tag">Digits: 0–1</div></div>
+            <div class="conv-field"><label>Hexadecimal (Base 16)</label><input type="text" id="cnvHex" placeholder="e.g. FF" oninput="convert('hex',this.value)"><div class="base-tag">Digits: 0–9, A–F</div></div>
+            <div class="conv-field"><label>Octal (Base 8)</label><input type="text" id="cnvOct" placeholder="e.g. 377" oninput="convert('oct',this.value)"><div class="base-tag">Digits: 0–7</div></div>
+          </div>
+          <div id="convSteps" class="fbox" style="min-height:40px;font-size:.82rem;display:none"></div>
+        </div>
+      </div>
+
+      <div class="fcard">
+        <div class="fcard-h">Conversion Methods <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">Denary → Binary:</span>  divide repeatedly by 2, read remainders bottom to top<br>
+            <span class="k">Binary → Denary:</span>  multiply each bit by its positional value (128,64,32,16,8,4,2,1) and sum<br>
+            <span class="k">Denary → Hex:</span>     divide by 16, remainders 10-15 → A-F<br>
+            <span class="k">Binary → Hex:</span>     split into groups of 4 bits → convert each nibble<br>
+            <span class="k">Hex → Binary:</span>     each hex digit → 4 bits<br><br>
+            <span class="k">8-bit place values:</span><br>
+            128 | 64 | 32 | 16 | 8 | 4 | 2 | 1<br>
+             2⁷  |  2⁶ |  2⁵ |  2⁴ | 2³| 2²| 2¹| 2⁰
+          </div>
+          <p class="fnote"><strong>Nibble</strong> = 4 bits | <strong>Byte</strong> = 8 bits | <strong>Kilobyte</strong> = 1024 bytes | <strong>Megabyte</strong> = 1024 KB</p>
+        </div>
+      </div>
+
+      <div class="fcard">
+        <div class="fcard-h">Two's Complement &amp; Signed Numbers <span class="lp li">Intermediate</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">Two's complement (to negate):</span><br>
+            Step 1: Invert all bits (one's complement)<br>
+            Step 2: Add 1 to the result<br><br>
+            Example: +6 = 00000110<br>
+            Step 1: 11111001<br>
+            Step 2: 11111010 = -6<br><br>
+            <span class="k">8-bit range:</span>  -128 to +127<br>
+            <span class="k">MSB (leftmost):</span> sign bit — 0=positive, 1=negative<br><br>
+            <span class="k">Binary addition:</span><br>
+            0+0=0 | 0+1=1 | 1+0=1 | 1+1=10 (carry 1) | 1+1+1=11 (carry 1)
+          </div>
+        </div>
+      </div>
+
+      <div class="fcard">
+        <div class="fcard-h">Hex Colour Codes <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">Format:</span>  #RRGGBB  (each pair = 0x00 to 0xFF = 0 to 255)<br>
+            #FF0000 = Red  | #00FF00 = Green | #0000FF = Blue<br>
+            #FFFFFF = White | #000000 = Black | #808080 = Grey<br>
+            Each channel: 256 values → 256³ = 16,777,216 possible colours
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ DATA REPRESENTATION ═══ -->
+    <section class="fsec" id="data" data-title="Data Representation text ASCII Unicode images pixels sound sampling bit depth">
+      <div class="stitle"><i class="bi bi-file-binary"></i> Data Representation</div>
+      <div class="fcard">
+        <div class="fcard-h">Text — ASCII &amp; Unicode <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <table class="ftbl">
+            <tr><th>Standard</th><th>Bits</th><th>Characters</th><th>Coverage</th></tr>
+            <tr><td>ASCII</td><td><code>7-bit</code></td><td>128</td><td>Basic English, digits, punctuation</td></tr>
+            <tr><td>Extended ASCII</td><td><code>8-bit</code></td><td>256</td><td>+ accented chars</td></tr>
+            <tr><td>Unicode (UTF-8)</td><td><code>8–32-bit</code></td><td>1,112,064</td><td>All world scripts, emoji</td></tr>
+            <tr><td>Unicode (UTF-16)</td><td><code>16-bit</code></td><td>65,536+</td><td>BMP characters</td></tr>
+          </table>
+          <div class="fbox" style="margin-top:10px">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">Character code:</span>  'A' = 65 = 01000001  |  'a' = 97 = 01100001  |  '0' = 48<br>
+            <span class="k">File size (text):</span>  chars × bits per char / 8  [bytes]
+          </div>
+        </div>
+      </div>
+      <div class="fcard">
+        <div class="fcard-h">Images — Pixels &amp; Bit Depth <span class="lp li">Intermediate</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">Image file size:</span>  width × height × colour depth (bits) / 8  [bytes]<br>
+            <span class="k">Colour depth:</span>     bits per pixel<br>
+            1-bit:   2 colours (B&amp;W) | 8-bit: 256 colours | 24-bit: 16.7M colours (True Colour)<br><br>
+            <span class="k">Resolution:</span>       pixels per inch (PPI) or dots per inch (DPI)<br>
+            <span class="k">Metadata:</span>         stored in file — width, height, colour depth, creator, date<br>
+            <span class="k">Vector vs Raster:</span><br>
+            Raster: pixel-based (JPEG, PNG, BMP) — quality lost on scaling<br>
+            Vector: maths-based (SVG, AI) — infinite scaling without quality loss
+          </div>
+        </div>
+      </div>
+      <div class="fcard">
+        <div class="fcard-h">Sound — Sampling &amp; Bit Depth <span class="lp li">Intermediate</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">Sound file size:</span>  sample rate × bit depth × duration × channels / 8  [bytes]<br>
+            <span class="k">Sample rate:</span>      samples per second (Hz) — CD quality = 44,100 Hz<br>
+            <span class="k">Bit depth:</span>        bits per sample — CD quality = 16-bit<br>
+            <span class="k">Nyquist theorem:</span>  sample rate must be ≥ 2× highest frequency<br>
+            Higher sample rate + higher bit depth = better quality + larger file
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ LOGIC GATES ═══ -->
+    <section class="fsec" id="logic" data-title="Logic Gates Boolean Algebra AND OR NOT NAND NOR XOR truth table De Morgan">
+      <div class="stitle"><i class="bi bi-toggles"></i> Logic Gates &amp; Boolean Algebra</div>
+
+      <!-- INTERACTIVE SIMULATOR -->
+      <div class="fcard">
+        <div class="fcard-h">⚡ Interactive Logic Gate Simulator</div>
+        <div class="fcard-b">
+          <div class="gate-sim">
+            <div class="gate-row" id="gateChips"></div>
+            <div class="gate-io">
+              <div class="io-group" id="gateInputs"></div>
+              <svg id="gateSVG" width="160" height="80" viewBox="0 0 160 80"></svg>
+              <div>
+                <div style="color:#7aad92;font-size:.8rem;margin-bottom:6px">Output</div>
+                <div class="gate-result out0" id="gateOutput">0</div>
+                <div style="color:#7aad92;font-size:.78rem;margin-top:6px" id="gateExpr">A AND B = 0</div>
+              </div>
+            </div>
+            <div class="truth-mini" id="truthMini"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TRUTH TABLES -->
+      <div class="fcard">
+        <div class="fcard-h">All Gate Truth Tables <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <div class="tt-grid" id="ttGrid"></div>
+        </div>
+      </div>
+
+      <div class="fcard">
+        <div class="fcard-h">Boolean Algebra Laws <span class="lp li">Intermediate</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">Identity:</span>     A AND 1 = A  |  A OR 0 = A<br>
+            <span class="k">Null:</span>          A AND 0 = 0  |  A OR 1 = 1<br>
+            <span class="k">Complement:</span>   A AND NOT A = 0  |  A OR NOT A = 1<br>
+            <span class="k">Idempotent:</span>   A AND A = A  |  A OR A = A<br>
+            <span class="k">Double neg.:</span>  NOT(NOT A) = A<br>
+            <span class="k">De Morgan 1:</span>  NOT(A AND B) = NOT A OR NOT B<br>
+            <span class="k">De Morgan 2:</span>  NOT(A OR B) = NOT A AND NOT B<br>
+            <span class="k">Commutative:</span>  A AND B = B AND A<br>
+            <span class="k">Associative:</span>  A AND (B AND C) = (A AND B) AND C<br>
+            <span class="k">Distributive:</span> A AND (B OR C) = (A AND B) OR (A AND C)
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ ALGORITHMS ═══ -->
+    <section class="fsec" id="algorithms" data-title="Algorithms searching sorting linear binary bubble merge insertion Big O complexity flowchart">
+      <div class="stitle"><i class="bi bi-sort-down"></i> Algorithms &amp; Complexity</div>
+
+      <div class="fcard">
+        <div class="fcard-h">Big O Complexity — All Algorithms <span class="lp li">Intermediate</span></div>
+        <div class="fcard-b">
+          <table class="ftbl">
+            <tr><th>Algorithm</th><th>Best</th><th>Average</th><th>Worst</th><th>Space</th></tr>
+            <tr><td>Linear Search</td><td class="complex-good">O(1)</td><td class="complex-ok">O(n)</td><td class="complex-ok">O(n)</td><td class="complex-good">O(1)</td></tr>
+            <tr><td>Binary Search</td><td class="complex-good">O(1)</td><td class="complex-good">O(log n)</td><td class="complex-good">O(log n)</td><td class="complex-good">O(1)</td></tr>
+            <tr><td>Bubble Sort</td><td class="complex-ok">O(n)</td><td class="complex-bad">O(n²)</td><td class="complex-bad">O(n²)</td><td class="complex-good">O(1)</td></tr>
+            <tr><td>Insertion Sort</td><td class="complex-ok">O(n)</td><td class="complex-bad">O(n²)</td><td class="complex-bad">O(n²)</td><td class="complex-good">O(1)</td></tr>
+            <tr><td>Selection Sort</td><td class="complex-bad">O(n²)</td><td class="complex-bad">O(n²)</td><td class="complex-bad">O(n²)</td><td class="complex-good">O(1)</td></tr>
+            <tr><td>Merge Sort</td><td class="complex-good">O(n log n)</td><td class="complex-good">O(n log n)</td><td class="complex-good">O(n log n)</td><td class="complex-ok">O(n)</td></tr>
+            <tr><td>Quick Sort</td><td class="complex-good">O(n log n)</td><td class="complex-good">O(n log n)</td><td class="complex-bad">O(n²)</td><td class="complex-good">O(log n)</td></tr>
+            <tr><td>Hash Table lookup</td><td class="complex-good">O(1)</td><td class="complex-good">O(1)</td><td class="complex-ok">O(n)</td><td class="complex-ok">O(n)</td></tr>
+          </table>
+          <p class="fnote"><strong>O(1)</strong> = constant | <strong>O(log n)</strong> = logarithmic | <strong>O(n)</strong> = linear | <strong>O(n²)</strong> = quadratic</p>
+        </div>
+      </div>
+
+      <div class="fcard">
+        <div class="fcard-h">Searching Algorithms <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">Linear Search:</span><br>
+            Check each element one by one from start to end<br>
+            Works on unsorted AND sorted data<br>
+            Worst case: n comparisons (element not found)<br><br>
+            <span class="k">Binary Search:</span><br>
+            REQUIRES sorted data<br>
+            1. Find middle element<br>
+            2. If target = middle → found<br>
+            3. If target &lt; middle → search left half<br>
+            4. If target &gt; middle → search right half<br>
+            5. Repeat until found or no elements left<br>
+            Worst case: log₂(n) comparisons
+          </div>
+        </div>
+      </div>
+
+      <div class="fcard">
+        <div class="fcard-h">Sorting Algorithms — Pseudocode <span class="lp li">Intermediate</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">Bubble Sort:</span><br>
+            FOR i = 0 TO n-1:<br>
+            &nbsp;&nbsp;FOR j = 0 TO n-2-i:<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;IF array[j] &gt; array[j+1]:<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SWAP array[j] AND array[j+1]<br><br>
+            <span class="k">Insertion Sort:</span><br>
+            FOR i = 1 TO n-1:<br>
+            &nbsp;&nbsp;key = array[i]<br>
+            &nbsp;&nbsp;j = i - 1<br>
+            &nbsp;&nbsp;WHILE j &gt;= 0 AND array[j] &gt; key:<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;array[j+1] = array[j]<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;j = j - 1<br>
+            &nbsp;&nbsp;array[j+1] = key
+          </div>
+        </div>
+      </div>
+
+      <div class="fcard">
+        <div class="fcard-h">Flowchart Symbols <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <div class="fc-wrap">
+            <svg viewBox="0 0 580 120" xmlns="http://www.w3.org/2000/svg" style="max-width:580px;width:100%">
+              <rect width="580" height="120" fill="#0a1510" rx="10"/>
+              <!-- Terminal -->
+              <rect x="10" y="40" width="70" height="40" rx="20" fill="#1a3a28" stroke="#4cd98a" stroke-width="2"/>
+              <text x="45" y="65" text-anchor="middle" font-size="9" fill="#4cd98a" font-family="Nunito" font-weight="700">Start/End</text>
+              <text x="45" y="108" text-anchor="middle" font-size="8.5" fill="#6aad82" font-family="Nunito">Rounded rect</text>
+              <!-- Process -->
+              <rect x="100" y="40" width="80" height="40" fill="#1a2a3a" stroke="#89d8ff" stroke-width="2"/>
+              <text x="140" y="65" text-anchor="middle" font-size="9" fill="#89d8ff" font-family="Nunito" font-weight="700">Process</text>
+              <text x="140" y="108" text-anchor="middle" font-size="8.5" fill="#6aad82" font-family="Nunito">Rectangle</text>
+              <!-- Decision -->
+              <polygon points="240,40 280,60 240,80 200,60" fill="#2a1a3a" stroke="#c8a8ff" stroke-width="2"/>
+              <text x="240" y="64" text-anchor="middle" font-size="9" fill="#c8a8ff" font-family="Nunito" font-weight="700">Decision</text>
+              <text x="240" y="108" text-anchor="middle" font-size="8.5" fill="#6aad82" font-family="Nunito">Diamond</text>
+              <!-- I/O -->
+              <polygon points="300,40 380,40 370,80 290,80" fill="#2a1a0a" stroke="#f6d365" stroke-width="2"/>
+              <text x="335" y="65" text-anchor="middle" font-size="9" fill="#f6d365" font-family="Nunito" font-weight="700">Input/Output</text>
+              <text x="335" y="108" text-anchor="middle" font-size="8.5" fill="#6aad82" font-family="Nunito">Parallelogram</text>
+              <!-- Arrow -->
+              <line x1="420" y1="30" x2="420" y2="90" stroke="#4cd98a" stroke-width="2" marker-end="url(#fcarr)"/>
+              <defs><marker id="fcarr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#4cd98a"/></marker></defs>
+              <text x="440" y="65" font-size="9" fill="#4cd98a" font-family="Nunito" font-weight="700">Flow line</text>
+              <text x="420" y="108" text-anchor="middle" font-size="8.5" fill="#6aad82" font-family="Nunito">Arrow</text>
+              <!-- Connector -->
+              <circle cx="530" cy="60" r="18" fill="#1a3a1a" stroke="#4cd98a" stroke-width="2"/>
+              <text x="530" y="64" text-anchor="middle" font-size="9" fill="#4cd98a" font-family="Nunito" font-weight="700">Con</text>
+              <text x="530" y="108" text-anchor="middle" font-size="8.5" fill="#6aad82" font-family="Nunito">Circle</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ SORTING VISUALISER ═══ -->
+    <section class="fsec" id="sorting" data-title="Sorting Visualiser bubble insertion selection merge animation">
+      <div class="stitle"><i class="bi bi-bar-chart-steps"></i> Sorting Algorithm Visualiser</div>
+      <div class="fcard">
+        <div class="fcard-h">⚡ Watch Sorting Algorithms Animate Step by Step</div>
+        <div class="fcard-b">
+          <div class="sort-wrap">
+            <div class="sort-controls">
+              <select id="sortAlgo">
+                <option value="bubble">Bubble Sort</option>
+                <option value="insertion">Insertion Sort</option>
+                <option value="selection">Selection Sort</option>
+              </select>
+              <input type="number" id="sortSpeed" value="300" min="50" max="1000" style="width:90px" title="Speed (ms)"> ms
+              <button class="sort-btn" onclick="startSort()">▶ Sort</button>
+              <button class="sort-btn secondary" onclick="resetSort()">↺ Reset</button>
+              <button class="sort-btn secondary" onclick="shuffleSort()">⇄ Shuffle</button>
+            </div>
+            <div class="bars-wrap" id="barsWrap"></div>
+            <div class="sort-info" id="sortInfo">Ready. Press ▶ Sort to begin.</div>
+            <div style="display:flex;gap:16px;margin-top:8px;flex-wrap:wrap;font-size:.78rem">
+              <span><span style="color:#2980b9">■</span> Unsorted</span>
+              <span><span style="color:#f6d365">■</span> Comparing</span>
+              <span><span style="color:#fda085">■</span> Swapping</span>
+              <span><span style="color:#4cd98a">■</span> Sorted</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ PROGRAMMING ═══ -->
+    <section class="fsec" id="programming" data-title="Programming Python variables data types operators if else for while functions recursion pseudocode">
+      <div class="stitle"><i class="bi bi-code-slash"></i> Programming Concepts (Python)</div>
+      <div class="fcard">
+        <div class="fcard-h">Data Types <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <table class="ftbl">
+            <tr><th>Type</th><th>Python</th><th>Example</th><th>Description</th></tr>
+            <tr><td>Integer</td><td><code>int</code></td><td><code>42, -7, 0</code></td><td>Whole numbers</td></tr>
+            <tr><td>Float</td><td><code>float</code></td><td><code>3.14, -0.5</code></td><td>Decimal numbers</td></tr>
+            <tr><td>String</td><td><code>str</code></td><td><code>"hello", 'world'</code></td><td>Text characters</td></tr>
+            <tr><td>Boolean</td><td><code>bool</code></td><td><code>True, False</code></td><td>Logical true/false</td></tr>
+            <tr><td>List</td><td><code>list</code></td><td><code>[1, 2, 3]</code></td><td>Ordered, mutable</td></tr>
+            <tr><td>Tuple</td><td><code>tuple</code></td><td><code>(1, 2, 3)</code></td><td>Ordered, immutable</td></tr>
+            <tr><td>Dictionary</td><td><code>dict</code></td><td><code>{"a": 1}</code></td><td>Key-value pairs</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="fcard">
+        <div class="fcard-h">Selection &amp; Iteration <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <div class="code-block">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="py-cm"># Selection (if / elif / else)</span><br>
+            <span class="py-kw">if</span> score <span class="py-op">&gt;=</span> <span class="py-num">70</span>:<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="py-fn">print</span>(<span class="py-str">"Distinction"</span>)<br>
+            <span class="py-kw">elif</span> score <span class="py-op">&gt;=</span> <span class="py-num">50</span>:<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="py-fn">print</span>(<span class="py-str">"Pass"</span>)<br>
+            <span class="py-kw">else</span>:<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="py-fn">print</span>(<span class="py-str">"Fail"</span>)<br><br>
+            <span class="py-cm"># For loop (count-controlled)</span><br>
+            <span class="py-kw">for</span> i <span class="py-kw">in</span> <span class="py-fn">range</span>(<span class="py-num">5</span>):<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="py-fn">print</span>(i)  <span class="py-cm"># 0,1,2,3,4</span><br><br>
+            <span class="py-cm"># While loop (condition-controlled)</span><br>
+            count <span class="py-op">=</span> <span class="py-num">0</span><br>
+            <span class="py-kw">while</span> count <span class="py-op">&lt;</span> <span class="py-num">5</span>:<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="py-fn">print</span>(count)<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;count <span class="py-op">+=</span> <span class="py-num">1</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="fcard">
+        <div class="fcard-h">Functions &amp; Recursion <span class="lp li">Intermediate</span></div>
+        <div class="fcard-b">
+          <div class="code-block">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="py-cm"># Function definition</span><br>
+            <span class="py-kw">def</span> <span class="py-fn">greet</span>(name, greeting<span class="py-op">=</span><span class="py-str">"Hello"</span>):<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="py-kw">return</span> <span class="py-str">f"{greeting}, {name}!"</span><br><br>
+            <span class="py-fn">print</span>(<span class="py-fn">greet</span>(<span class="py-str">"Alice"</span>))       <span class="py-cm"># Hello, Alice!</span><br><br>
+            <span class="py-cm"># Recursive factorial</span><br>
+            <span class="py-kw">def</span> <span class="py-fn">factorial</span>(n):<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="py-kw">if</span> n <span class="py-op">==</span> <span class="py-num">0</span>:  <span class="py-cm"># base case</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="py-kw">return</span> <span class="py-num">1</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="py-kw">return</span> n <span class="py-op">*</span> <span class="py-fn">factorial</span>(n <span class="py-op">-</span> <span class="py-num">1</span>)  <span class="py-cm"># recursive case</span><br><br>
+            <span class="py-fn">print</span>(<span class="py-fn">factorial</span>(<span class="py-num">5</span>))  <span class="py-cm"># 120</span>
+          </div>
+          <p class="fnote"><strong>Recursion needs:</strong> a base case (to stop) and a recursive case (calls itself with smaller input).</p>
+        </div>
+      </div>
+
+      <div class="fcard">
+        <div class="fcard-h">String &amp; List Operations <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <div class="code-block">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="py-cm"># String operations</span><br>
+            s <span class="py-op">=</span> <span class="py-str">"Hello World"</span><br>
+            s.<span class="py-fn">upper</span>()        <span class="py-cm"># "HELLO WORLD"</span><br>
+            s.<span class="py-fn">lower</span>()        <span class="py-cm"># "hello world"</span><br>
+            s.<span class="py-fn">split</span>()        <span class="py-cm"># ["Hello", "World"]</span><br>
+            <span class="py-fn">len</span>(s)           <span class="py-cm"># 11</span><br>
+            s[<span class="py-num">0</span>:<span class="py-num">5</span>]          <span class="py-cm"># "Hello" (slicing)</span><br><br>
+            <span class="py-cm"># List operations</span><br>
+            lst <span class="py-op">=</span> [<span class="py-num">3</span>, <span class="py-num">1</span>, <span class="py-num">4</span>, <span class="py-num">1</span>, <span class="py-num">5</span>]<br>
+            lst.<span class="py-fn">append</span>(<span class="py-num">9</span>)   <span class="py-cm"># [3,1,4,1,5,9]</span><br>
+            lst.<span class="py-fn">sort</span>()        <span class="py-cm"># [1,1,3,4,5,9]</span><br>
+            lst.<span class="py-fn">pop</span>()         <span class="py-cm"># removes last</span><br>
+            lst.<span class="py-fn">remove</span>(<span class="py-num">1</span>)    <span class="py-cm"># removes first 1</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="fcard">
+        <div class="fcard-h">Pseudocode Reference <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            INPUT name           <span class="c">// get user input</span><br>
+            OUTPUT "Hello"       <span class="c">// display output</span><br>
+            x ← 5                <span class="c">// assignment</span><br>
+            IF x &gt; 0 THEN ... ELSE ... ENDIF<br>
+            FOR i ← 1 TO 10 DO ... NEXT i<br>
+            WHILE condition DO ... ENDWHILE<br>
+            REPEAT ... UNTIL condition<br>
+            PROCEDURE name(params) ... ENDPROCEDURE<br>
+            FUNCTION name(params) RETURNS type ... ENDFUNCTION<br>
+            ARRAY nums[10]       <span class="c">// declare array of 10</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ DATA STRUCTURES ═══ -->
+    <section class="fsec" id="structures" data-title="Data Structures arrays stacks queues linked lists trees hash tables graphs">
+      <div class="stitle"><i class="bi bi-diagram-3"></i> Data Structures</div>
+      <div class="fcard">
+        <div class="fcard-h">Data Structures Comparison <span class="lp li">Intermediate</span></div>
+        <div class="fcard-b">
+          <table class="ftbl">
+            <tr><th>Structure</th><th>Access</th><th>Insert</th><th>Delete</th><th>Search</th><th>Use Case</th></tr>
+            <tr><td>Array</td><td class="complex-good">O(1)</td><td class="complex-bad">O(n)</td><td class="complex-bad">O(n)</td><td class="complex-ok">O(n)</td><td>Fixed-size lists, matrices</td></tr>
+            <tr><td>Linked List</td><td class="complex-ok">O(n)</td><td class="complex-good">O(1)</td><td class="complex-good">O(1)</td><td class="complex-ok">O(n)</td><td>Dynamic sizes, queues</td></tr>
+            <tr><td>Stack</td><td class="complex-good">O(1)</td><td class="complex-good">O(1)</td><td class="complex-good">O(1)</td><td class="complex-ok">O(n)</td><td>Undo, call stack, brackets</td></tr>
+            <tr><td>Queue</td><td class="complex-good">O(1)</td><td class="complex-good">O(1)</td><td class="complex-good">O(1)</td><td class="complex-ok">O(n)</td><td>Print queue, BFS, buffers</td></tr>
+            <tr><td>Hash Table</td><td class="complex-good">O(1)</td><td class="complex-good">O(1)</td><td class="complex-good">O(1)</td><td class="complex-good">O(1)</td><td>Dictionaries, caches</td></tr>
+            <tr><td>Binary Tree</td><td class="complex-good">O(log n)</td><td class="complex-good">O(log n)</td><td class="complex-good">O(log n)</td><td class="complex-good">O(log n)</td><td>Sorted data, databases</td></tr>
+            <tr><td>Graph</td><td class="complex-ok">O(V+E)</td><td class="complex-good">O(1)</td><td class="complex-ok">O(V+E)</td><td class="complex-ok">O(V+E)</td><td>Networks, maps, social graphs</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="fcard">
+        <div class="fcard-h">Stacks &amp; Queues <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">STACK (LIFO — Last In, First Out):</span><br>
+            Push  → add to top<br>
+            Pop   → remove from top<br>
+            Peek  → view top without removing<br>
+            Uses: undo/redo, call stack, balanced brackets, DFS<br><br>
+            <span class="k">QUEUE (FIFO — First In, First Out):</span><br>
+            Enqueue → add to rear<br>
+            Dequeue → remove from front<br>
+            Uses: print queue, BFS, scheduling, buffers<br><br>
+            <span class="k">Priority Queue:</span>  each item has priority — highest priority dequeued first
+          </div>
+        </div>
+      </div>
+      <div class="fcard">
+        <div class="fcard-h">Trees &amp; Graphs <span class="lp li">Intermediate</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">Binary Search Tree (BST):</span><br>
+            Left child &lt; parent &lt; right child<br>
+            Inorder traversal → sorted output<br>
+            Preorder: root → left → right<br>
+            Postorder: left → right → root<br><br>
+            <span class="k">Graph terminology:</span><br>
+            Vertex (node) | Edge (connection) | Directed/Undirected<br>
+            Weighted graph: edges have costs/distances<br>
+            Adjacency matrix: 2D array (0 or 1)<br>
+            Adjacency list: each node → list of neighbours<br><br>
+            <span class="k">Graph algorithms:</span><br>
+            BFS (Breadth-First): level by level, uses queue, shortest path (unweighted)<br>
+            DFS (Depth-First): go deep first, uses stack/recursion<br>
+            Dijkstra's: shortest path in weighted graph
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ COMPUTER ARCHITECTURE ═══ -->
+    <section class="fsec" id="architecture" data-title="Computer Architecture CPU ALU CU registers fetch decode execute RAM ROM cache Von Neumann">
+      <div class="stitle"><i class="bi bi-motherboard"></i> Computer Architecture</div>
+      <div class="fcard">
+        <div class="fcard-h">CPU Components <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <table class="ftbl">
+            <tr><th>Component</th><th>Full Name</th><th>Function</th></tr>
+            <tr><td><code>ALU</code></td><td>Arithmetic Logic Unit</td><td>Performs maths (+,−,×,÷) and logic (AND,OR,NOT,comparisons)</td></tr>
+            <tr><td><code>CU</code></td><td>Control Unit</td><td>Directs data flow; fetches, decodes and executes instructions</td></tr>
+            <tr><td><code>MAR</code></td><td>Memory Address Register</td><td>Holds address of memory location being accessed</td></tr>
+            <tr><td><code>MDR</code></td><td>Memory Data Register</td><td>Holds data being read from or written to memory</td></tr>
+            <tr><td><code>PC</code></td><td>Program Counter</td><td>Holds address of next instruction to fetch</td></tr>
+            <tr><td><code>ACC</code></td><td>Accumulator</td><td>Stores results of ALU operations</td></tr>
+            <tr><td><code>Cache</code></td><td>Cache Memory</td><td>Fast memory between CPU and RAM (L1, L2, L3)</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="fcard">
+        <div class="fcard-h">Fetch–Decode–Execute Cycle <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">FETCH:</span><br>
+            MAR ← PC           (copy program counter to MAR)<br>
+            MDR ← Memory[MAR]  (fetch instruction from RAM)<br>
+            CIR ← MDR          (copy to Current Instruction Register)<br>
+            PC ← PC + 1        (increment program counter)<br><br>
+            <span class="k">DECODE:</span><br>
+            CU decodes the instruction in CIR<br>
+            Identifies the opcode (operation) and operand (data/address)<br><br>
+            <span class="k">EXECUTE:</span><br>
+            ALU performs the operation<br>
+            Result stored in ACC or written back to memory
+          </div>
+        </div>
+      </div>
+      <div class="fcard">
+        <div class="fcard-h">Memory Types <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <table class="ftbl">
+            <tr><th>Type</th><th>Volatile?</th><th>R/W?</th><th>Speed</th><th>Use</th></tr>
+            <tr><td>RAM</td><td>Yes (loses on power off)</td><td>Read &amp; Write</td><td>Fast</td><td>Temporary storage while running</td></tr>
+            <tr><td>ROM</td><td>No (permanent)</td><td>Read only</td><td>Fast</td><td>BIOS/firmware, boot instructions</td></tr>
+            <tr><td>Cache (L1)</td><td>Yes</td><td>R&amp;W</td><td>Fastest</td><td>Most recently used CPU data</td></tr>
+            <tr><td>Cache (L2/L3)</td><td>Yes</td><td>R&amp;W</td><td>Fast</td><td>Slightly older data</td></tr>
+            <tr><td>Virtual Memory</td><td>No</td><td>R&amp;W</td><td>Slow</td><td>HDD/SSD used as extra RAM</td></tr>
+            <tr><td>HDD/SSD</td><td>No</td><td>R&amp;W</td><td>Slowest</td><td>Permanent file storage</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="fcard">
+        <div class="fcard-h">CPU Performance Factors <span class="lp li">Intermediate</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">Clock speed:</span>  GHz — cycles per second — more = faster<br>
+            <span class="k">Cores:</span>         multiple cores run tasks in parallel<br>
+            <span class="k">Cache size:</span>    larger cache = fewer slow RAM accesses<br>
+            <span class="k">Word length:</span>   bits processed at once (32-bit or 64-bit)<br>
+            <span class="k">Bus width:</span>     bits transmitted at once between components<br>
+            <span class="k">Pipelining:</span>    overlap fetch/decode/execute stages
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ NETWORKING ═══ -->
+    <section class="fsec" id="networking" data-title="Networking OSI model TCP IP protocols HTTP DNS FTP topology encryption LAN WAN">
+      <div class="stitle"><i class="bi bi-router"></i> Networking</div>
+      <div class="fcard">
+        <div class="fcard-h">OSI Model — 7 Layers <span class="lp li">Intermediate</span></div>
+        <div class="fcard-b" id="osiLayers"></div>
+      </div>
+      <div class="fcard">
+        <div class="fcard-h">TCP/IP Model <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <table class="ftbl">
+            <tr><th>Layer</th><th>Function</th><th>Protocols</th></tr>
+            <tr><td>Application</td><td>User-facing services</td><td><code>HTTP, HTTPS, FTP, SMTP, DNS</code></td></tr>
+            <tr><td>Transport</td><td>End-to-end communication</td><td><code>TCP, UDP</code></td></tr>
+            <tr><td>Internet</td><td>Routing &amp; addressing</td><td><code>IP, ICMP</code></td></tr>
+            <tr><td>Link</td><td>Physical transmission</td><td><code>Ethernet, Wi-Fi</code></td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="fcard">
+        <div class="fcard-h">Network Protocols <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <table class="ftbl">
+            <tr><th>Protocol</th><th>Port</th><th>Purpose</th></tr>
+            <tr><td><code>HTTP</code></td><td>80</td><td>Web pages (unencrypted)</td></tr>
+            <tr><td><code>HTTPS</code></td><td>443</td><td>Secure web (TLS encrypted)</td></tr>
+            <tr><td><code>FTP</code></td><td>21</td><td>File transfer</td></tr>
+            <tr><td><code>SMTP</code></td><td>25</td><td>Send email</td></tr>
+            <tr><td><code>IMAP</code></td><td>143</td><td>Receive email (server)</td></tr>
+            <tr><td><code>DNS</code></td><td>53</td><td>Domain name → IP address</td></tr>
+            <tr><td><code>DHCP</code></td><td>67/68</td><td>Automatic IP assignment</td></tr>
+            <tr><td><code>SSH</code></td><td>22</td><td>Secure remote access</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="fcard">
+        <div class="fcard-h">IP Addressing <span class="lp li">Intermediate</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">IPv4:</span>  32-bit | 4 octets | e.g. 192.168.1.1 | ~4.3 billion addresses<br>
+            <span class="k">IPv6:</span>  128-bit | 8 groups of hex | e.g. 2001:0db8::1 | 340 undecillion addresses<br>
+            <span class="k">Subnet mask:</span>  defines network vs host portion (e.g. 255.255.255.0)<br>
+            <span class="k">Public IP:</span>   visible on internet (assigned by ISP)<br>
+            <span class="k">Private IP:</span>  used in LAN (10.x.x.x, 192.168.x.x, 172.16–31.x.x)<br>
+            <span class="k">MAC address:</span> 48-bit hardware address (unique per NIC) e.g. AA:BB:CC:DD:EE:FF<br>
+            <span class="k">NAT:</span>  Network Address Translation — maps private IPs to single public IP
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ DATABASES ═══ -->
+    <section class="fsec" id="databases" data-title="Databases SQL SELECT INSERT UPDATE DELETE JOIN normalisation primary key foreign key ER diagram">
+      <div class="stitle"><i class="bi bi-database"></i> Databases &amp; SQL</div>
+      <div class="fcard">
+        <div class="fcard-h">⚡ SQL Playground — Try queries on a sample database</div>
+        <div class="fcard-b">
+          <div style="font-size:.82rem;color:#5a8a6a;margin-bottom:8px">Tables: <strong>students</strong>(id, name, age, grade, subject) &nbsp;|&nbsp; <strong>scores</strong>(student_id, score, exam)</div>
+          <div class="sql-wrap">
+            <div class="sql-editor">
+              <textarea id="sqlInput" rows="4" spellcheck="false">SELECT * FROM students;</textarea>
+              <button class="conv-btn" style="margin-top:8px;width:100%" onclick="runSQL()">▶ Run Query</button>
+              <div style="margin-top:10px;font-size:.8rem;color:#7aad92">
+                Try:<br>
+                SELECT name, grade FROM students WHERE age &gt; 16;<br>
+                SELECT * FROM students ORDER BY grade DESC;<br>
+                SELECT * FROM students WHERE subject = 'Maths';<br>
+                SELECT COUNT(*) FROM students;<br>
+                SELECT * FROM scores WHERE score &gt;= 80;
+              </div>
+            </div>
+            <div class="sql-result">
+              <div id="sqlOut"><p style="color:#7aad92;font-size:.85rem">Results will appear here.</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="fcard">
+        <div class="fcard-h">SQL Commands Reference <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">SELECT:</span>    SELECT name, age FROM students WHERE age &gt; 16<br>
+            <span class="k">INSERT:</span>    INSERT INTO students VALUES (6,'Dave',17,'A','Physics')<br>
+            <span class="k">UPDATE:</span>    UPDATE students SET grade='A' WHERE id=3<br>
+            <span class="k">DELETE:</span>    DELETE FROM students WHERE id=5<br>
+            <span class="k">JOIN:</span>      SELECT s.name, sc.score FROM students s JOIN scores sc ON s.id=sc.student_id<br>
+            <span class="k">ORDER BY:</span>  SELECT * FROM students ORDER BY age DESC<br>
+            <span class="k">GROUP BY:</span>  SELECT grade, COUNT(*) FROM students GROUP BY grade<br>
+            <span class="k">LIKE:</span>      SELECT * FROM students WHERE name LIKE 'A%'<br>
+            <span class="k">BETWEEN:</span>  SELECT * FROM students WHERE age BETWEEN 15 AND 18<br>
+            <span class="k">CREATE:</span>    CREATE TABLE name (col1 type, col2 type, PRIMARY KEY(col1))
+          </div>
+        </div>
+      </div>
+      <div class="fcard">
+        <div class="fcard-h">Normalisation &amp; Keys <span class="lp li">Intermediate</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">Primary Key:</span>   unique identifier for each record; no NULLs allowed<br>
+            <span class="k">Foreign Key:</span>   field linking to primary key of another table<br>
+            <span class="k">Composite Key:</span> primary key made of 2+ fields combined<br><br>
+            <span class="k">1NF (First Normal Form):</span><br>
+            - No repeating groups; each cell has one value; primary key exists<br><br>
+            <span class="k">2NF (Second Normal Form):</span><br>
+            - Meets 1NF + no partial dependencies (non-key fields depend on whole PK)<br><br>
+            <span class="k">3NF (Third Normal Form):</span><br>
+            - Meets 2NF + no transitive dependencies (non-key fields depend ONLY on PK)
+          </div>
+          <p class="fnote">Goal of normalisation: reduce data redundancy and improve data integrity.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ CYBERSECURITY ═══ -->
+    <section class="fsec" id="security" data-title="Cybersecurity encryption hashing symmetric asymmetric attacks phishing SQL injection malware DDoS firewall SSL TLS">
+      <div class="stitle"><i class="bi bi-shield-lock"></i> Cybersecurity</div>
+      <div class="fcard">
+        <div class="fcard-h">Types of Cyber Attacks <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <table class="ftbl">
+            <tr><th>Attack</th><th>How it works</th><th>Prevention</th></tr>
+            <tr><td>Phishing</td><td>Fake emails/sites trick users into entering credentials</td><td>Verify sender, 2FA, training</td></tr>
+            <tr><td>Malware</td><td>Malicious software (virus, worm, trojan, ransomware)</td><td>Antivirus, updates, backups</td></tr>
+            <tr><td>SQL Injection</td><td>Malicious SQL code injected via input fields</td><td>Parameterised queries, sanitise input</td></tr>
+            <tr><td>DDoS</td><td>Flood server with requests → crashes service</td><td>Rate limiting, firewalls, CDN</td></tr>
+            <tr><td>Man-in-the-Middle</td><td>Intercepts communication between two parties</td><td>HTTPS/TLS, certificate pinning</td></tr>
+            <tr><td>Brute Force</td><td>Try every possible password combination</td><td>Long passwords, account lockout</td></tr>
+            <tr><td>Social Engineering</td><td>Manipulate humans into revealing info</td><td>Security training, policies</td></tr>
+            <tr><td>Zero-Day Exploit</td><td>Attack on unknown/unpatched vulnerability</td><td>Regular patching, threat intel</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="fcard">
+        <div class="fcard-h">Encryption &amp; Hashing <span class="lp li">Intermediate</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">Symmetric encryption:</span><br>
+            Same key for encrypt and decrypt<br>
+            Fast but key must be shared securely<br>
+            Examples: AES, DES<br><br>
+            <span class="k">Asymmetric encryption:</span><br>
+            Public key (encrypt) + Private key (decrypt)<br>
+            Slower but secure key exchange<br>
+            Examples: RSA, ECC<br>
+            Used in: HTTPS, digital signatures, SSH<br><br>
+            <span class="k">Hashing:</span><br>
+            One-way function: input → fixed-length hash<br>
+            Cannot be reversed (not encryption)<br>
+            Same input always → same hash<br>
+            Used for: passwords, file integrity, digital signatures<br>
+            Examples: MD5 (broken), SHA-256, bcrypt<br><br>
+            <span class="k">SSL/TLS handshake:</span><br>
+            1. Client → Server: "hello" + supported ciphers<br>
+            2. Server → Client: certificate + public key<br>
+            3. Client verifies cert; sends session key (encrypted with public key)<br>
+            4. Both use session key (symmetric) for rest of session
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ OPERATING SYSTEMS ═══ -->
+    <section class="fsec" id="os" data-title="Operating Systems processes scheduling memory management virtual paging deadlock">
+      <div class="stitle"><i class="bi bi-window-stack"></i> Operating Systems</div>
+      <div class="fcard">
+        <div class="fcard-h">OS Functions <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <div class="fbox">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">OS responsibilities:</span><br>
+            1. Process management    — create, schedule, terminate processes<br>
+            2. Memory management     — allocate/deallocate RAM<br>
+            3. File management       — organise files/directories<br>
+            4. Device management     — drivers for I/O devices<br>
+            5. Security              — user authentication, permissions<br>
+            6. User interface        — CLI or GUI<br>
+            7. Error handling        — detect and recover from errors<br><br>
+            <span class="k">Process states:</span>  New → Ready → Running → Waiting → Terminated<br>
+            <span class="k">Context switching:</span>  save state of current process → load next process state
+          </div>
+        </div>
+      </div>
+      <div class="fcard">
+        <div class="fcard-h">CPU Scheduling Algorithms <span class="lp li">Intermediate</span></div>
+        <div class="fcard-b">
+          <table class="ftbl">
+            <tr><th>Algorithm</th><th>How it works</th><th>Pros</th><th>Cons</th></tr>
+            <tr><td>FCFS</td><td>First Come First Served — queue order</td><td>Simple, fair</td><td>Long wait times (convoy effect)</td></tr>
+            <tr><td>SJF</td><td>Shortest Job First — shortest burst time</td><td>Optimal avg wait</td><td>Starvation of long jobs</td></tr>
+            <tr><td>Round Robin</td><td>Each process gets a time quantum</td><td>Fair, responsive</td><td>Context switch overhead</td></tr>
+            <tr><td>Priority</td><td>Highest priority runs first</td><td>Urgent tasks fast</td><td>Starvation of low-priority</td></tr>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ COMPRESSION ═══ -->
+    <section class="fsec" id="compression" data-title="Compression lossy lossless run-length encoding Huffman coding JPEG PNG MP3">
+      <div class="stitle"><i class="bi bi-file-zip"></i> Compression</div>
+      <div class="fcard">
+        <div class="fcard-h">Lossy vs Lossless <span class="lp lb">Basic</span></div>
+        <div class="fcard-b">
+          <table class="ftbl">
+            <tr><th>Type</th><th>Description</th><th>Examples</th><th>Use case</th></tr>
+            <tr><td>Lossless</td><td>Exact original can be restored</td><td>PNG, ZIP, FLAC, GIF</td><td>Text, code, documents</td></tr>
+            <tr><td>Lossy</td><td>Some data permanently removed</td><td>JPEG, MP3, MP4, AAC</td><td>Images, audio, video</td></tr>
+          </table>
+          <div class="fbox" style="margin-top:10px">
+            <button class="cpb" onclick="cpf(this)">Copy</button>
+            <span class="k">Run-Length Encoding (RLE) — Lossless:</span><br>
+            Original:  AAABBBCCCCDDDDDD<br>
+            Encoded:   3A 3B 4C 6D<br>
+            Great for images with large uniform areas<br><br>
+            <span class="k">Huffman Coding — Lossless:</span><br>
+            Most frequent chars get shortest binary codes<br>
+            Build a frequency tree; traverse for code<br>
+            'e' might = 00  |  'z' might = 111010<br><br>
+            <span class="k">Compression ratio:</span>  original size / compressed size<br>
+            <span class="k">Space saving:</span>       (1 - compressed/original) × 100%
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ ASCII TABLE ═══ -->
+    <section class="fsec" id="ascii" data-title="ASCII table characters codes Unicode decimal hex binary">
+      <div class="stitle"><i class="bi bi-table"></i> ASCII Table (First 128 Characters)</div>
+      <div class="fcard">
+        <div class="fcard-h">ASCII Reference — Decimal, Hex &amp; Character</div>
+        <div class="fcard-b" style="overflow-x:auto">
+          <table class="ftbl" id="asciiTable" style="font-family:'Fira Code',monospace;font-size:.82rem"></table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="container text-center">
+    <p class="mb-1">🏕 <strong style="color:#fff">SchoolCamp</strong> — The student community for Cameroon 🇨🇲</p>
+    <small><a href="{% url 'forum:home' %}">Forum</a> · <a href="{% url 'groups:list' %}">Groups</a> · <a href="{% url 'materials:list' %}">Materials</a> · <a href="{% url 'quiz:list' %}">Quiz</a></small>
+  </div>
+</footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+/* ═══════════════════════════════════════
+   NUMBER CONVERTER
+═══════════════════════════════════════ */
+function convert(from, val) {
+  val = val.trim();
+  if (!val) { ['Dec','Bin','Hex','Oct'].forEach(x=>{ if('cnv'+x !== 'cnv'+from.charAt(0).toUpperCase()+from.slice(1)) document.getElementById('cnv'+x).value=''; }); document.getElementById('convSteps').style.display='none'; return; }
+  let dec;
+  try {
+    if (from==='dec') dec = parseInt(val, 10);
+    else if (from==='bin') dec = parseInt(val, 2);
+    else if (from==='hex') dec = parseInt(val, 16);
+    else if (from==='oct') dec = parseInt(val, 8);
+    if (isNaN(dec) || dec < 0) { document.getElementById('convSteps').style.display='none'; return; }
+  } catch(e) { return; }
+  if (from!=='dec') document.getElementById('cnvDec').value = dec;
+  if (from!=='bin') document.getElementById('cnvBin').value = dec.toString(2);
+  if (from!=='hex') document.getElementById('cnvHex').value = dec.toString(16).toUpperCase();
+  if (from!=='oct') document.getElementById('cnvOct').value = dec.toString(8);
+  // Show steps
+  const binStr = dec.toString(2).padStart(8,'0');
+  const bits = [128,64,32,16,8,4,2,1];
+  let stepsHtml = '<span class="k">Denary → Binary steps:</span>  ';
+  stepsHtml += bits.map((b,i)=>`<span style="color:${parseInt(binStr[i])===1?'#4cd98a':'#555'}">${b}(${binStr[i]})</span>`).join(' + ');
+  stepsHtml += ' = '+dec;
+  stepsHtml += '\n<span class="k">Binary:</span> '+dec.toString(2).padStart(8,'0')+'  |  <span class="k">Hex:</span> '+dec.toString(16).toUpperCase()+'  |  <span class="k">Octal:</span> '+dec.toString(8);
+  document.getElementById('convSteps').style.display='block';
+  document.getElementById('convSteps').innerHTML = stepsHtml;
+}
+
+/* ═══════════════════════════════════════
+   LOGIC GATE SIMULATOR
+═══════════════════════════════════════ */
+const gates = {
+  AND:  {fn:(a,b)=>a&b,  inputs:2, expr:(a,b)=>`A AND B = ${a&b}`,  sym:'&'},
+  OR:   {fn:(a,b)=>a|b,  inputs:2, expr:(a,b)=>`A OR B = ${a|b}`,   sym:'≥1'},
+  NOT:  {fn:(a)=>a^1,    inputs:1, expr:(a)  =>`NOT A = ${a^1}`,    sym:'1'},
+  NAND: {fn:(a,b)=>(a&b)^1, inputs:2, expr:(a,b)=>`A NAND B = ${(a&b)^1}`, sym:'&̄'},
+  NOR:  {fn:(a,b)=>(a|b)^1, inputs:2, expr:(a,b)=>`A NOR B = ${(a|b)^1}`,  sym:'≥1̄'},
+  XOR:  {fn:(a,b)=>a^b,  inputs:2, expr:(a,b)=>`A XOR B = ${a^b}`,  sym:'=1'},
+  XNOR: {fn:(a,b)=>(a^b)^1, inputs:2, expr:(a,b)=>`A XNOR B = ${(a^b)^1}`, sym:'=1̄'}
+};
+let curGate = 'AND', gateInputs = {A:0, B:0};
+
+function buildGateUI() {
+  // Chips
+  const cr = document.getElementById('gateChips');
+  cr.innerHTML = Object.keys(gates).map(g=>`<div class="gate-chip${g===curGate?' selected':''}" onclick="selectGate('${g}')">${g}</div>`).join('');
+  // Inputs
+  const ir = document.getElementById('gateInputs');
+  const g = gates[curGate];
+  const labels = g.inputs===1 ? ['A'] : ['A','B'];
+  ir.innerHTML = labels.map(l=>`
+    <div class="io-toggle">
+      <div class="toggle-btn${gateInputs[l]?' on':''}" onclick="toggleInput('${l}')" id="tgl${l}"></div>
+      <span>${l} = ${gateInputs[l]}</span>
+    </div>`).join('');
+  updateGateOutput();
+  buildTruthMini();
+}
+
+function selectGate(g) { curGate=g; gateInputs={A:0,B:0}; buildGateUI(); }
+function toggleInput(l) { gateInputs[l]^=1; buildGateUI(); }
+
+function updateGateOutput() {
+  const g = gates[curGate];
+  const a = gateInputs.A, b = gateInputs.B||0;
+  const out = g.inputs===1 ? g.fn(a) : g.fn(a,b);
+  const el = document.getElementById('gateOutput');
+  el.textContent = out;
+  el.className = 'gate-result '+(out?'out1':'out0');
+  document.getElementById('gateExpr').textContent = g.inputs===1 ? g.expr(a) : g.expr(a,b);
+  // Draw gate SVG
+  drawGateSVG(curGate, a, b, out);
+}
+
+function drawGateSVG(type, a, b, out) {
+  const svg = document.getElementById('gateSVG');
+  const col = out ? '#4cd98a' : '#ff9eae';
+  const aCol = a ? '#4cd98a' : '#ff9eae';
+  const bCol = (b&&gates[type].inputs>1) ? '#4cd98a' : '#ff9eae';
+  let body = '';
+  if (type==='AND'||type==='NAND') body = '<path d="M55,20 L55,60 Q95,60 95,40 Q95,20 55,20 Z" fill="#1a2e20" stroke="#89d8ff" stroke-width="2"/>';
+  else if (type==='OR'||type==='NOR'||type==='XOR'||type==='XNOR') {
+    body = '<path d="M50,20 Q60,40 50,60 Q75,55 90,40 Q75,25 50,20 Z" fill="#1a2e20" stroke="#89d8ff" stroke-width="2"/>';
+    if(type==='XOR'||type==='XNOR') body += '<path d="M44,22 Q54,40 44,58" fill="none" stroke="#89d8ff" stroke-width="2"/>';
+  } else if (type==='NOT') body = '<path d="M55,25 L55,55 L90,40 Z" fill="#1a2e20" stroke="#89d8ff" stroke-width="2"/>';
+  const bubble = (type==='NAND'||type==='NOR'||type==='NOT'||type==='XNOR') ? `<circle cx="97" cy="40" r="5" fill="none" stroke="#89d8ff" stroke-width="2"/>` : '';
+  const wires = gates[type].inputs===2
+    ? `<line x1="10" y1="30" x2="55" y2="30" stroke="${aCol}" stroke-width="2"/>
+       <line x1="10" y1="50" x2="55" y2="50" stroke="${bCol}" stroke-width="2"/>
+       <text x="5" y="34" font-size="10" fill="${aCol}" font-family="Fira Code">A=${a}</text>
+       <text x="5" y="54" font-size="10" fill="${bCol}" font-family="Fira Code">B=${b}</text>`
+    : `<line x1="10" y1="40" x2="55" y2="40" stroke="${aCol}" stroke-width="2"/>
+       <text x="5" y="44" font-size="10" fill="${aCol}" font-family="Fira Code">A=${a}</text>`;
+  const outX = (type==='NOT'||type==='NAND'||type==='NOR'||type==='XNOR') ? 102 : 95;
+  svg.innerHTML = wires + body + bubble +
+    `<line x1="${outX}" y1="40" x2="155" y2="40" stroke="${col}" stroke-width="2"/>
+     <text x="115" y="35" font-size="9" fill="${col}" font-family="Fira Code">out=${out}</text>`;
+}
+
+function buildTruthMini() {
+  const g = gates[curGate];
+  const rows = g.inputs===1
+    ? [[0,g.fn(0)],[1,g.fn(1)]]
+    : [[0,0,g.fn(0,0)],[0,1,g.fn(0,1)],[1,0,g.fn(1,0)],[1,1,g.fn(1,1)]];
+  const hdr = g.inputs===1 ? '<th>A</th><th>Out</th>' : '<th>A</th><th>B</th><th>Out</th>';
+  const body = rows.map(r=>{
+    const out = r[r.length-1];
+    const highlight = (g.inputs===2 ? r[0]===gateInputs.A&&r[1]===gateInputs.B : r[0]===gateInputs.A) ? ' class="row-hi"' : '';
+    return `<tr${highlight}>`+r.map((v,i)=>`<td class="${i===r.length-1?(v?'t1':'t0'):''}">${v}</td>`).join('')+'</tr>';
+  }).join('');
+  document.getElementById('truthMini').innerHTML=`<div style="color:#7aad92;font-size:.78rem;margin-bottom:6px">${curGate} truth table:</div><div class="truth-mini"><table><tr>${hdr}</tr>${body}</table></div>`;
+}
+
+// Build all truth tables
+function buildAllTT() {
+  const html = Object.entries(gates).map(([name,g])=>{
+    const rows = g.inputs===1 ? [[0,g.fn(0)],[1,g.fn(1)]] : [[0,0,g.fn(0,0)],[0,1,g.fn(0,1)],[1,0,g.fn(1,0)],[1,1,g.fn(1,1)]];
+    const hdr = g.inputs===1 ? '<th>A</th><th>Out</th>' : '<th>A</th><th>B</th><th>Out</th>';
+    const body = rows.map(r=>`<tr>`+r.map((v,i)=>`<td class="${i===r.length-1?(v?'t1':'t0'):''}">${v}</td>`).join('')+'</tr>').join('');
+    const desc = {AND:'Both inputs must be 1',OR:'At least one input is 1',NOT:'Inverts input',NAND:'Inverts AND output',NOR:'Inverts OR output',XOR:'Inputs must differ',XNOR:'Inputs must be equal'}[name];
+    return `<div class="tt-card"><div class="tt-card-h">${name} <span style="font-weight:400;font-size:.78rem;color:#6aad82;margin-left:6px">${desc}</span></div><div class="tt-card-b"><table><tr>${hdr}</tr>${body}</table></div></div>`;
+  }).join('');
+  document.getElementById('ttGrid').innerHTML = html;
+}
+
+/* ═══════════════════════════════════════
+   SORTING VISUALISER
+═══════════════════════════════════════ */
+let sortArr = [38,27,43,12,9,55,23,46,31,17];
+let sorting = false;
+
+function initBars() {
+  const wrap = document.getElementById('barsWrap');
+  const max = Math.max(...sortArr);
+  wrap.innerHTML = sortArr.map((v,i)=>`<div class="bar" id="bar${i}" style="height:${Math.round(v/max*140)}px"><div class="bar-val">${v}</div></div>`).join('');
+}
+
+function resetSort() {
+  sorting=false;
+  sortArr=[38,27,43,12,9,55,23,46,31,17];
+  initBars();
+  document.getElementById('sortInfo').innerHTML='Ready. Press ▶ Sort to begin.';
+}
+
+function shuffleSort() {
+  sorting=false;
+  sortArr=Array.from({length:10},()=>Math.floor(Math.random()*99)+1);
+  initBars();
+  document.getElementById('sortInfo').innerHTML='Shuffled! Press ▶ Sort.';
+}
+
+function setBars(arr, comparing=[], swapping=[], sorted=[]) {
+  const max = Math.max(...arr);
+  arr.forEach((v,i)=>{
+    const bar = document.getElementById('bar'+i);
+    if (!bar) return;
+    bar.style.height = Math.round(v/max*140)+'px';
+    bar.querySelector('.bar-val').textContent = v;
+    bar.className = 'bar' + (sorted.includes(i)?' sorted':swapping.includes(i)?' swapping':comparing.includes(i)?' comparing':'');
+  });
+}
+
+function sleep(ms) { return new Promise(r=>setTimeout(r,ms)); }
+
+async function startSort() {
+  if (sorting) return;
+  sorting = true;
+  const algo = document.getElementById('sortAlgo').value;
+  const speed = parseInt(document.getElementById('sortSpeed').value)||300;
+  const arr = [...sortArr];
+  const info = document.getElementById('sortInfo');
+  let steps=0;
+
+  if (algo==='bubble') {
+    info.innerHTML = 'Running <span class="sort-step">Bubble Sort</span>...';
+    const n=arr.length;
+    for (let i=0;i<n-1&&sorting;i++) {
+      for (let j=0;j<n-1-i&&sorting;j++) {
+        setBars(arr,[j,j+1],[],[...Array(i).keys()].map(x=>n-1-x));
+        await sleep(speed);
+        if (arr[j]>arr[j+1]) { [arr[j],arr[j+1]]=[arr[j+1],arr[j]]; steps++; setBars(arr,[],[j,j+1],[...Array(i).keys()].map(x=>n-1-x)); await sleep(speed/2); }
+        steps++;
+        info.innerHTML=`Bubble Sort: comparing index ${j} &amp; ${j+1} | swaps: ${steps}`;
+      }
+    }
+    if (sorting) { setBars(arr,[],[],[...Array(arr.length).keys()]); info.innerHTML=`✅ Bubble Sort done — ${steps} operations`; }
+  } else if (algo==='insertion') {
+    info.innerHTML='Running <span class="sort-step">Insertion Sort</span>...';
+    const sorted2=[];
+    for (let i=1;i<arr.length&&sorting;i++) {
+      let key=arr[i], j=i-1;
+      setBars(arr,[i],[],[...sorted2]);
+      await sleep(speed);
+      while (j>=0&&arr[j]>key&&sorting) { arr[j+1]=arr[j]; j--; steps++; setBars(arr,[j+1],[j+1,j],[...sorted2]); await sleep(speed/2); }
+      arr[j+1]=key; sorted2.push(i);
+      info.innerHTML=`Insertion Sort: inserted ${key} at position ${j+1} | moves: ${steps}`;
+    }
+    if (sorting) { setBars(arr,[],[],[...Array(arr.length).keys()]); info.innerHTML=`✅ Insertion Sort done — ${steps} operations`; }
+  } else if (algo==='selection') {
+    info.innerHTML='Running <span class="sort-step">Selection Sort</span>...';
+    const n=arr.length;
+    for (let i=0;i<n-1&&sorting;i++) {
+      let minIdx=i;
+      for (let j=i+1;j<n&&sorting;j++) { setBars(arr,[minIdx,j],[],[...Array(i).keys()]); await sleep(speed/2); steps++; if (arr[j]<arr[minIdx]) minIdx=j; }
+      if (minIdx!==i) { [arr[i],arr[minIdx]]=[arr[minIdx],arr[i]]; setBars(arr,[],[i,minIdx],[...Array(i).keys()]); await sleep(speed/2); }
+      info.innerHTML=`Selection Sort: placed ${arr[i]} at index ${i} | comparisons: ${steps}`;
+    }
+    if (sorting) { setBars(arr,[],[],[...Array(arr.length).keys()]); info.innerHTML=`✅ Selection Sort done — ${steps} comparisons`; }
+  }
+  sortArr=[...arr];
+  sorting=false;
+}
+
+/* ═══════════════════════════════════════
+   SQL PLAYGROUND
+═══════════════════════════════════════ */
+const DB = {
+  students: [
+    {id:1,name:'Alice',age:17,grade:'A',subject:'Maths'},
+    {id:2,name:'Bob',age:16,grade:'B',subject:'Physics'},
+    {id:3,name:'Carol',age:18,grade:'A',subject:'Maths'},
+    {id:4,name:'Dave',age:15,grade:'C',subject:'Biology'},
+    {id:5,name:'Eve',age:17,grade:'B',subject:'Chemistry'},
+    {id:6,name:'Frank',age:16,grade:'A',subject:'Physics'},
+    {id:7,name:'Grace',age:18,grade:'C',subject:'Maths'},
+    {id:8,name:'Henry',age:15,grade:'B',subject:'Biology'},
+  ],
+  scores: [
+    {student_id:1,score:92,exam:'Mid-term'},{student_id:2,score:74,exam:'Mid-term'},
+    {student_id:3,score:88,exam:'Mid-term'},{student_id:4,score:61,exam:'Mid-term'},
+    {student_id:5,score:79,exam:'Mid-term'},{student_id:6,score:95,exam:'Mid-term'},
+    {student_id:7,score:58,exam:'Final'},{student_id:8,score:83,exam:'Final'},
+    {student_id:1,score:97,exam:'Final'},{student_id:3,score:91,exam:'Final'},
+  ]
+};
+
+function runSQL() {
+  const raw = document.getElementById('sqlInput').value.trim().replace(/\s+/g,' ');
+  const out = document.getElementById('sqlOut');
+  try {
+    const result = parseSQL(raw);
+    if (result && result.rows && result.rows.length>0) {
+      let html=`<table class="sql-result-table"><tr>${result.cols.map(c=>`<th>${c}</th>`).join('')}</tr>`;
+      result.rows.forEach(r=>{ html+=`<tr>${result.cols.map(c=>`<td>${r[c]===undefined?'NULL':r[c]}</td>`).join('')}</tr>`; });
+      html+=`</table><div class="sql-msg">${result.rows.length} row(s) returned.</div>`;
+      out.innerHTML=html;
+    } else if (result && result.msg) {
+      out.innerHTML=`<div class="sql-msg">✅ ${result.msg}</div>`;
+    } else {
+      out.innerHTML=`<div class="sql-msg">No results found.</div>`;
+    }
+  } catch(e) {
+    out.innerHTML=`<div class="sql-msg">❌ Error: ${e.message}</div>`;
+  }
+}
+
+function parseSQL(sql) {
+  const upper = sql.toUpperCase();
+  // SELECT
+  if (upper.startsWith('SELECT')) {
+    const fromMatch = sql.match(/FROM\s+(\w+)/i);
+    if (!fromMatch) throw new Error('Missing FROM clause');
+    const tbl = fromMatch[1].toLowerCase();
+    if (!DB[tbl]) throw new Error(`Table '${tbl}' not found`);
+    let rows = [...DB[tbl]];
+    // WHERE
+    const whereMatch = sql.match(/WHERE\s+(.+?)(?=ORDER|GROUP|LIMIT|$)/i);
+    if (whereMatch) rows = rows.filter(r => evalWhere(r, whereMatch[1].trim()));
+    // ORDER BY
+    const orderMatch = sql.match(/ORDER\s+BY\s+(\w+)(?:\s+(ASC|DESC))?/i);
+    if (orderMatch) {
+      const col=orderMatch[1], dir=(orderMatch[2]||'ASC').toUpperCase();
+      rows.sort((a,b)=>dir==='ASC'?(a[col]>b[col]?1:-1):(a[col]<b[col]?1:-1));
+    }
+    // SELECT cols
+    const selPart = sql.match(/SELECT\s+(.*?)\s+FROM/i)[1].trim();
+    let cols;
+    if (selPart==='*') { cols=Object.keys(rows[0]||DB[tbl][0]||{}); }
+    else if (upper.includes('COUNT(*)')) { return {cols:['COUNT(*)'],rows:[{'COUNT(*)':rows.length}]}; }
+    else { cols=selPart.split(',').map(c=>c.trim()); }
+    return {cols, rows: rows.map(r=>{ const o={}; cols.forEach(c=>{o[c]=r[c]}); return o; })};
+  }
+  // INSERT
+  if (upper.startsWith('INSERT')) {
+    const m=sql.match(/INTO\s+(\w+)\s+VALUES\s*\((.+)\)/i);
+    if(!m) throw new Error('Invalid INSERT syntax');
+    const tbl=m[1].toLowerCase();
+    if(!DB[tbl]) throw new Error(`Table '${tbl}' not found`);
+    const vals=m[2].split(',').map(v=>v.trim().replace(/^['"]|['"]$/g,''));
+    const cols=Object.keys(DB[tbl][0]);
+    const rec={}; cols.forEach((c,i)=>rec[c]=isNaN(vals[i])?vals[i]:Number(vals[i]));
+    DB[tbl].push(rec);
+    return {msg:`1 row inserted into ${tbl}.`};
+  }
+  // UPDATE
+  if (upper.startsWith('UPDATE')) {
+    const m=sql.match(/UPDATE\s+(\w+)\s+SET\s+(.+?)\s+WHERE\s+(.+)/i);
+    if(!m) throw new Error('Invalid UPDATE syntax');
+    const tbl=m[1].toLowerCase(); if(!DB[tbl]) throw new Error(`Table '${tbl}' not found`);
+    let count=0;
+    DB[tbl].forEach(r=>{ if(evalWhere(r,m[3].trim())){ const [col,,val]=m[2].trim().split(/\s*=\s*/); r[col.trim()]=isNaN(val.replace(/'/g,''))?val.replace(/'/g,''):Number(val); count++; } });
+    return {msg:`${count} row(s) updated.`};
+  }
+  // DELETE
+  if (upper.startsWith('DELETE')) {
+    const m=sql.match(/FROM\s+(\w+)\s+WHERE\s+(.+)/i);
+    if(!m) throw new Error('Invalid DELETE syntax');
+    const tbl=m[1].toLowerCase(); if(!DB[tbl]) throw new Error(`Table '${tbl}' not found`);
+    const before=DB[tbl].length; DB[tbl]=DB[tbl].filter(r=>!evalWhere(r,m[2].trim()));
+    return {msg:`${before-DB[tbl].length} row(s) deleted.`};
+  }
+  throw new Error('Unsupported SQL command. Try SELECT, INSERT, UPDATE, or DELETE.');
+}
+
+function evalWhere(row, cond) {
+  // Handle simple comparisons
+  const ops = [['>=','gte'],['<=','lte'],['>','gt'],['<','lt'],['!=','ne'],['=','eq']];
+  for (const [op,name] of ops) {
+    if (cond.includes(op)) {
+      let [l,r]=cond.split(op).map(s=>s.trim());
+      const lv=isNaN(row[l])?row[l]:(row[l]);
+      const rv=r.replace(/^['"]|['"]$/g,'');
+      const rvn = isNaN(rv)?rv:Number(rv);
+      if (name==='eq') return lv==rv||lv==rvn;
+      if (name==='ne') return lv!=rv&&lv!=rvn;
+      if (name==='gt') return Number(lv)>Number(rvn);
+      if (name==='lt') return Number(lv)<Number(rvn);
+      if (name==='gte') return Number(lv)>=Number(rvn);
+      if (name==='lte') return Number(lv)<=Number(rvn);
+    }
+  }
+  if (cond.toUpperCase().includes(' LIKE ')) {
+    const [col,pat]=cond.split(/\s+LIKE\s+/i).map(s=>s.trim().replace(/^['"]|['"]$/g,''));
+    const regex=new RegExp('^'+pat.replace(/%/g,'.*').replace(/_/g,'.')+'$','i');
+    return regex.test(row[col]||'');
+  }
+  return true;
+}
+
+/* ═══════════════════════════════════════
+   OSI LAYERS
+═══════════════════════════════════════ */
+const osiData = [
+  {n:7,name:'Application',color:'#c0392b',desc:'User-facing protocols and apps',proto:'HTTP, HTTPS, FTP, SMTP, DNS'},
+  {n:6,name:'Presentation',color:'#e67e22',desc:'Data format, encryption, compression',proto:'SSL/TLS, JPEG, ASCII'},
+  {n:5,name:'Session',color:'#f39c12',desc:'Manage sessions between applications',proto:'NetBIOS, RPC'},
+  {n:4,name:'Transport',color:'#27ae60',desc:'End-to-end communication, error recovery',proto:'TCP, UDP'},
+  {n:3,name:'Network',color:'#2980b9',desc:'Routing and logical addressing',proto:'IP, ICMP, OSPF'},
+  {n:2,name:'Data Link',color:'#8e44ad',desc:'MAC addressing, error detection',proto:'Ethernet, Wi-Fi, ARP'},
+  {n:1,name:'Physical',color:'#7f8c8d',desc:'Bits over physical medium (cables, signals)',proto:'USB, RJ45, Fibre'},
+];
+function buildOSI() {
+  const el = document.getElementById('osiLayers');
+  if (!el) return;
+  el.innerHTML = osiData.map(l=>`
+    <div class="osi-layer" style="background:${l.color}18;padding:8px 12px;border-radius:8px;margin-bottom:6px">
+      <div class="osi-num" style="background:${l.color}">${l.n}</div>
+      <div class="osi-name">${l.name}</div>
+      <div class="osi-desc">${l.desc}</div>
+      <div class="osi-proto">${l.proto}</div>
+    </div>`).join('');
+}
+
+/* ═══════════════════════════════════════
+   ASCII TABLE
+═══════════════════════════════════════ */
+function buildASCII() {
+  const el = document.getElementById('asciiTable');
+  if (!el) return;
+  const special = {0:'NUL',1:'SOH',2:'STX',3:'ETX',4:'EOT',5:'ENQ',6:'ACK',7:'BEL',8:'BS',9:'TAB',10:'LF',11:'VT',12:'FF',13:'CR',14:'SO',15:'SI',16:'DLE',17:'DC1',18:'DC2',19:'DC3',20:'DC4',21:'NAK',22:'SYN',23:'ETB',24:'CAN',25:'EM',26:'SUB',27:'ESC',28:'FS',29:'GS',30:'RS',31:'US',32:'SP',127:'DEL'};
+  let html = '<tr><th>Dec</th><th>Hex</th><th>Bin</th><th>Char</th><th>Dec</th><th>Hex</th><th>Bin</th><th>Char</th><th>Dec</th><th>Hex</th><th>Bin</th><th>Char</th><th>Dec</th><th>Hex</th><th>Bin</th><th>Char</th></tr>';
+  for (let row=0;row<32;row++) {
+    html+='<tr>';
+    for (let col=0;col<4;col++) {
+      const n=row+col*32;
+      const ch = special[n] ? `<span style="color:#c8a8ff">${special[n]}</span>` : `<span style="color:#4cd98a">${String.fromCharCode(n)}</span>`;
+      html+=`<td>${n}</td><td>${n.toString(16).toUpperCase().padStart(2,'0')}</td><td style="font-size:.75rem">${n.toString(2).padStart(7,'0')}</td><td>${ch}</td>`;
+    }
+    html+='</tr>';
+  }
+  el.innerHTML=html;
+}
+
+/* ═══════════════════════════════════════
+   SIDEBAR & UTILS
+═══════════════════════════════════════ */
+function toggleSB(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sbOvl').classList.toggle('open');}
+function goTo(id,e){if(e)e.preventDefault();const el=document.getElementById(id);if(!el)return;el.scrollIntoView({behavior:'smooth',block:'start'});if(window.innerWidth<=768)toggleSB();document.querySelectorAll('.cl').forEach(l=>l.classList.remove('active'));if(e&&e.currentTarget)e.currentTarget.classList.add('active');}
+function filterSecs(q){q=q.toLowerCase().trim();document.querySelectorAll('.fsec').forEach(s=>{s.classList.toggle('hidden',q&&!s.textContent.toLowerCase().includes(q));});}
+function cpf(btn){const b=btn.closest('.fbox,.code-block');const t=b.innerText.replace(/^Copy\n|^Copied!\n/,'').trim();navigator.clipboard.writeText(t).then(()=>{btn.textContent='Copied!';btn.style.cssText='background:var(--sc-green);color:#fff;border-color:var(--sc-green)';setTimeout(()=>{btn.textContent='Copy';btn.style.cssText='';},2000);});}
+const secs=document.querySelectorAll('.fsec');
+window.addEventListener('scroll',()=>{let cur='';secs.forEach(s=>{if(window.scrollY+100>=s.offsetTop)cur=s.id;});document.querySelectorAll('.cl').forEach(l=>{l.classList.remove('active');if((l.getAttribute('onclick')||'').includes("'"+cur+"'"))l.classList.add('active');});});
+
+
+buildGateUI();
+buildAllTT();
+buildOSI();
+buildASCII();
+initBars();
+</script>
+</body>
+</html>

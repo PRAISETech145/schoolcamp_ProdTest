@@ -1,0 +1,1620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Physics Formula Library | SchoolCamp 🏕</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Fira+Code:wght@400;500&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --sc-green: #1a9e5a;
+      --sc-dark: #0f1c14;
+      --sc-light-green: #e8f5ee;
+      --sc-accent: #4cd98a;
+      --sidebar-w: 270px;
+    }
+    * { box-sizing: border-box; }
+    body { background: #f4f7f5; font-family: 'Nunito', sans-serif; margin: 0; }
+
+    .navbar { background: var(--sc-dark) !important; position: sticky; top: 0; z-index: 1030; }
+    .navbar-brand { color: #fff !important; font-weight: 800; font-size: 1.4rem; }
+    .navbar-brand span { color: var(--sc-accent); }
+    .nav-link { color: #cde8d8 !important; }
+    .nav-link:hover { color: #fff !important; }
+
+    .page-wrapper { display: flex; min-height: calc(100vh - 56px); }
+
+    #sidebar {
+      width: var(--sidebar-w); min-width: var(--sidebar-w);
+      background: var(--sc-dark); color: #cde8d8;
+      position: sticky; top: 56px; height: calc(100vh - 56px);
+      overflow-y: auto; transition: transform 0.3s ease;
+      z-index: 1020; flex-shrink: 0;
+    }
+    #sidebar::-webkit-scrollbar { width: 5px; }
+    #sidebar::-webkit-scrollbar-thumb { background: #2a5c3a; border-radius: 10px; }
+
+    .sidebar-header {
+      background: #0a1510; padding: 16px 20px;
+      font-weight: 800; font-size: 0.85rem; letter-spacing: 1.5px;
+      text-transform: uppercase; color: var(--sc-accent);
+      border-bottom: 1px solid #1e3828;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .sidebar-search { padding: 12px 14px; border-bottom: 1px solid #1e3828; }
+    .sidebar-search input {
+      background: #1a2e20; border: 1px solid #2a5c3a; color: #cde8d8;
+      border-radius: 8px; padding: 7px 12px; width: 100%;
+      font-size: 13px; outline: none;
+    }
+    .sidebar-search input::placeholder { color: #6aad82; }
+    .sidebar-search input:focus { border-color: var(--sc-accent); }
+
+    .sidebar-nav .category-link {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 20px; color: #9ecfb0; text-decoration: none;
+      font-size: 0.88rem; font-weight: 600;
+      border-left: 3px solid transparent; transition: all 0.2s; cursor: pointer;
+    }
+    .sidebar-nav .category-link:hover,
+    .sidebar-nav .category-link.active {
+      color: #fff; background: rgba(76,217,138,0.1); border-left-color: var(--sc-accent);
+    }
+    .sidebar-nav .category-link i { font-size: 1rem; color: var(--sc-accent); }
+
+    #sidebarOverlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.55); z-index: 1019;
+    }
+
+    #mainContent { flex: 1; padding: 28px 24px; overflow-x: hidden; min-width: 0; }
+
+    .page-title { font-family: 'Merriweather', serif; font-size: 1.9rem; font-weight: 700; color: var(--sc-dark); margin-bottom: 4px; }
+    .page-subtitle { color: #5a8a6a; font-size: 0.95rem; margin-bottom: 28px; }
+
+    .formula-section { margin-bottom: 40px; scroll-margin-top: 80px; }
+    .formula-section.hidden { display: none; }
+
+    .section-title {
+      font-family: 'Merriweather', serif; font-size: 1.25rem; font-weight: 700;
+      color: var(--sc-dark); border-left: 4px solid var(--sc-green);
+      padding-left: 12px; margin-bottom: 16px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .section-title i { color: var(--sc-green); font-size: 1.1rem; }
+
+    .formula-card {
+      background: #fff; border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+      overflow: hidden; margin-bottom: 14px; border: none;
+      transition: box-shadow 0.2s;
+    }
+    .formula-card:hover { box-shadow: 0 4px 20px rgba(26,158,90,0.15); }
+
+    .formula-card-header {
+      background: var(--sc-light-green); border-bottom: 1px solid #d2e8db;
+      padding: 10px 16px; font-weight: 700; font-size: 0.92rem; color: #0f3d22;
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 6px;
+    }
+    .formula-body { padding: 14px 16px; }
+
+    .formula-box {
+      background: #0f1c14; border-radius: 8px; padding: 14px 18px;
+      font-family: 'Fira Code', monospace; font-size: 0.93rem;
+      color: #4cd98a; margin: 8px 0; position: relative;
+      overflow-x: auto; line-height: 1.9;
+    }
+    .formula-box .var { color: #fda085; }
+    .formula-box .kw  { color: #f6d365; font-weight: bold; }
+    .formula-box .sym { color: #89d8ff; }
+    .formula-box .unit { color: #c8a8ff; font-size: 0.82rem; }
+
+    .copy-btn {
+      position: absolute; top: 8px; right: 8px;
+      background: rgba(76,217,138,0.15); border: 1px solid rgba(76,217,138,0.3);
+      color: var(--sc-accent); border-radius: 6px; padding: 2px 8px;
+      font-size: 11px; cursor: pointer; transition: all 0.2s;
+    }
+    .copy-btn:hover { background: var(--sc-green); color: #fff; border-color: var(--sc-green); }
+
+    .formula-note { font-size: 0.83rem; color: #5a8a6a; margin-top: 6px; font-style: italic; }
+    .formula-note strong { color: #1a7a42; font-style: normal; }
+
+    .formula-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    .formula-table th { background: var(--sc-light-green); color: #0f3d22; padding: 8px 12px; text-align: left; font-weight: 700; border-bottom: 2px solid #d2e8db; }
+    .formula-table td { padding: 8px 12px; border-bottom: 1px solid #eef5f1; vertical-align: middle; }
+    .formula-table tr:hover td { background: #f8fbf9; }
+    .formula-table code { background: #0f1c14; color: #4cd98a; border-radius: 5px; padding: 2px 7px; font-family: 'Fira Code', monospace; font-size: 0.88rem; }
+
+    #sidebarToggle {
+      display: none; background: var(--sc-green); color: #fff; border: none;
+      border-radius: 8px; padding: 6px 12px; font-size: 0.85rem;
+      font-weight: 700; cursor: pointer; align-items: center; gap: 6px;
+    }
+
+    .level-pill { font-size: 10px; border-radius: 20px; padding: 2px 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    .level-basic { background: #d4edda; color: #155724; }
+    .level-inter { background: #fff3cd; color: #856404; }
+    .level-adv   { background: #f8d7da; color: #721c24; }
+
+    .constants-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; margin-top: 4px; }
+    .constant-item { background: #0f1c14; border-radius: 8px; padding: 10px 14px; font-family: 'Fira Code', monospace; font-size: 0.82rem; }
+    .constant-item .c-name { color: #f6d365; font-weight: bold; font-size: 0.78rem; margin-bottom: 2px; }
+    .constant-item .c-sym  { color: #fda085; }
+    .constant-item .c-val  { color: #4cd98a; }
+
+    .sc-breadcrumb { font-size: 0.82rem; color: #7aad92; margin-bottom: 20px; }
+    .sc-breadcrumb a { color: var(--sc-green); text-decoration: none; }
+
+    footer { background: var(--sc-dark); color: #7aad92; padding: 30px 0; margin-top: 20px; }
+    footer a { color: var(--sc-accent); text-decoration: none; }
+
+    /* EXPERIMENT CARDS */
+    .exp-card { background:#fff; border-radius:12px; box-shadow:0 2px 12px rgba(0,0,0,.07); overflow:hidden; margin-bottom:22px; border:none; transition:box-shadow .2s; }
+    .exp-card:hover { box-shadow:0 4px 20px rgba(26,158,90,.15); }
+    .exp-header { background:var(--sc-dark); padding:12px 18px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; }
+    .exp-header .exp-title { color:#fff; font-weight:800; font-size:1rem; }
+    .exp-header .exp-sub { color:var(--sc-accent); font-size:.8rem; font-weight:600; }
+    .exp-body { padding:0; }
+    .exp-layout { display:grid; grid-template-columns:1fr 1fr; gap:0; }
+    .exp-left { padding:16px 18px; border-right:1px solid #eef5f1; }
+    .exp-right { padding:16px 18px; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#f9fcfa; }
+    .exp-right svg { max-width:100%; height:auto; }
+    .exp-tag { display:inline-block; border-radius:6px; padding:2px 9px; font-size:.75rem; font-weight:700; text-transform:uppercase; letter-spacing:.5px; }
+    .tag-mech { background:#d4edda; color:#155724; }
+    .tag-elec { background:#cce5ff; color:#004085; }
+    .tag-optic { background:#fff3cd; color:#856404; }
+    .tag-modern { background:#f8d7da; color:#721c24; }
+    .tag-wave { background:#e2d9f3; color:#4a0e8f; }
+    .exp-row { margin-bottom:8px; }
+    .exp-row-label { font-weight:700; font-size:.8rem; color:#1a9e5a; text-transform:uppercase; letter-spacing:.5px; margin-bottom:2px; }
+    .exp-row-val { font-size:.86rem; color:#333; line-height:1.5; }
+    .exp-eq { background:#0f1c14; border-radius:7px; padding:8px 12px; font-family:'Fira Code',monospace; font-size:.82rem; color:#4cd98a; margin:6px 0; line-height:1.8; }
+    .exp-eq .var { color:#fda085; }
+    .exp-eq .kw { color:#f6d365; font-weight:bold; }
+    .exp-eq .sym { color:#89d8ff; }
+    .exp-divider { height:1px; background:#eef5f1; margin:10px 0; }
+    .exp-diagram-cap { font-size:.75rem; color:#5a8a6a; text-align:center; margin-top:6px; font-style:italic; }
+    @media(max-width:700px){ .exp-layout{ grid-template-columns:1fr; } .exp-left{ border-right:none; border-bottom:1px solid #eef5f1; } }
+
+    @media (max-width: 768px) {
+      #sidebar {
+        position: fixed; top: 56px; left: 0; height: calc(100vh - 56px);
+        transform: translateX(-100%); box-shadow: 4px 0 20px rgba(0,0,0,0.3);
+      }
+      #sidebar.open { transform: translateX(0); }
+      #sidebarOverlay.open { display: block; }
+      #sidebarToggle { display: flex; }
+      #mainContent { padding: 20px 16px; }
+      .page-title { font-size: 1.45rem; }
+      .formula-box { font-size: 0.8rem; }
+      .constants-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 420px) { .constants-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark">
+  <div class="container-fluid px-3">
+    <a class="navbar-brand" href="#">🏕 School<span>Camp</span></a>
+    <div class="ms-auto d-flex align-items-center gap-3">
+      <button id="sidebarToggle" onclick="toggleSidebar()">
+        <i class="bi bi-list"></i> Topics
+      </button>
+      <a class="nav-link d-none d-lg-block" href="{% url 'forum:home' %}"><i class="bi bi-house"></i> Home</a>
+      <a class="nav-link d-none d-lg-block" href="{% url 'GCE:list' %}"></i> GCE</a>
+    </div>
+  </div>
+</nav>
+
+<div id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<div class="page-wrapper">
+  <aside id="sidebar">
+    <div class="sidebar-header"><i class="bi bi-lightning-charge"></i> Physics Topics</div>
+    <div class="sidebar-search">
+      <input type="text" id="sidebarSearch" placeholder="🔍 Search formulas…" oninput="filterSections(this.value)">
+    </div>
+    <nav class="sidebar-nav">
+      <a class="category-link active" onclick="goTo('mechanics',event)" href="#"><i class="bi bi-arrow-right-circle"></i> Mechanics</a>
+      <a class="category-link" onclick="goTo('kinematics',event)" href="#"><i class="bi bi-speedometer2"></i> Kinematics</a>
+      <a class="category-link" onclick="goTo('forces',event)" href="#"><i class="bi bi-arrows-move"></i> Forces & Newton's Laws</a>
+      <a class="category-link" onclick="goTo('energy',event)" href="#"><i class="bi bi-battery-charging"></i> Work, Energy & Power</a>
+      <a class="category-link" onclick="goTo('waves',event)" href="#"><i class="bi bi-soundwave"></i> Waves & Oscillations</a>
+      <a class="category-link" onclick="goTo('thermal',event)" href="#"><i class="bi bi-thermometer-half"></i> Thermal Physics</a>
+      <a class="category-link" onclick="goTo('electricity',event)" href="#"><i class="bi bi-plug"></i> Electricity & Circuits</a>
+      <a class="category-link" onclick="goTo('magnetism',event)" href="#"><i class="bi bi-magnet"></i> Magnetism & EM</a>
+      <a class="category-link" onclick="goTo('optics',event)" href="#"><i class="bi bi-eye"></i> Light & Optics</a>
+      <a class="category-link" onclick="goTo('modern',event)" href="#"><i class="bi bi-atom"></i> Modern Physics</a>
+      <a class="category-link" onclick="goTo('gravitation',event)" href="#"><i class="bi bi-globe"></i> Gravitation</a>
+      <a class="category-link" onclick="goTo('fluids',event)" href="#"><i class="bi bi-droplet"></i> Fluids</a>
+      <a class="category-link" onclick="goTo('constants',event)" href="#"><i class="bi bi-bookmark-star"></i> Constants</a>
+      <a class="category-link" onclick="goTo('experiments',event)" href="#"><i class="bi bi-eyedropper"></i> Key Experiments</a>
+    </nav>
+  </aside>
+
+  <main id="mainContent">
+     
+    <h1 class="page-title">⚡ Physics Formula Library</h1>
+    <p class="page-subtitle">All essential physics formulas — from Basic to Advanced — in one place. Use the sidebar to jump to any topic.</p>
+
+    <!-- MECHANICS -->
+    <section class="formula-section" id="mechanics" data-title="Mechanics momentum circular SHM">
+      <div class="section-title"><i class="bi bi-arrow-right-circle"></i> Mechanics</div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Momentum & Impulse <span class="level-pill level-basic">Basic</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            <span class="kw">Momentum:</span>  <span class="var">p</span> <span class="sym">=</span> <span class="var">mv</span>  <span class="unit">[kg·m/s]</span><br>
+            <span class="kw">Impulse:</span>  <span class="var">J</span> <span class="sym">=</span> <span class="var">FΔt</span> <span class="sym">=</span> <span class="var">Δp</span>  <span class="unit">[N·s]</span><br>
+            <span class="kw">Conservation:</span>  <span class="var">m₁u₁</span> <span class="sym">+</span> <span class="var">m₂u₂</span> <span class="sym">=</span> <span class="var">m₁v₁</span> <span class="sym">+</span> <span class="var">m₂v₂</span>
+          </div>
+          <p class="formula-note"><strong>m</strong> = mass, <strong>v</strong> = velocity, <strong>u</strong> = initial velocity.</p>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Circular Motion <span class="level-pill level-inter">Intermediate</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            <span class="kw">Angular velocity:</span>  <span class="var">ω</span> <span class="sym">=</span> 2π/<span class="var">T</span> <span class="sym">=</span> 2π<span class="var">f</span>  <span class="unit">[rad/s]</span><br>
+            <span class="kw">Linear speed:</span>  <span class="var">v</span> <span class="sym">=</span> <span class="var">ωr</span><br>
+            <span class="kw">Centripetal accel:</span>  <span class="var">a</span> <span class="sym">=</span> <span class="var">v</span>²/<span class="var">r</span> <span class="sym">=</span> <span class="var">ω²r</span>  <span class="unit">[m/s²]</span><br>
+            <span class="kw">Centripetal force:</span>  <span class="var">F</span> <span class="sym">=</span> <span class="var">mv</span>²/<span class="var">r</span> <span class="sym">=</span> <span class="var">mω²r</span>  <span class="unit">[N]</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Rotational Motion <span class="level-pill level-adv">Advanced</span></div>
+        <div class="formula-body">
+          <table class="formula-table">
+            <tr><th>Quantity</th><th>Formula</th><th>Unit</th></tr>
+            <tr><td>Torque</td><td><code>τ = rF sinθ</code></td><td>N·m</td></tr>
+            <tr><td>Moment of Inertia</td><td><code>I = Σmr²</code></td><td>kg·m²</td></tr>
+            <tr><td>Angular momentum</td><td><code>L = Iω</code></td><td>kg·m²/s</td></tr>
+            <tr><td>Rotational KE</td><td><code>KE = ½Iω²</code></td><td>J</td></tr>
+            <tr><td>Newton's 2nd (rot.)</td><td><code>τ = Iα</code></td><td>N·m</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Simple Harmonic Motion (SHM) <span class="level-pill level-adv">Advanced</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            <span class="var">x</span> <span class="sym">=</span> <span class="var">A</span> cos(<span class="var">ωt</span> <span class="sym">+</span> <span class="var">φ</span>)<br>
+            <span class="kw">Velocity:</span>  <span class="var">v</span> <span class="sym">=</span> <span class="sym">±ω</span>√(<span class="var">A</span>² <span class="sym">−</span> <span class="var">x</span>²)<br>
+            <span class="kw">Acceleration:</span>  <span class="var">a</span> <span class="sym">=</span> <span class="sym">−ω²x</span><br>
+            <span class="kw">Period (pendulum):</span>  <span class="var">T</span> <span class="sym">=</span> 2π√(<span class="var">l</span>/<span class="var">g</span>)<br>
+            <span class="kw">Period (spring):</span>  <span class="var">T</span> <span class="sym">=</span> 2π√(<span class="var">m</span>/<span class="var">k</span>)
+          </div>
+          <p class="formula-note"><strong>A</strong> = amplitude, <strong>ω</strong> = angular frequency, <strong>k</strong> = spring constant.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- KINEMATICS -->
+    <section class="formula-section" id="kinematics" data-title="Kinematics SUVAT projectile motion">
+      <div class="section-title"><i class="bi bi-speedometer2"></i> Kinematics</div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Equations of Motion (SUVAT) <span class="level-pill level-basic">Basic</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            <span class="var">v</span> <span class="sym">=</span> <span class="var">u</span> <span class="sym">+</span> <span class="var">at</span><br>
+            <span class="var">s</span> <span class="sym">=</span> <span class="var">ut</span> <span class="sym">+</span> ½<span class="var">at</span>²<br>
+            <span class="var">v</span>² <span class="sym">=</span> <span class="var">u</span>² <span class="sym">+</span> 2<span class="var">as</span><br>
+            <span class="var">s</span> <span class="sym">=</span> ½(<span class="var">u</span> <span class="sym">+</span> <span class="var">v</span>)<span class="var">t</span><br>
+            <span class="var">s</span> <span class="sym">=</span> <span class="var">vt</span> <span class="sym">−</span> ½<span class="var">at</span>²
+          </div>
+          <p class="formula-note"><strong>s</strong> = displacement, <strong>u</strong> = initial velocity, <strong>v</strong> = final velocity, <strong>a</strong> = acceleration, <strong>t</strong> = time.</p>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Projectile Motion <span class="level-pill level-inter">Intermediate</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            <span class="kw">Horizontal:</span>  <span class="var">x</span> <span class="sym">=</span> <span class="var">u</span>cos<span class="var">θ</span> · <span class="var">t</span><br>
+            <span class="kw">Vertical:</span>  <span class="var">y</span> <span class="sym">=</span> <span class="var">u</span>sin<span class="var">θ</span> · <span class="var">t</span> <span class="sym">−</span> ½<span class="var">gt</span>²<br>
+            <span class="kw">Time of flight:</span>  <span class="var">T</span> <span class="sym">=</span> 2<span class="var">u</span>sin<span class="var">θ</span> / <span class="var">g</span><br>
+            <span class="kw">Max height:</span>  <span class="var">H</span> <span class="sym">=</span> <span class="var">u</span>²sin²<span class="var">θ</span> / (2<span class="var">g</span>)<br>
+            <span class="kw">Range:</span>  <span class="var">R</span> <span class="sym">=</span> <span class="var">u</span>²sin(2<span class="var">θ</span>) / <span class="var">g</span>
+          </div>
+          <p class="formula-note">Maximum range when <strong>θ = 45°</strong>. g ≈ 9.8 m/s².</p>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Basic Motion Quantities <span class="level-pill level-basic">Basic</span></div>
+        <div class="formula-body">
+          <table class="formula-table">
+            <tr><th>Quantity</th><th>Formula</th><th>Unit</th></tr>
+            <tr><td>Speed</td><td><code>v = d/t</code></td><td>m/s</td></tr>
+            <tr><td>Acceleration</td><td><code>a = Δv/Δt</code></td><td>m/s²</td></tr>
+            <tr><td>Average velocity</td><td><code>v̄ = (u+v)/2</code></td><td>m/s</td></tr>
+            <tr><td>Free-fall</td><td><code>g = 9.8 m/s²</code></td><td>m/s²</td></tr>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- FORCES -->
+    <section class="formula-section" id="forces" data-title="Forces Newton friction spring Hooke weight">
+      <div class="section-title"><i class="bi bi-arrows-move"></i> Forces & Newton's Laws</div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Newton's Laws <span class="level-pill level-basic">Basic</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            <span class="kw">1st Law:</span>  Object remains at rest or uniform motion unless net force acts.<br>
+            <span class="kw">2nd Law:</span>  <span class="var">F</span> <span class="sym">=</span> <span class="var">ma</span>  <span class="unit">[N]</span><br>
+            <span class="kw">3rd Law:</span>  Every action has an equal and opposite reaction.
+          </div>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Friction <span class="level-pill level-basic">Basic</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            <span class="kw">Static friction:</span>  <span class="var">f</span> ≤ <span class="var">μₛN</span><br>
+            <span class="kw">Kinetic friction:</span>  <span class="var">f</span> <span class="sym">=</span> <span class="var">μₖN</span><br>
+            <span class="kw">Normal (flat):</span>  <span class="var">N</span> <span class="sym">=</span> <span class="var">mg</span><br>
+            <span class="kw">Normal (incline θ):</span>  <span class="var">N</span> <span class="sym">=</span> <span class="var">mg</span>cos<span class="var">θ</span>
+          </div>
+          <p class="formula-note"><strong>μ</strong> = coefficient of friction, <strong>N</strong> = normal reaction.</p>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Hooke's Law — Springs <span class="level-pill level-basic">Basic</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            <span class="var">F</span> <span class="sym">=</span> <span class="var">kx</span>  <span class="unit">[N]</span><br>
+            <span class="kw">Elastic PE:</span>  <span class="var">E</span> <span class="sym">=</span> ½<span class="var">kx</span>²  <span class="unit">[J]</span><br>
+            <span class="kw">Series:</span>  1/<span class="var">k</span> <span class="sym">=</span> 1/<span class="var">k₁</span> <span class="sym">+</span> 1/<span class="var">k₂</span><br>
+            <span class="kw">Parallel:</span>  <span class="var">k</span> <span class="sym">=</span> <span class="var">k₁</span> <span class="sym">+</span> <span class="var">k₂</span>
+          </div>
+          <p class="formula-note"><strong>k</strong> = spring constant (N/m), <strong>x</strong> = extension/compression.</p>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Weight & Apparent Weight <span class="level-pill level-basic">Basic</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            <span class="kw">Weight:</span>  <span class="var">W</span> <span class="sym">=</span> <span class="var">mg</span>  <span class="unit">[N]</span><br>
+            <span class="kw">Apparent (lift up):</span>  <span class="var">W'</span> <span class="sym">=</span> <span class="var">m</span>(<span class="var">g</span> <span class="sym">+</span> <span class="var">a</span>)<br>
+            <span class="kw">Apparent (lift down):</span>  <span class="var">W'</span> <span class="sym">=</span> <span class="var">m</span>(<span class="var">g</span> <span class="sym">−</span> <span class="var">a</span>)
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ENERGY -->
+    <section class="formula-section" id="energy" data-title="Work Energy Power efficiency kinetic potential">
+      <div class="section-title"><i class="bi bi-battery-charging"></i> Work, Energy & Power</div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Work & Energy <span class="level-pill level-basic">Basic</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            <span class="kw">Work:</span>  <span class="var">W</span> <span class="sym">=</span> <span class="var">Fd</span>cos<span class="var">θ</span>  <span class="unit">[J]</span><br>
+            <span class="kw">Kinetic Energy:</span>  <span class="var">KE</span> <span class="sym">=</span> ½<span class="var">mv</span>²  <span class="unit">[J]</span><br>
+            <span class="kw">Gravitational PE:</span>  <span class="var">PE</span> <span class="sym">=</span> <span class="var">mgh</span>  <span class="unit">[J]</span><br>
+            <span class="kw">Work-Energy Theorem:</span>  <span class="var">W</span><sub>net</sub> <span class="sym">=</span> Δ<span class="var">KE</span><br>
+            <span class="kw">Conservation:</span>  <span class="var">KE</span> <span class="sym">+</span> <span class="var">PE</span> <span class="sym">=</span> constant
+          </div>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Power & Efficiency <span class="level-pill level-basic">Basic</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            <span class="kw">Power:</span>  <span class="var">P</span> <span class="sym">=</span> <span class="var">W</span>/<span class="var">t</span> <span class="sym">=</span> <span class="var">Fv</span>  <span class="unit">[W]</span><br>
+            <span class="kw">Efficiency:</span>  η <span class="sym">=</span> (useful output / total input) × 100%
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WAVES -->
+    <section class="formula-section" id="waves" data-title="Waves Oscillations Sound Doppler resonance standing">
+      <div class="section-title"><i class="bi bi-soundwave"></i> Waves & Oscillations</div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Wave Properties <span class="level-pill level-basic">Basic</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            <span class="kw">Wave speed:</span>  <span class="var">v</span> <span class="sym">=</span> <span class="var">fλ</span>  <span class="unit">[m/s]</span><br>
+            <span class="kw">Period:</span>  <span class="var">T</span> <span class="sym">=</span> 1/<span class="var">f</span>  <span class="unit">[s]</span><br>
+            <span class="kw">Angular frequency:</span>  <span class="var">ω</span> <span class="sym">=</span> 2π<span class="var">f</span>  <span class="unit">[rad/s]</span>
+          </div>
+          <p class="formula-note"><strong>λ</strong> = wavelength, <strong>f</strong> = frequency.</p>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Sound & Intensity <span class="level-pill level-inter">Intermediate</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            <span class="kw">Intensity:</span>  <span class="var">I</span> <span class="sym">=</span> <span class="var">P</span>/(4π<span class="var">r</span>²)  <span class="unit">[W/m²]</span><br>
+            <span class="kw">Sound level:</span>  β <span class="sym">=</span> 10 log(<span class="var">I</span>/<span class="var">I₀</span>)  <span class="unit">[dB]</span><br>
+            <span class="kw">Doppler:</span>  <span class="var">f'</span> <span class="sym">=</span> <span class="var">f</span>(<span class="var">v</span> <span class="sym">±</span> <span class="var">v_obs</span>) / (<span class="var">v</span> <span class="sym">∓</span> <span class="var">v_src</span>)
+          </div>
+          <p class="formula-note"><strong>I₀</strong> = 10⁻¹² W/m². Speed of sound ≈ 343 m/s in air.</p>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Standing Waves & Resonance <span class="level-pill level-inter">Intermediate</span></div>
+        <div class="formula-body">
+          <table class="formula-table">
+            <tr><th>Condition</th><th>Formula</th></tr>
+            <tr><td>String / open pipe</td><td><code>fₙ = nv / 2L  (n = 1,2,3…)</code></td></tr>
+            <tr><td>Closed pipe (odd only)</td><td><code>fₙ = nv / 4L  (n = 1,3,5…)</code></td></tr>
+            <tr><td>Node spacing</td><td><code>λ/2</code></td></tr>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- THERMAL -->
+    <section class="formula-section" id="thermal" data-title="Thermal Heat Temperature gas laws thermodynamics expansion">
+      <div class="section-title"><i class="bi bi-thermometer-half"></i> Thermal Physics</div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Heat & Temperature <span class="level-pill level-basic">Basic</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            <span class="kw">Heat absorbed:</span>  <span class="var">Q</span> <span class="sym">=</span> <span class="var">mcΔT</span>  <span class="unit">[J]</span><br>
+            <span class="kw">Latent heat:</span>  <span class="var">Q</span> <span class="sym">=</span> <span class="var">mL</span>  <span class="unit">[J]</span><br>
+            <span class="kw">°C to K:</span>  <span class="var">T</span>(K) <span class="sym">=</span> <span class="var">T</span>(°C) <span class="sym">+</span> 273.15<br>
+            <span class="kw">°F to °C:</span>  <span class="var">T</span>(°C) <span class="sym">=</span> (<span class="var">T</span>(°F) <span class="sym">−</span> 32) × 5/9
+          </div>
+          <p class="formula-note"><strong>c</strong> = specific heat capacity, <strong>L</strong> = specific latent heat.</p>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Gas Laws <span class="level-pill level-inter">Intermediate</span></div>
+        <div class="formula-body">
+          <table class="formula-table">
+            <tr><th>Law</th><th>Formula</th></tr>
+            <tr><td>Boyle's (const. T)</td><td><code>P₁V₁ = P₂V₂</code></td></tr>
+            <tr><td>Charles's (const. P)</td><td><code>V₁/T₁ = V₂/T₂</code></td></tr>
+            <tr><td>Gay-Lussac's (const. V)</td><td><code>P₁/T₁ = P₂/T₂</code></td></tr>
+            <tr><td>Ideal Gas Law</td><td><code>PV = nRT</code></td></tr>
+            <tr><td>Combined Gas Law</td><td><code>P₁V₁/T₁ = P₂V₂/T₂</code></td></tr>
+          </table>
+          <p class="formula-note"><strong>R</strong> = 8.314 J/(mol·K). Temperature must be in Kelvin.</p>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Thermodynamics <span class="level-pill level-adv">Advanced</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            <span class="kw">1st Law:</span>  Δ<span class="var">U</span> <span class="sym">=</span> <span class="var">Q</span> <span class="sym">−</span> <span class="var">W</span><br>
+            <span class="kw">Carnot efficiency:</span>  η <span class="sym">=</span> 1 <span class="sym">−</span> <span class="var">T_cold</span> / <span class="var">T_hot</span><br>
+            <span class="kw">Entropy change:</span>  Δ<span class="var">S</span> <span class="sym">=</span> <span class="var">Q</span> / <span class="var">T</span>  <span class="unit">[J/K]</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Thermal Expansion <span class="level-pill level-basic">Basic</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            <span class="kw">Linear:</span>  Δ<span class="var">L</span> <span class="sym">=</span> <span class="var">L₀αΔT</span><br>
+            <span class="kw">Area:</span>  Δ<span class="var">A</span> <span class="sym">=</span> <span class="var">A₀</span>(2<span class="var">α</span>)Δ<span class="var">T</span><br>
+            <span class="kw">Volume:</span>  Δ<span class="var">V</span> <span class="sym">=</span> <span class="var">V₀γΔT</span>  <span class="unit">(γ ≈ 3α)</span>
+          </div>
+          <p class="formula-note"><strong>α</strong> = linear expansion coefficient.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ELECTRICITY -->
+    <section class="formula-section" id="electricity" data-title="Electricity Circuits Current Voltage Ohm Kirchhoff capacitor resistor">
+      <div class="section-title"><i class="bi bi-plug"></i> Electricity & Circuits</div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Ohm's Law & Fundamentals <span class="level-pill level-basic">Basic</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            <span class="kw">Ohm's Law:</span>  <span class="var">V</span> <span class="sym">=</span> <span class="var">IR</span>  <span class="unit">[V]</span><br>
+            <span class="kw">Current:</span>  <span class="var">I</span> <span class="sym">=</span> <span class="var">Q</span>/<span class="var">t</span>  <span class="unit">[A]</span><br>
+            <span class="kw">Power:</span>  <span class="var">P</span> <span class="sym">=</span> <span class="var">IV</span> <span class="sym">=</span> <span class="var">I</span>²<span class="var">R</span> <span class="sym">=</span> <span class="var">V</span>²/<span class="var">R</span>  <span class="unit">[W]</span><br>
+            <span class="kw">Energy:</span>  <span class="var">E</span> <span class="sym">=</span> <span class="var">Pt</span> <span class="sym">=</span> <span class="var">VIt</span>  <span class="unit">[J]</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Resistors & Capacitors <span class="level-pill level-inter">Intermediate</span></div>
+        <div class="formula-body">
+          <table class="formula-table">
+            <tr><th>Connection</th><th>Resistors</th><th>Capacitors</th></tr>
+            <tr><td>Series</td><td><code>R = R₁+R₂+…</code></td><td><code>1/C = 1/C₁+1/C₂+…</code></td></tr>
+            <tr><td>Parallel</td><td><code>1/R = 1/R₁+1/R₂+…</code></td><td><code>C = C₁+C₂+…</code></td></tr>
+          </table>
+          <div class="formula-box" style="margin-top:10px">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            <span class="kw">Capacitance:</span>  <span class="var">C</span> <span class="sym">=</span> <span class="var">Q</span>/<span class="var">V</span>  <span class="unit">[F]</span><br>
+            <span class="kw">Energy stored:</span>  <span class="var">E</span> <span class="sym">=</span> ½<span class="var">CV</span>²  <span class="unit">[J]</span><br>
+            <span class="kw">Resistivity:</span>  <span class="var">R</span> <span class="sym">=</span> <span class="var">ρL</span>/<span class="var">A</span>  <span class="unit">[Ω]</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Coulomb's Law & Electrostatics <span class="level-pill level-inter">Intermediate</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            <span class="kw">Coulomb's Law:</span>  <span class="var">F</span> <span class="sym">=</span> k<span class="var">q₁q₂</span>/<span class="var">r</span>²  <span class="unit">[N]</span><br>
+            <span class="kw">Electric field:</span>  <span class="var">E</span> <span class="sym">=</span> <span class="var">F</span>/<span class="var">q</span> <span class="sym">=</span> k<span class="var">Q</span>/<span class="var">r</span>²  <span class="unit">[N/C]</span><br>
+            <span class="kw">Electric potential:</span>  <span class="var">V</span> <span class="sym">=</span> k<span class="var">Q</span>/<span class="var">r</span>  <span class="unit">[V]</span><br>
+            <span class="kw">PE of charge:</span>  <span class="var">U</span> <span class="sym">=</span> k<span class="var">q₁q₂</span>/<span class="var">r</span>  <span class="unit">[J]</span>
+          </div>
+          <p class="formula-note"><strong>k</strong> = 8.99 × 10⁹ N·m²/C².</p>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Kirchhoff's Laws <span class="level-pill level-inter">Intermediate</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            <span class="kw">KCL (junction):</span>  Σ<span class="var">I_in</span> <span class="sym">=</span> Σ<span class="var">I_out</span><br>
+            <span class="kw">KVL (loop):</span>  Σ<span class="var">V</span> <span class="sym">=</span> 0  (around any closed loop)
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MAGNETISM -->
+    <section class="formula-section" id="magnetism" data-title="Magnetism Electromagnetic induction Faraday transformer flux">
+      <div class="section-title"><i class="bi bi-magnet"></i> Magnetism & Electromagnetism</div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Magnetic Force <span class="level-pill level-inter">Intermediate</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            <span class="kw">Force on charge:</span>  <span class="var">F</span> <span class="sym">=</span> <span class="var">qvB</span>sin<span class="var">θ</span>  <span class="unit">[N]</span><br>
+            <span class="kw">Force on wire:</span>  <span class="var">F</span> <span class="sym">=</span> <span class="var">BIL</span>sin<span class="var">θ</span>  <span class="unit">[N]</span><br>
+            <span class="kw">Torque on coil:</span>  <span class="var">τ</span> <span class="sym">=</span> <span class="var">NBIA</span>sin<span class="var">θ</span>
+          </div>
+          <p class="formula-note"><strong>B</strong> = magnetic flux density (T), <strong>N</strong> = number of turns.</p>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Electromagnetic Induction <span class="level-pill level-adv">Advanced</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            <span class="kw">Magnetic flux:</span>  Φ <span class="sym">=</span> <span class="var">BA</span>cos<span class="var">θ</span>  <span class="unit">[Wb]</span><br>
+            <span class="kw">Faraday's Law:</span>  ε <span class="sym">=</span> <span class="sym">−N</span> dΦ/d<span class="var">t</span>  <span class="unit">[V]</span><br>
+            <span class="kw">Motional EMF:</span>  ε <span class="sym">=</span> <span class="var">BLv</span><br>
+            <span class="kw">Transformer:</span>  <span class="var">V₁</span>/<span class="var">V₂</span> <span class="sym">=</span> <span class="var">N₁</span>/<span class="var">N₂</span> <span class="sym">=</span> <span class="var">I₂</span>/<span class="var">I₁</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- OPTICS -->
+    <section class="formula-section" id="optics" data-title="Light Optics Lens Mirror Refraction Snell diffraction Young">
+      <div class="section-title"><i class="bi bi-eye"></i> Light & Optics</div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Reflection & Refraction <span class="level-pill level-basic">Basic</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            <span class="kw">Law of reflection:</span>  <span class="var">θᵢ</span> <span class="sym">=</span> <span class="var">θᵣ</span><br>
+            <span class="kw">Snell's Law:</span>  <span class="var">n₁</span>sin<span class="var">θ₁</span> <span class="sym">=</span> <span class="var">n₂</span>sin<span class="var">θ₂</span><br>
+            <span class="kw">Refractive index:</span>  <span class="var">n</span> <span class="sym">=</span> <span class="var">c</span>/<span class="var">v</span><br>
+            <span class="kw">Critical angle (TIR):</span>  sin<span class="var">θ_c</span> <span class="sym">=</span> <span class="var">n₂</span>/<span class="var">n₁</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Lenses & Mirrors <span class="level-pill level-inter">Intermediate</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            <span class="kw">Mirror/Lens equation:</span>  1/<span class="var">f</span> <span class="sym">=</span> 1/<span class="var">v</span> <span class="sym">+</span> 1/<span class="var">u</span><br>
+            <span class="kw">Magnification:</span>  <span class="var">m</span> <span class="sym">=</span> <span class="var">v</span>/<span class="var">u</span><br>
+            <span class="kw">Lens power:</span>  <span class="var">P</span> <span class="sym">=</span> 1/<span class="var">f</span>  <span class="unit">[D — Dioptres]</span>
+          </div>
+          <p class="formula-note">Real = positive, Virtual = negative (for mirrors).</p>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Wave Optics <span class="level-pill level-adv">Advanced</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            <span class="kw">Young's (bright fringes):</span>  <span class="var">d</span>sin<span class="var">θ</span> <span class="sym">=</span> <span class="var">nλ</span><br>
+            <span class="kw">Fringe spacing:</span>  Δ<span class="var">y</span> <span class="sym">=</span> <span class="var">λD</span>/<span class="var">d</span><br>
+            <span class="kw">Diffraction grating:</span>  <span class="var">d</span>sin<span class="var">θ</span> <span class="sym">=</span> <span class="var">nλ</span>
+          </div>
+          <p class="formula-note"><strong>d</strong> = slit separation, <strong>D</strong> = screen distance, <strong>λ</strong> = wavelength.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- MODERN PHYSICS -->
+    <section class="formula-section" id="modern" data-title="Modern Physics Quantum Nuclear Radioactivity relativity photon">
+      <div class="section-title"><i class="bi bi-atom"></i> Modern Physics</div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Quantum Physics <span class="level-pill level-adv">Advanced</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            <span class="kw">Photon energy:</span>  <span class="var">E</span> <span class="sym">=</span> <span class="var">hf</span> <span class="sym">=</span> <span class="var">hc</span>/<span class="var">λ</span>  <span class="unit">[J]</span><br>
+            <span class="kw">Photoelectric:</span>  <span class="var">hf</span> <span class="sym">=</span> φ <span class="sym">+</span> ½<span class="var">mv</span>²<sub>max</sub><br>
+            <span class="kw">de Broglie:</span>  <span class="var">λ</span> <span class="sym">=</span> <span class="var">h</span>/<span class="var">p</span> <span class="sym">=</span> <span class="var">h</span>/<span class="var">mv</span><br>
+            <span class="kw">Heisenberg:</span>  Δ<span class="var">x</span>·Δ<span class="var">p</span> ≥ <span class="var">h</span>/(4π)
+          </div>
+          <p class="formula-note"><strong>h</strong> = 6.626 × 10⁻³⁴ J·s, <strong>φ</strong> = work function.</p>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Special Relativity <span class="level-pill level-adv">Advanced</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            <span class="kw">Mass-energy:</span>  <span class="var">E</span> <span class="sym">=</span> <span class="var">mc</span>²<br>
+            <span class="kw">Lorentz factor:</span>  γ <span class="sym">=</span> 1/√(1 <span class="sym">−</span> <span class="var">v</span>²/<span class="var">c</span>²)<br>
+            <span class="kw">Time dilation:</span>  Δ<span class="var">t</span> <span class="sym">=</span> γΔ<span class="var">t₀</span><br>
+            <span class="kw">Length contraction:</span>  <span class="var">L</span> <span class="sym">=</span> <span class="var">L₀</span>/γ
+          </div>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Radioactivity & Nuclear <span class="level-pill level-adv">Advanced</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            <span class="kw">Decay law:</span>  <span class="var">N</span> <span class="sym">=</span> <span class="var">N₀</span>e<sup>−λ<span class="var">t</span></sup><br>
+            <span class="kw">Half-life:</span>  <span class="var">T</span>½ <span class="sym">=</span> ln2 / λ <span class="sym">=</span> 0.693 / λ<br>
+            <span class="kw">Activity:</span>  <span class="var">A</span> <span class="sym">=</span> λ<span class="var">N</span>  <span class="unit">[Bq]</span><br>
+            <span class="kw">Binding energy:</span>  <span class="var">E</span> <span class="sym">=</span> Δ<span class="var">m</span> · <span class="var">c</span>²
+          </div>
+          <p class="formula-note"><strong>λ</strong> = decay constant, <strong>N₀</strong> = initial number of nuclei.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- GRAVITATION -->
+    <section class="formula-section" id="gravitation" data-title="Gravitation Gravity Orbital Kepler escape velocity">
+      <div class="section-title"><i class="bi bi-globe"></i> Gravitation</div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Newton's Law of Gravitation <span class="level-pill level-inter">Intermediate</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            <span class="kw">Gravitational force:</span>  <span class="var">F</span> <span class="sym">=</span> G<span class="var">m₁m₂</span>/<span class="var">r</span>²  <span class="unit">[N]</span><br>
+            <span class="kw">Gravitational field:</span>  <span class="var">g</span> <span class="sym">=</span> G<span class="var">M</span>/<span class="var">r</span>²  <span class="unit">[N/kg]</span><br>
+            <span class="kw">Escape velocity:</span>  <span class="var">v_e</span> <span class="sym">=</span> √(2G<span class="var">M</span>/<span class="var">R</span>)
+          </div>
+          <p class="formula-note"><strong>G</strong> = 6.674 × 10⁻¹¹ N·m²/kg².</p>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Orbital Motion & Kepler's Laws <span class="level-pill level-inter">Intermediate</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            <span class="kw">Orbital speed:</span>  <span class="var">v</span> <span class="sym">=</span> √(G<span class="var">M</span>/<span class="var">r</span>)<br>
+            <span class="kw">Orbital period:</span>  <span class="var">T</span> <span class="sym">=</span> 2π√(<span class="var">r</span>³/G<span class="var">M</span>)<br>
+            <span class="kw">Kepler's 3rd Law:</span>  <span class="var">T</span>² <span class="sym">∝</span> <span class="var">r</span>³<br>
+            <span class="kw">Gravitational PE:</span>  <span class="var">U</span> <span class="sym">=</span> <span class="sym">−</span>G<span class="var">Mm</span>/<span class="var">r</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FLUIDS -->
+    <section class="formula-section" id="fluids" data-title="Fluids Pressure Buoyancy Bernoulli Archimedes density viscosity">
+      <div class="section-title"><i class="bi bi-droplet"></i> Fluids</div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Pressure & Buoyancy <span class="level-pill level-basic">Basic</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            <span class="kw">Pressure:</span>  <span class="var">P</span> <span class="sym">=</span> <span class="var">F</span>/<span class="var">A</span>  <span class="unit">[Pa]</span><br>
+            <span class="kw">Hydrostatic:</span>  <span class="var">P</span> <span class="sym">=</span> <span class="var">ρgh</span>  <span class="unit">[Pa]</span><br>
+            <span class="kw">Archimedes:</span>  <span class="var">F_b</span> <span class="sym">=</span> <span class="var">ρ_fluid</span> · <span class="var">V_sub</span> · <span class="var">g</span><br>
+            <span class="kw">Density:</span>  <span class="var">ρ</span> <span class="sym">=</span> <span class="var">m</span>/<span class="var">V</span>  <span class="unit">[kg/m³]</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Fluid Flow & Bernoulli <span class="level-pill level-adv">Advanced</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            <span class="kw">Continuity:</span>  <span class="var">A₁v₁</span> <span class="sym">=</span> <span class="var">A₂v₂</span><br>
+            <span class="kw">Bernoulli:</span>  <span class="var">P</span> <span class="sym">+</span> ½<span class="var">ρv</span>² <span class="sym">+</span> <span class="var">ρgh</span> <span class="sym">=</span> constant<br>
+            <span class="kw">Stokes drag:</span>  <span class="var">F</span> <span class="sym">=</span> 6π<span class="var">ηrv</span>
+          </div>
+          <p class="formula-note"><strong>η</strong> = dynamic viscosity (Pa·s).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONSTANTS -->
+    <section class="formula-section" id="constants" data-title="Constants physical values SI prefixes">
+      <div class="section-title"><i class="bi bi-bookmark-star"></i> Physical Constants</div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Universal Constants</div>
+        <div class="formula-body">
+          <div class="constants-grid">
+            <div class="constant-item"><div class="c-name">Speed of Light</div><div><span class="c-sym">c</span> = <span class="c-val">3.00 × 10⁸ m/s</span></div></div>
+            <div class="constant-item"><div class="c-name">Planck's Constant</div><div><span class="c-sym">h</span> = <span class="c-val">6.626 × 10⁻³⁴ J·s</span></div></div>
+            <div class="constant-item"><div class="c-name">Gravitational Constant</div><div><span class="c-sym">G</span> = <span class="c-val">6.674 × 10⁻¹¹ N·m²/kg²</span></div></div>
+            <div class="constant-item"><div class="c-name">Elementary Charge</div><div><span class="c-sym">e</span> = <span class="c-val">1.602 × 10⁻¹⁹ C</span></div></div>
+            <div class="constant-item"><div class="c-name">Electron Mass</div><div><span class="c-sym">mₑ</span> = <span class="c-val">9.109 × 10⁻³¹ kg</span></div></div>
+            <div class="constant-item"><div class="c-name">Proton Mass</div><div><span class="c-sym">mₚ</span> = <span class="c-val">1.673 × 10⁻²⁷ kg</span></div></div>
+            <div class="constant-item"><div class="c-name">Boltzmann Constant</div><div><span class="c-sym">k_B</span> = <span class="c-val">1.381 × 10⁻²³ J/K</span></div></div>
+            <div class="constant-item"><div class="c-name">Avogadro's Number</div><div><span class="c-sym">Nₐ</span> = <span class="c-val">6.022 × 10²³ mol⁻¹</span></div></div>
+            <div class="constant-item"><div class="c-name">Gas Constant</div><div><span class="c-sym">R</span> = <span class="c-val">8.314 J/(mol·K)</span></div></div>
+            <div class="constant-item"><div class="c-name">Coulomb's Constant</div><div><span class="c-sym">k</span> = <span class="c-val">8.99 × 10⁹ N·m²/C²</span></div></div>
+            <div class="constant-item"><div class="c-name">Permittivity (ε₀)</div><div><span class="c-sym">ε₀</span> = <span class="c-val">8.854 × 10⁻¹² F/m</span></div></div>
+            <div class="constant-item"><div class="c-name">Permeability (μ₀)</div><div><span class="c-sym">μ₀</span> = <span class="c-val">4π × 10⁻⁷ H/m</span></div></div>
+            <div class="constant-item"><div class="c-name">Gravity (Earth)</div><div><span class="c-sym">g</span> = <span class="c-val">9.8 m/s²</span></div></div>
+            <div class="constant-item"><div class="c-name">Atmospheric Pressure</div><div><span class="c-sym">P₀</span> = <span class="c-val">1.013 × 10⁵ Pa</span></div></div>
+            <div class="constant-item"><div class="c-name">Stefan-Boltzmann</div><div><span class="c-sym">σ</span> = <span class="c-val">5.67 × 10⁻⁸ W/(m²K⁴)</span></div></div>
+            <div class="constant-item"><div class="c-name">1 electron-volt</div><div><span class="c-sym">1 eV</span> = <span class="c-val">1.602 × 10⁻¹⁹ J</span></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">SI Prefixes</div>
+        <div class="formula-body">
+          <table class="formula-table">
+            <tr><th>Prefix</th><th>Symbol</th><th>Factor</th></tr>
+            <tr><td>Tera</td><td><code>T</code></td><td><code>10¹²</code></td></tr>
+            <tr><td>Giga</td><td><code>G</code></td><td><code>10⁹</code></td></tr>
+            <tr><td>Mega</td><td><code>M</code></td><td><code>10⁶</code></td></tr>
+            <tr><td>Kilo</td><td><code>k</code></td><td><code>10³</code></td></tr>
+            <tr><td>Centi</td><td><code>c</code></td><td><code>10⁻²</code></td></tr>
+            <tr><td>Milli</td><td><code>m</code></td><td><code>10⁻³</code></td></tr>
+            <tr><td>Micro</td><td><code>μ</code></td><td><code>10⁻⁶</code></td></tr>
+            <tr><td>Nano</td><td><code>n</code></td><td><code>10⁻⁹</code></td></tr>
+            <tr><td>Pico</td><td><code>p</code></td><td><code>10⁻¹²</code></td></tr>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- KEY PHYSICS EXPERIMENTS -->
+    <section class="formula-section" id="experiments" data-title="Key Physics Experiments Millikan Michelson Young double slit pendulum Ohm Photoelectric Cathode ray Rutherford Newton rings Doppler">
+      <div class="section-title"><i class="bi bi-eyedropper"></i> Key Physics Experiments</div>
+
+      <!-- 1. Young's Double Slit -->
+      <div class="exp-card">
+        <div class="exp-header">
+          <span class="exp-title">1. Young's Double-Slit Experiment</span>
+          <span><span class="exp-tag tag-optic">Optics / Waves</span> <span class="level-pill level-inter">Intermediate</span></span>
+        </div>
+        <div class="exp-body">
+          <div class="exp-layout">
+            <div class="exp-left">
+              <div class="exp-row"><div class="exp-row-label">Aim</div><div class="exp-row-val">Demonstrate the wave nature of light by producing interference fringes.</div></div>
+              <div class="exp-divider"></div>
+              <div class="exp-row"><div class="exp-row-label">Setup</div><div class="exp-row-val">Monochromatic light → single slit (coherent source) → double slit (separation <em>d</em>) → screen at distance <em>D</em>.</div></div>
+              <div class="exp-divider"></div>
+              <div class="exp-row"><div class="exp-row-label">Observation</div><div class="exp-row-val">Alternating bright (constructive) and dark (destructive) fringes appear on the screen.</div></div>
+              <div class="exp-divider"></div>
+              <div class="exp-row"><div class="exp-row-label">Key Equations</div>
+                <div class="exp-eq">
+                  <span class="kw">Fringe spacing:</span>  <span class="var">Δy</span> = <span class="var">λD</span>/<span class="var">d</span><br>
+                  <span class="kw">Bright fringe:</span>  <span class="var">d</span> sin<span class="var">θ</span> = <span class="var">nλ</span>  (n=0,1,2…)<br>
+                  <span class="kw">Dark fringe:</span>  <span class="var">d</span> sin<span class="var">θ</span> = (n+½)<span class="var">λ</span>
+                </div>
+              </div>
+              <div class="exp-row"><div class="exp-row-label">Conclusion</div><div class="exp-row-val">Light behaves as a wave. Fringe spacing increases with longer λ or larger D; decreases with larger d.</div></div>
+            </div>
+            <div class="exp-right">
+              <svg viewBox="0 0 320 230" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:320px">
+                <rect width="320" height="230" fill="#0f1c14" rx="8"/>
+                <!-- Light source -->
+                <circle cx="20" cy="115" r="10" fill="#f6d365" opacity=".9"/>
+                <text x="20" y="137" text-anchor="middle" fill="#f6d365" font-size="8" font-family="Nunito,sans-serif">source</text>
+                <!-- Rays from source to single slit -->
+                <line x1="30" y1="115" x2="78" y2="115" stroke="#f6d365" stroke-width="1.5" stroke-dasharray="4,2"/>
+                <!-- Single slit barrier -->
+                <rect x="78" y="70" width="7" height="35" fill="#4cd98a"/>
+                <rect x="78" y="125" width="7" height="35" fill="#4cd98a"/>
+                <text x="82" y="65" text-anchor="middle" fill="#4cd98a" font-size="8" font-family="Nunito,sans-serif">S₁</text>
+                <!-- Double slit barrier -->
+                <rect x="140" y="60" width="7" height="38" fill="#4cd98a"/>
+                <rect x="140" y="106" width="7" height="20" fill="#4cd98a"/>
+                <rect x="140" y="134" width="7" height="38" fill="#4cd98a"/>
+                <text x="143" y="55" text-anchor="middle" fill="#4cd98a" font-size="8" font-family="Nunito,sans-serif">S₂ (d)</text>
+                <!-- Waves from double slits to screen -->
+                <!-- Top slit rays -->
+                <line x1="147" y1="98" x2="250" y2="60"  stroke="#89d8ff" stroke-width="1" opacity=".7"/>
+                <line x1="147" y1="98" x2="250" y2="85"  stroke="#89d8ff" stroke-width="1" opacity=".7"/>
+                <line x1="147" y1="98" x2="250" y2="115" stroke="#89d8ff" stroke-width="1" opacity=".7"/>
+                <line x1="147" y1="98" x2="250" y2="145" stroke="#89d8ff" stroke-width="1" opacity=".7"/>
+                <line x1="147" y1="98" x2="250" y2="170" stroke="#89d8ff" stroke-width="1" opacity=".7"/>
+                <!-- Bottom slit rays -->
+                <line x1="147" y1="142" x2="250" y2="60"  stroke="#fda085" stroke-width="1" opacity=".7"/>
+                <line x1="147" y1="142" x2="250" y2="85"  stroke="#fda085" stroke-width="1" opacity=".7"/>
+                <line x1="147" y1="142" x2="250" y2="115" stroke="#fda085" stroke-width="1" opacity=".7"/>
+                <line x1="147" y1="142" x2="250" y2="145" stroke="#fda085" stroke-width="1" opacity=".7"/>
+                <line x1="147" y1="142" x2="250" y2="170" stroke="#fda085" stroke-width="1" opacity=".7"/>
+                <!-- Screen -->
+                <rect x="250" y="45" width="8" height="150" fill="#555" rx="2"/>
+                <!-- Bright fringes on screen -->
+                <rect x="258" y="108" width="18" height="14" fill="#fffde0" rx="2" opacity=".95"/>
+                <rect x="258" y="78"  width="18" height="10" fill="#fffde0" rx="2" opacity=".7"/>
+                <rect x="258" y="138" width="18" height="10" fill="#fffde0" rx="2" opacity=".7"/>
+                <rect x="258" y="55"  width="18" height="8"  fill="#fffde0" rx="2" opacity=".45"/>
+                <rect x="258" y="162" width="18" height="8"  fill="#fffde0" rx="2" opacity=".45"/>
+                <!-- Labels -->
+                <text x="284" y="117" fill="#f6d365" font-size="8" font-family="Nunito,sans-serif">bright (n=0)</text>
+                <text x="284" y="86"  fill="#f6d365" font-size="8" font-family="Nunito,sans-serif">bright (n=1)</text>
+                <text x="284" y="145" fill="#f6d365" font-size="8" font-family="Nunito,sans-serif">bright (n=1)</text>
+                <!-- D arrow -->
+                <line x1="147" y1="205" x2="250" y2="205" stroke="#4cd98a" stroke-width="1" marker-end="url(#arr)" marker-start="url(#arr2)"/>
+                <text x="198" y="218" text-anchor="middle" fill="#4cd98a" font-size="9" font-family="Nunito,sans-serif">D (distance to screen)</text>
+                <defs>
+                  <marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#4cd98a"/></marker>
+                  <marker id="arr2" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto-start-reverse"><path d="M0,0 L6,3 L0,6 Z" fill="#4cd98a"/></marker>
+                </defs>
+              </svg>
+              <div class="exp-diagram-cap">Monochromatic light through two slits produces bright &amp; dark fringes</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Simple Pendulum -->
+      <div class="exp-card">
+        <div class="exp-header">
+          <span class="exp-title">2. Simple Pendulum — Measuring g</span>
+          <span><span class="exp-tag tag-mech">Mechanics</span> <span class="level-pill level-basic">Basic</span></span>
+        </div>
+        <div class="exp-body">
+          <div class="exp-layout">
+            <div class="exp-left">
+              <div class="exp-row"><div class="exp-row-label">Aim</div><div class="exp-row-val">Determine the acceleration due to gravity <em>g</em> using a pendulum of known length.</div></div>
+              <div class="exp-divider"></div>
+              <div class="exp-row"><div class="exp-row-label">Setup</div><div class="exp-row-val">Bob on string of length <em>L</em>, clamped at top. Displace <15° and release. Time 20 oscillations → find period T.</div></div>
+              <div class="exp-divider"></div>
+              <div class="exp-row"><div class="exp-row-label">Key Equations</div>
+                <div class="exp-eq">
+                  <span class="kw">Period:</span>  <span class="var">T</span> = 2π √(<span class="var">L</span>/<span class="var">g</span>)<br>
+                  <span class="kw">Therefore:</span>  <span class="var">g</span> = 4π²<span class="var">L</span>/<span class="var">T</span>²<br>
+                  <span class="kw">Graph:</span>  Plot <span class="var">T</span>² vs <span class="var">L</span>; gradient = 4π²/<span class="var">g</span>
+                </div>
+              </div>
+              <div class="exp-row"><div class="exp-row-label">Sources of Error</div><div class="exp-row-val">Air resistance, reaction time, large amplitude (violates small-angle approx.), flexible string.</div></div>
+              <div class="exp-row"><div class="exp-row-label">Conclusion</div><div class="exp-row-val">T² is directly proportional to L. Slope of T²–L graph gives g ≈ 9.8 m/s².</div></div>
+            </div>
+            <div class="exp-right">
+              <svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:220px">
+                <rect width="200" height="240" fill="#0f1c14" rx="8"/>
+                <!-- Ceiling -->
+                <rect x="60" y="18" width="80" height="8" fill="#4cd98a" rx="2"/>
+                <rect x="94" y="14" width="12" height="12" fill="#2a5c3a" rx="2"/>
+                <!-- Equilibrium string -->
+                <line x1="100" y1="26" x2="100" y2="165" stroke="#cde8d8" stroke-width="1.5" stroke-dasharray="4,2" opacity=".5"/>
+                <!-- Displaced string (angled) -->
+                <line x1="100" y1="26" x2="140" y2="155" stroke="#fda085" stroke-width="2"/>
+                <!-- Bob -->
+                <circle cx="140" cy="165" r="13" fill="#f6d365" stroke="#fda085" stroke-width="2"/>
+                <text x="140" y="169" text-anchor="middle" fill="#0f1c14" font-size="9" font-weight="800" font-family="Nunito,sans-serif">m</text>
+                <!-- Angle arc -->
+                <path d="M100,65 A40,40 0 0,1 126,55" fill="none" stroke="#89d8ff" stroke-width="1.5"/>
+                <text x="118" y="54" fill="#89d8ff" font-size="9" font-family="Nunito,sans-serif">θ</text>
+                <!-- L arrow -->
+                <line x1="80" y1="26" x2="80" y2="155" stroke="#4cd98a" stroke-width="1" marker-end="url(#a1)" marker-start="url(#a2)"/>
+                <text x="72" y="96" fill="#4cd98a" font-size="10" font-family="Nunito,sans-serif" text-anchor="middle">L</text>
+                <!-- Weight arrow -->
+                <line x1="140" y1="178" x2="140" y2="205" stroke="#ff7c7c" stroke-width="2" marker-end="url(#ra)"/>
+                <text x="152" y="197" fill="#ff7c7c" font-size="9" font-family="Nunito,sans-serif">mg</text>
+                <!-- Arc path hint -->
+                <path d="M100,165 A65,65 0 0,1 140,165" fill="none" stroke="#4cd98a" stroke-width="1" stroke-dasharray="3,2" opacity=".6"/>
+                <!-- Period label -->
+                <text x="100" y="228" text-anchor="middle" fill="#cde8d8" font-size="8" font-family="Nunito,sans-serif">T = 2π √(L/g)</text>
+                <defs>
+                  <marker id="a1" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#4cd98a"/></marker>
+                  <marker id="a2" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto-start-reverse"><path d="M0,0 L6,3 L0,6 Z" fill="#4cd98a"/></marker>
+                  <marker id="ra" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#ff7c7c"/></marker>
+                </defs>
+              </svg>
+              <div class="exp-diagram-cap">Bob displaced by angle θ; restoring force = mg sinθ</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Ohm's Law -->
+      <div class="exp-card">
+        <div class="exp-header">
+          <span class="exp-title">3. Ohm's Law — V–I Characteristics</span>
+          <span><span class="exp-tag tag-elec">Electricity</span> <span class="level-pill level-basic">Basic</span></span>
+        </div>
+        <div class="exp-body">
+          <div class="exp-layout">
+            <div class="exp-left">
+              <div class="exp-row"><div class="exp-row-label">Aim</div><div class="exp-row-val">Verify Ohm's Law: current through a conductor is proportional to voltage (at constant temperature).</div></div>
+              <div class="exp-divider"></div>
+              <div class="exp-row"><div class="exp-row-label">Setup</div><div class="exp-row-val">Resistor + variable resistor (rheostat) in series with ammeter. Voltmeter in parallel across resistor. Vary voltage using rheostat; record V and I.</div></div>
+              <div class="exp-divider"></div>
+              <div class="exp-row"><div class="exp-row-label">Key Equations</div>
+                <div class="exp-eq">
+                  <span class="kw">Ohm's Law:</span>  <span class="var">V</span> = <span class="var">IR</span><br>
+                  <span class="kw">Resistance:</span>  <span class="var">R</span> = <span class="var">V</span>/<span class="var">I</span>  [Ω]<br>
+                  <span class="kw">Graph:</span>  <span class="var">V</span> vs <span class="var">I</span> → straight line; gradient = <span class="var">R</span>
+                </div>
+              </div>
+              <div class="exp-row"><div class="exp-row-label">Ohmic vs Non-Ohmic</div><div class="exp-row-val">Resistor → straight V–I line. Filament bulb / diode → curved (resistance changes with temperature).</div></div>
+            </div>
+            <div class="exp-right">
+              <svg viewBox="0 0 280 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:300px">
+                <rect width="280" height="200" fill="#0f1c14" rx="8"/>
+                <!-- Battery -->
+                <rect x="18" y="90" width="24" height="20" fill="#2a5c3a" rx="3"/>
+                <line x1="24" y1="86" x2="24" y2="94" stroke="#f6d365" stroke-width="2.5"/>
+                <line x1="30" y1="84" x2="30" y2="96" stroke="#f6d365" stroke-width="1.5"/>
+                <line x1="36" y1="86" x2="36" y2="94" stroke="#f6d365" stroke-width="2.5"/>
+                <text x="30" y="124" fill="#f6d365" font-size="8" text-anchor="middle" font-family="Nunito">EMF</text>
+                <!-- Wires top -->
+                <line x1="30" y1="90" x2="30" y2="40" stroke="#4cd98a" stroke-width="2"/>
+                <line x1="30" y1="40" x2="240" y2="40" stroke="#4cd98a" stroke-width="2"/>
+                <!-- Rheostat symbol -->
+                <rect x="68" y="32" width="40" height="16" fill="none" stroke="#fda085" stroke-width="2" rx="3"/>
+                <line x1="88" y1="28" x2="94" y2="22" stroke="#fda085" stroke-width="1.5" marker-end="url(#ba)"/>
+                <text x="88" y="19" fill="#fda085" font-size="7" text-anchor="middle" font-family="Nunito">rheostat</text>
+                <!-- Ammeter -->
+                <circle cx="160" cy="40" r="11" fill="#1a2e20" stroke="#89d8ff" stroke-width="2"/>
+                <text x="160" y="44" fill="#89d8ff" font-size="10" text-anchor="middle" font-family="Nunito" font-weight="800">A</text>
+                <!-- Wire right & down -->
+                <line x1="240" y1="40" x2="240" y2="90" stroke="#4cd98a" stroke-width="2"/>
+                <!-- Resistor box -->
+                <rect x="218" y="90" width="44" height="20" fill="none" stroke="#f6d365" stroke-width="2" rx="3"/>
+                <text x="240" y="104" fill="#f6d365" font-size="10" text-anchor="middle" font-family="Nunito" font-weight="800">R</text>
+                <!-- Voltmeter parallel -->
+                <line x1="218" y1="96" x2="190" y2="96" stroke="#ff9ff3" stroke-width="1.5"/>
+                <line x1="262" y1="96" x2="290" y2="96" stroke="#ff9ff3" stroke-width="1.5"/>
+                <line x1="190" y1="96" x2="190" y2="145" stroke="#ff9ff3" stroke-width="1.5"/>
+                <line x1="290" y1="96" x2="290" y2="145" stroke="#ff9ff3" stroke-width="1.5"/>
+                <line x1="190" y1="145" x2="290" y2="145" stroke="#ff9ff3" stroke-width="1.5"/>
+                <circle cx="240" cy="145" r="12" fill="#1a2e20" stroke="#ff9ff3" stroke-width="2"/>
+                <text x="240" y="149" fill="#ff9ff3" font-size="10" text-anchor="middle" font-family="Nunito" font-weight="800">V</text>
+                <!-- Wire bottom -->
+                <line x1="240" y1="110" x2="240" y2="160" stroke="#4cd98a" stroke-width="2"/>
+                <line x1="240" y1="160" x2="30" y2="160" stroke="#4cd98a" stroke-width="2"/>
+                <line x1="30" y1="160" x2="30" y2="110" stroke="#4cd98a" stroke-width="2"/>
+                <!-- V-I graph inset -->
+                <rect x="22" y="128" width="60" height="45" fill="#1a2e20" rx="4"/>
+                <line x1="28" y1="168" x2="78" y2="168" stroke="#cde8d8" stroke-width="1"/>
+                <line x1="28" y1="168" x2="28" y2="132" stroke="#cde8d8" stroke-width="1"/>
+                <line x1="28" y1="168" x2="76" y2="134" stroke="#4cd98a" stroke-width="2"/>
+                <text x="80" y="170" fill="#cde8d8" font-size="7" font-family="Nunito">I</text>
+                <text x="29" y="130" fill="#cde8d8" font-size="7" font-family="Nunito">V</text>
+                <text x="52" y="179" fill="#4cd98a" font-size="6" text-anchor="middle" font-family="Nunito">gradient=R</text>
+                <defs><marker id="ba" markerWidth="5" markerHeight="5" refX="2.5" refY="2.5" orient="auto"><path d="M0,0 L5,2.5 L0,5 Z" fill="#fda085"/></marker></defs>
+              </svg>
+              <div class="exp-diagram-cap">Circuit with ammeter (series) and voltmeter (parallel). V–I graph has slope R.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Photoelectric Effect -->
+      <div class="exp-card">
+        <div class="exp-header">
+          <span class="exp-title">4. Photoelectric Effect</span>
+          <span><span class="exp-tag tag-modern">Modern Physics</span> <span class="level-pill level-adv">Advanced</span></span>
+        </div>
+        <div class="exp-body">
+          <div class="exp-layout">
+            <div class="exp-left">
+              <div class="exp-row"><div class="exp-row-label">Aim</div><div class="exp-row-val">Show that light ejects electrons from a metal surface only when its frequency exceeds a threshold <em>f₀</em>, regardless of intensity — proving light is quantised (photons).</div></div>
+              <div class="exp-divider"></div>
+              <div class="exp-row"><div class="exp-row-label">Key Observations</div><div class="exp-row-val">
+                • Below threshold frequency → no electrons, even with bright light.<br>
+                • Above threshold → electrons emitted instantly.<br>
+                • Intensity only affects number of electrons, not their max KE.<br>
+                • Higher frequency → higher max KE of photoelectrons.
+              </div></div>
+              <div class="exp-divider"></div>
+              <div class="exp-row"><div class="exp-row-label">Key Equations</div>
+                <div class="exp-eq">
+                  <span class="kw">Einstein's equation:</span>  <span class="var">hf</span> = <span class="var">φ</span> + KE<sub>max</sub><br>
+                  <span class="kw">Work function:</span>  <span class="var">φ</span> = <span class="var">hf₀</span><br>
+                  <span class="kw">KE max:</span>  ½<span class="var">mv²</span> = <span class="var">h</span>(<span class="var">f</span> − <span class="var">f₀</span>)<br>
+                  <span class="kw">Stopping voltage:</span>  <span class="var">eVₛ</span> = KE<sub>max</sub>
+                </div>
+              </div>
+              <div class="exp-row"><div class="exp-row-label">Conclusion</div><div class="exp-row-val">Light consists of photons of energy E = hf. Wave theory cannot explain the threshold — this was decisive evidence for quantum theory (Einstein 1905).</div></div>
+            </div>
+            <div class="exp-right">
+              <svg viewBox="0 0 260 230" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px">
+                <rect width="260" height="230" fill="#0f1c14" rx="8"/>
+                <!-- Metal plate -->
+                <rect x="50" y="80" width="80" height="20" fill="#4a5568" rx="3"/>
+                <text x="90" y="73" fill="#cde8d8" font-size="9" text-anchor="middle" font-family="Nunito">Metal plate</text>
+                <!-- Photon rays coming in -->
+                <line x1="10" y1="50" x2="60" y2="85" stroke="#f6d365" stroke-width="2"/>
+                <line x1="10" y1="65" x2="65" y2="88" stroke="#f6d365" stroke-width="2"/>
+                <line x1="10" y1="80" x2="62" y2="90" stroke="#f6d365" stroke-width="2"/>
+                <!-- Photon wave squiggles -->
+                <path d="M10,50 Q15,45 20,50 Q25,55 30,50 Q35,45 40,50 Q45,55 50,50 L60,85" fill="none" stroke="#f6d365" stroke-width="1.5"/>
+                <text x="8" y="42" fill="#f6d365" font-size="9" font-family="Nunito">hf</text>
+                <text x="2" y="52" fill="#f6d365" font-size="8" font-family="Nunito">photons</text>
+                <!-- Emitted electrons -->
+                <circle cx="110" cy="68" r="5" fill="#89d8ff"/>
+                <line x1="115" y1="68" x2="150" y2="45" stroke="#89d8ff" stroke-width="1.5" marker-end="url(#ea)"/>
+                <circle cx="98" cy="65" r="5" fill="#89d8ff"/>
+                <line x1="103" y1="65" x2="155" y2="55" stroke="#89d8ff" stroke-width="1.5" marker-end="url(#ea)"/>
+                <circle cx="120" cy="70" r="5" fill="#89d8ff"/>
+                <line x1="125" y1="70" x2="165" y2="50" stroke="#89d8ff" stroke-width="1.5" marker-end="url(#ea)"/>
+                <text x="165" y="38" fill="#89d8ff" font-size="8" font-family="Nunito">photoelectrons</text>
+                <text x="165" y="48" fill="#89d8ff" font-size="8" font-family="Nunito">KE = hf − φ</text>
+                <!-- Energy diagram -->
+                <rect x="30" y="140" width="190" height="78" fill="#1a2e20" rx="6"/>
+                <text x="125" y="154" fill="#cde8d8" font-size="8" text-anchor="middle" font-family="Nunito" font-weight="700">Energy Level Diagram</text>
+                <!-- Energy bar -->
+                <rect x="50" y="158" width="30" height="50" fill="#f6d365" opacity=".8" rx="2"/>
+                <text x="65" y="218" fill="#f6d365" font-size="7" text-anchor="middle" font-family="Nunito">hf</text>
+                <!-- Work function part -->
+                <rect x="50" y="193" width="30" height="15" fill="#ff7c7c" opacity=".85" rx="2"/>
+                <text x="100" y="202" fill="#ff7c7c" font-size="8" font-family="Nunito">φ (work function)</text>
+                <!-- KE part -->
+                <line x1="80" y1="158" x2="130" y2="158" stroke="#89d8ff" stroke-width="1" stroke-dasharray="3,2"/>
+                <line x1="80" y1="193" x2="130" y2="193" stroke="#89d8ff" stroke-width="1" stroke-dasharray="3,2"/>
+                <line x1="120" y1="158" x2="120" y2="193" stroke="#89d8ff" stroke-width="2"/>
+                <text x="133" y="178" fill="#89d8ff" font-size="8" font-family="Nunito">KE<tspan font-size="6">max</tspan></text>
+                <defs><marker id="ea" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#89d8ff"/></marker></defs>
+              </svg>
+              <div class="exp-diagram-cap">Photons eject electrons; energy splits into work function φ and kinetic energy</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. Rutherford Scattering -->
+      <div class="exp-card">
+        <div class="exp-header">
+          <span class="exp-title">5. Rutherford Alpha-Scattering Experiment</span>
+          <span><span class="exp-tag tag-modern">Modern Physics</span> <span class="level-pill level-adv">Advanced</span></span>
+        </div>
+        <div class="exp-body">
+          <div class="exp-layout">
+            <div class="exp-left">
+              <div class="exp-row"><div class="exp-row-label">Aim</div><div class="exp-row-val">Determine the structure of the atom by firing α-particles at a thin gold foil and detecting their deflections.</div></div>
+              <div class="exp-divider"></div>
+              <div class="exp-row"><div class="exp-row-label">Observations</div><div class="exp-row-val">
+                • Most α-particles passed straight through → atom is mostly empty space.<br>
+                • Some deflected by large angles → small, dense, positive nucleus.<br>
+                • Very few (1 in 8000) bounced back → nucleus is very small but contains most mass.
+              </div></div>
+              <div class="exp-divider"></div>
+              <div class="exp-row"><div class="exp-row-label">Key Result</div>
+                <div class="exp-eq">
+                  <span class="kw">Nuclear radius:</span>  <span class="var">r</span> ≈ 10⁻¹⁵ m (fm)<br>
+                  <span class="kw">Atom radius:</span>  <span class="var">r</span> ≈ 10⁻¹⁰ m<br>
+                  <span class="kw">Closest approach:</span>  ½<span class="var">mv²</span> = <span class="var">kZe²</span>/<span class="var">r</span>
+                </div>
+              </div>
+              <div class="exp-row"><div class="exp-row-label">Conclusion</div><div class="exp-row-val">Atom has a tiny, dense, positively charged nucleus surrounded by mostly empty space with orbiting electrons. Disproved Thomson's "plum pudding" model.</div></div>
+            </div>
+            <div class="exp-right">
+              <svg viewBox="0 0 260 220" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px">
+                <rect width="260" height="220" fill="#0f1c14" rx="8"/>
+                <!-- Gold foil -->
+                <rect x="118" y="20" width="6" height="180" fill="#f6d365" opacity=".7" rx="2"/>
+                <text x="121" y="15" fill="#f6d365" font-size="8" text-anchor="middle" font-family="Nunito">Gold foil</text>
+                <!-- Nucleus dots in foil -->
+                <circle cx="121" cy="60"  r="4" fill="#fda085"/>
+                <circle cx="121" cy="100" r="4" fill="#fda085"/>
+                <circle cx="121" cy="140" r="4" fill="#fda085"/>
+                <!-- Alpha source -->
+                <rect x="15" y="95" width="26" height="16" fill="#4cd98a" rx="3"/>
+                <text x="28" y="105" fill="#0f1c14" font-size="7" text-anchor="middle" font-family="Nunito" font-weight="800">α src</text>
+                <!-- Straight-through beam (most) -->
+                <line x1="41" y1="103" x2="240" y2="103" stroke="#89d8ff" stroke-width="2" marker-end="url(#psa)"/>
+                <text x="200" y="97" fill="#89d8ff" font-size="7" font-family="Nunito">most (straight)</text>
+                <!-- Slightly deflected -->
+                <line x1="41" y1="103" x2="124" y2="103" stroke="#fda085" stroke-width="1.5"/>
+                <line x1="124" y1="103" x2="240" y2="75"  stroke="#fda085" stroke-width="1.5" marker-end="url(#oa)"/>
+                <text x="200" y="72" fill="#fda085" font-size="7" font-family="Nunito">some (deflected)</text>
+                <!-- Large deflection -->
+                <line x1="41" y1="103" x2="124" y2="103" stroke="#ff7c7c" stroke-width="1.5"/>
+                <line x1="124" y1="103" x2="240" y2="55"  stroke="#ff7c7c" stroke-width="1.5" marker-end="url(#ra2)"/>
+                <text x="200" y="52" fill="#ff7c7c" font-size="7" font-family="Nunito">large deflection</text>
+                <!-- Back-scatter -->
+                <line x1="41" y1="103" x2="118" y2="103" stroke="#c8a8ff" stroke-width="1.5"/>
+                <line x1="118" y1="103" x2="41"  y2="78"  stroke="#c8a8ff" stroke-width="1.5" marker-end="url(#va)"/>
+                <text x="14" y="74" fill="#c8a8ff" font-size="7" font-family="Nunito">few bounce back!</text>
+                <!-- Nucleus zoom -->
+                <rect x="30" y="148" width="100" height="58" fill="#1a2e20" rx="6"/>
+                <text x="80" y="161" fill="#cde8d8" font-size="7" text-anchor="middle" font-family="Nunito" font-weight="700">Nucleus (zoomed)</text>
+                <circle cx="80" cy="185" r="16" fill="none" stroke="#4cd98a" stroke-width="1" stroke-dasharray="3,2" opacity=".5"/>
+                <circle cx="80" cy="185" r="4"  fill="#fda085"/>
+                <text x="80" y="201" fill="#fda085" font-size="7" text-anchor="middle" font-family="Nunito">+Ze</text>
+                <!-- Detector arc -->
+                <path d="M124,103 m80,0 a80,80 0 0,1 0,1" fill="none"/>
+                <path d="M200,25 A85,85 0 0,1 200,180" fill="none" stroke="#2a5c3a" stroke-width="3" stroke-dasharray="6,3"/>
+                <text x="240" y="185" fill="#2a5c3a" font-size="7" font-family="Nunito">detector</text>
+                <defs>
+                  <marker id="psa" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#89d8ff"/></marker>
+                  <marker id="oa"  markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#fda085"/></marker>
+                  <marker id="ra2" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#ff7c7c"/></marker>
+                  <marker id="va"  markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#c8a8ff"/></marker>
+                </defs>
+              </svg>
+              <div class="exp-diagram-cap">Most α-particles pass through; only close hits are deflected by the tiny nucleus</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. Diffraction Grating -->
+      <div class="exp-card">
+        <div class="exp-header">
+          <span class="exp-title">6. Diffraction Grating — Measuring Wavelength</span>
+          <span><span class="exp-tag tag-optic">Optics</span> <span class="level-pill level-inter">Intermediate</span></span>
+        </div>
+        <div class="exp-body">
+          <div class="exp-layout">
+            <div class="exp-left">
+              <div class="exp-row"><div class="exp-row-label">Aim</div><div class="exp-row-val">Use a diffraction grating to measure the wavelength of monochromatic (or white) light precisely.</div></div>
+              <div class="exp-divider"></div>
+              <div class="exp-row"><div class="exp-row-label">Setup</div><div class="exp-row-val">Laser or lamp → diffraction grating (N lines/mm). Measure angle θ to each order maximum on a screen or with a spectrometer.</div></div>
+              <div class="exp-divider"></div>
+              <div class="exp-row"><div class="exp-row-label">Key Equations</div>
+                <div class="exp-eq">
+                  <span class="kw">Grating equation:</span>  <span class="var">d</span> sin<span class="var">θ</span> = <span class="var">nλ</span><br>
+                  <span class="kw">Slit spacing:</span>  <span class="var">d</span> = 1/<span class="var">N</span>  (N = lines per metre)<br>
+                  <span class="kw">Resolving power:</span>  <span class="var">RP</span> = <span class="var">nN</span>
+                </div>
+              </div>
+              <div class="exp-row"><div class="exp-row-label">Advantage over double slit</div><div class="exp-row-val">Many slits give very sharp, bright maxima → much more accurate wavelength measurement.</div></div>
+            </div>
+            <div class="exp-right">
+              <svg viewBox="0 0 280 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:300px">
+                <rect width="280" height="200" fill="#0f1c14" rx="8"/>
+                <!-- Laser -->
+                <rect x="8" y="90" width="28" height="16" fill="#ff7c7c" rx="3"/>
+                <text x="22" y="102" fill="#fff" font-size="7" text-anchor="middle" font-family="Nunito" font-weight="700">laser</text>
+                <!-- Incident beam -->
+                <line x1="36" y1="98" x2="110" y2="98" stroke="#ff7c7c" stroke-width="2"/>
+                <!-- Grating -->
+                <rect x="110" y="30" width="6" height="140" fill="#4cd98a" rx="2"/>
+                <text x="113" y="24" fill="#4cd98a" font-size="7" text-anchor="middle" font-family="Nunito">grating</text>
+                <!-- Lines on grating -->
+                <line x1="110" y1="42" x2="116" y2="42" stroke="#0f1c14" stroke-width="1.5"/>
+                <line x1="110" y1="52" x2="116" y2="52" stroke="#0f1c14" stroke-width="1.5"/>
+                <line x1="110" y1="62" x2="116" y2="62" stroke="#0f1c14" stroke-width="1.5"/>
+                <line x1="110" y1="72" x2="116" y2="72" stroke="#0f1c14" stroke-width="1.5"/>
+                <line x1="110" y1="82" x2="116" y2="82" stroke="#0f1c14" stroke-width="1.5"/>
+                <line x1="110" y1="92" x2="116" y2="92" stroke="#0f1c14" stroke-width="1.5"/>
+                <line x1="110" y1="102" x2="116" y2="102" stroke="#0f1c14" stroke-width="1.5"/>
+                <line x1="110" y1="112" x2="116" y2="112" stroke="#0f1c14" stroke-width="1.5"/>
+                <line x1="110" y1="122" x2="116" y2="122" stroke="#0f1c14" stroke-width="1.5"/>
+                <line x1="110" y1="132" x2="116" y2="132" stroke="#0f1c14" stroke-width="1.5"/>
+                <line x1="110" y1="142" x2="116" y2="142" stroke="#0f1c14" stroke-width="1.5"/>
+                <line x1="110" y1="152" x2="116" y2="152" stroke="#0f1c14" stroke-width="1.5"/>
+                <!-- n=0 central -->
+                <line x1="116" y1="98" x2="250" y2="98" stroke="#ff7c7c" stroke-width="2.5"/>
+                <text x="255" y="101" fill="#ff7c7c" font-size="8" font-family="Nunito">n=0</text>
+                <!-- n=1 order above -->
+                <line x1="116" y1="98" x2="250" y2="60" stroke="#ff7c7c" stroke-width="1.5" opacity=".75"/>
+                <text x="255" y="63" fill="#ff7c7c" font-size="8" font-family="Nunito">n=1</text>
+                <!-- n=1 order below -->
+                <line x1="116" y1="98" x2="250" y2="136" stroke="#ff7c7c" stroke-width="1.5" opacity=".75"/>
+                <text x="255" y="139" fill="#ff7c7c" font-size="8" font-family="Nunito">n=−1</text>
+                <!-- n=2 order above -->
+                <line x1="116" y1="98" x2="250" y2="32" stroke="#ff7c7c" stroke-width="1" opacity=".45"/>
+                <text x="255" y="35" fill="#ff7c7c" font-size="8" font-family="Nunito">n=2</text>
+                <!-- n=2 order below -->
+                <line x1="116" y1="98" x2="250" y2="164" stroke="#ff7c7c" stroke-width="1" opacity=".45"/>
+                <text x="255" y="167" fill="#ff7c7c" font-size="8" font-family="Nunito">n=−2</text>
+                <!-- Angle arc -->
+                <path d="M150,98 A34,34 0 0,0 148,81" fill="none" stroke="#89d8ff" stroke-width="1.5"/>
+                <text x="163" y="83" fill="#89d8ff" font-size="9" font-family="Nunito">θ</text>
+                <!-- d label -->
+                <line x1="104" y1="92" x2="104" y2="102" stroke="#fda085" stroke-width="1.5"/>
+                <text x="96" y="100" fill="#fda085" font-size="8" font-family="Nunito">d</text>
+                <!-- Equation -->
+                <text x="60" y="186" fill="#4cd98a" font-size="9" font-family="Nunito" text-anchor="middle">d sinθ = nλ</text>
+              </svg>
+              <div class="exp-diagram-cap">Grating produces sharp maxima at angles obeying d sinθ = nλ</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 7. Specific Heat Capacity -->
+      <div class="exp-card">
+        <div class="exp-header">
+          <span class="exp-title">7. Specific Heat Capacity by Electrical Heating</span>
+          <span><span class="exp-tag tag-mech">Thermal</span> <span class="level-pill level-basic">Basic</span></span>
+        </div>
+        <div class="exp-body">
+          <div class="exp-layout">
+            <div class="exp-left">
+              <div class="exp-row"><div class="exp-row-label">Aim</div><div class="exp-row-val">Measure the specific heat capacity <em>c</em> of a metal or water using an electric immersion heater.</div></div>
+              <div class="exp-divider"></div>
+              <div class="exp-row"><div class="exp-row-label">Setup</div><div class="exp-row-val">Known mass <em>m</em> of material in insulated calorimeter. Immersion heater connected to ammeter + voltmeter. Heat for time <em>t</em>, record temperature rise ΔT.</div></div>
+              <div class="exp-divider"></div>
+              <div class="exp-row"><div class="exp-row-label">Key Equations</div>
+                <div class="exp-eq">
+                  <span class="kw">Electrical energy:</span>  <span class="var">Q</span> = <span class="var">VIt</span>  [J]<br>
+                  <span class="kw">Heat absorbed:</span>  <span class="var">Q</span> = <span class="var">mcΔT</span><br>
+                  <span class="kw">Therefore:</span>  <span class="var">c</span> = <span class="var">VIt</span> / (<span class="var">mΔT</span>)  [J kg⁻¹ K⁻¹]<br>
+                  <span class="kw">Graph:</span>  <span class="var">T</span> vs time → gradient = <span class="var">VI</span>/<span class="var">mc</span>
+                </div>
+              </div>
+              <div class="exp-row"><div class="exp-row-label">Sources of Error</div><div class="exp-row-val">Heat loss to surroundings (use insulation + cooling correction), heater not fully embedded, thermometer lag.</div></div>
+            </div>
+            <div class="exp-right">
+              <svg viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:240px">
+                <rect width="220" height="220" fill="#0f1c14" rx="8"/>
+                <!-- Calorimeter -->
+                <rect x="55" y="80" width="110" height="100" fill="#2a5c3a" rx="6" stroke="#4cd98a" stroke-width="2"/>
+                <!-- Insulation outer -->
+                <rect x="45" y="75" width="130" height="110" fill="none" stroke="#fda085" stroke-width="1.5" rx="8" stroke-dasharray="4,3"/>
+                <text x="36" y="185" fill="#fda085" font-size="7" font-family="Nunito">insulation</text>
+                <!-- Water/material inside -->
+                <rect x="62" y="130" width="96" height="44" fill="#1a5f7a" rx="3" opacity=".8"/>
+                <text x="110" y="156" fill="#89d8ff" font-size="8" text-anchor="middle" font-family="Nunito">material (mass m)</text>
+                <!-- Immersion heater -->
+                <rect x="96" y="108" width="28" height="55" fill="#ff7c7c" rx="4" opacity=".85"/>
+                <text x="110" y="120" fill="#fff" font-size="7" text-anchor="middle" font-family="Nunito" font-weight="700">heater</text>
+                <!-- Wire up to circuit -->
+                <line x1="100" y1="108" x2="100" y2="60" stroke="#cde8d8" stroke-width="1.5"/>
+                <line x1="120" y1="108" x2="120" y2="60" stroke="#cde8d8" stroke-width="1.5"/>
+                <!-- Ammeter -->
+                <circle cx="88" cy="50" r="10" fill="#1a2e20" stroke="#89d8ff" stroke-width="1.5"/>
+                <text x="88" y="54" fill="#89d8ff" font-size="9" text-anchor="middle" font-family="Nunito" font-weight="800">A</text>
+                <line x1="100" y1="60" x2="100" y2="50" stroke="#cde8d8" stroke-width="1.5"/>
+                <line x1="88" y1="50" x2="78" y2="50" stroke="#cde8d8" stroke-width="1.5"/>
+                <line x1="78" y1="50" x2="78" y2="30" stroke="#cde8d8" stroke-width="1.5"/>
+                <!-- Voltmeter -->
+                <circle cx="132" cy="50" r="10" fill="#1a2e20" stroke="#ff9ff3" stroke-width="1.5"/>
+                <text x="132" y="54" fill="#ff9ff3" font-size="9" text-anchor="middle" font-family="Nunito" font-weight="800">V</text>
+                <line x1="120" y1="60" x2="120" y2="50" stroke="#cde8d8" stroke-width="1.5"/>
+                <line x1="132" y1="50" x2="142" y2="50" stroke="#cde8d8" stroke-width="1.5"/>
+                <line x1="142" y1="50" x2="142" y2="30" stroke="#cde8d8" stroke-width="1.5"/>
+                <!-- Power supply -->
+                <rect x="78" y="18" width="64" height="14" fill="#2a5c3a" rx="3"/>
+                <line x1="78" y1="25" x2="78" y2="30" stroke="#cde8d8" stroke-width="1.5"/>
+                <line x1="142" y1="25" x2="142" y2="30" stroke="#cde8d8" stroke-width="1.5"/>
+                <text x="110" y="28" fill="#4cd98a" font-size="7" text-anchor="middle" font-family="Nunito">power supply</text>
+                <!-- Thermometer -->
+                <rect x="155" y="90" width="8" height="60" fill="#ff9ff3" rx="4" opacity=".7"/>
+                <circle cx="159" cy="155" r="6" fill="#ff7c7c"/>
+                <text x="172" y="128" fill="#ff9ff3" font-size="8" font-family="Nunito">thermometer</text>
+                <!-- Formula -->
+                <text x="110" y="207" fill="#4cd98a" font-size="8" text-anchor="middle" font-family="Nunito">c = VIt / mΔT</text>
+              </svg>
+              <div class="exp-diagram-cap">Insulated calorimeter with heater; measure V, I, t and temperature rise ΔT</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 8. Electromagnetic Induction (Faraday) -->
+      <div class="exp-card">
+        <div class="exp-header">
+          <span class="exp-title">8. Faraday's Electromagnetic Induction</span>
+          <span><span class="exp-tag tag-elec">Electromagnetism</span> <span class="level-pill level-inter">Intermediate</span></span>
+        </div>
+        <div class="exp-body">
+          <div class="exp-layout">
+            <div class="exp-left">
+              <div class="exp-row"><div class="exp-row-label">Aim</div><div class="exp-row-val">Demonstrate that a changing magnetic flux through a coil induces an EMF (and hence a current).</div></div>
+              <div class="exp-divider"></div>
+              <div class="exp-row"><div class="exp-row-label">Setup</div><div class="exp-row-val">Bar magnet moved in/out of solenoid connected to sensitive galvanometer. Observe deflection as flux changes.</div></div>
+              <div class="exp-divider"></div>
+              <div class="exp-row"><div class="exp-row-label">Observations</div><div class="exp-row-val">
+                • Magnet moving in → galvanometer deflects one way.<br>
+                • Magnet moving out → deflects opposite way.<br>
+                • Faster motion → larger deflection (higher EMF).<br>
+                • Stationary magnet → zero deflection.
+              </div></div>
+              <div class="exp-divider"></div>
+              <div class="exp-row"><div class="exp-row-label">Key Equations</div>
+                <div class="exp-eq">
+                  <span class="kw">Faraday's Law:</span>  <span class="var">ε</span> = −<span class="var">N</span> dΦ/<span class="var">dt</span><br>
+                  <span class="kw">Flux:</span>  <span class="var">Φ</span> = <span class="var">BA</span> cos<span class="var">θ</span>  [Wb]<br>
+                  <span class="kw">Lenz's Law:</span>  Induced current opposes the change (− sign)
+                </div>
+              </div>
+            </div>
+            <div class="exp-right">
+              <svg viewBox="0 0 260 210" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px">
+                <rect width="260" height="210" fill="#0f1c14" rx="8"/>
+                <!-- Solenoid -->
+                <rect x="80" y="70" width="110" height="70" fill="none" stroke="#4cd98a" stroke-width="2" rx="6"/>
+                <!-- Coil turns -->
+                <ellipse cx="80"  cy="105" rx="8" ry="35" fill="none" stroke="#4cd98a" stroke-width="1.5"/>
+                <ellipse cx="100" cy="105" rx="8" ry="35" fill="none" stroke="#4cd98a" stroke-width="1.5"/>
+                <ellipse cx="120" cy="105" rx="8" ry="35" fill="none" stroke="#4cd98a" stroke-width="1.5"/>
+                <ellipse cx="140" cy="105" rx="8" ry="35" fill="none" stroke="#4cd98a" stroke-width="1.5"/>
+                <ellipse cx="160" cy="105" rx="8" ry="35" fill="none" stroke="#4cd98a" stroke-width="1.5"/>
+                <ellipse cx="180" cy="105" rx="8" ry="35" fill="none" stroke="#4cd98a" stroke-width="1.5"/>
+                <text x="130" y="155" fill="#4cd98a" font-size="8" text-anchor="middle" font-family="Nunito">solenoid (N turns)</text>
+                <!-- Bar magnet coming in from left -->
+                <rect x="10" y="90" width="58" height="30" rx="4" fill="#cc0000"/>
+                <rect x="10" y="90" width="29" height="30" rx="4" fill="#2255cc"/>
+                <text x="24" y="109" fill="#fff" font-size="9" text-anchor="middle" font-family="Nunito" font-weight="800">N</text>
+                <text x="54" y="109" fill="#fff" font-size="9" text-anchor="middle" font-family="Nunito" font-weight="800">S</text>
+                <!-- Motion arrow -->
+                <line x1="68" y1="105" x2="78" y2="105" stroke="#f6d365" stroke-width="2" marker-end="url(#ma)"/>
+                <text x="50" y="80" fill="#f6d365" font-size="8" font-family="Nunito">→ moving in</text>
+                <!-- Wires from solenoid to galvanometer -->
+                <line x1="80"  y1="70"  x2="80"  y2="40"  stroke="#cde8d8" stroke-width="1.5"/>
+                <line x1="190" y1="70"  x2="190" y2="40"  stroke="#cde8d8" stroke-width="1.5"/>
+                <line x1="80"  y1="40"  x2="120" y2="40"  stroke="#cde8d8" stroke-width="1.5"/>
+                <line x1="190" y1="40"  x2="155" y2="40"  stroke="#cde8d8" stroke-width="1.5"/>
+                <!-- Galvanometer -->
+                <circle cx="136" cy="25" r="15" fill="#1a2e20" stroke="#f6d365" stroke-width="2"/>
+                <text x="136" y="29" fill="#f6d365" font-size="10" text-anchor="middle" font-family="Nunito" font-weight="800">G</text>
+                <line x1="120" y1="40" x2="121" y2="40" stroke="#cde8d8" stroke-width="1.5"/>
+                <line x1="155" y1="40" x2="151" y2="40" stroke="#cde8d8" stroke-width="1.5"/>
+                <!-- Needle deflection indicator -->
+                <line x1="136" y1="25" x2="130" y2="15" stroke="#ff7c7c" stroke-width="2"/>
+                <text x="115" y="12" fill="#ff7c7c" font-size="7" font-family="Nunito">deflects!</text>
+                <!-- Flux lines inside solenoid -->
+                <line x1="85"  y1="105" x2="175" y2="105" stroke="#89d8ff" stroke-width="1" stroke-dasharray="3,2" opacity=".7" marker-end="url(#fa)"/>
+                <line x1="85"  y1="95"  x2="175" y2="95"  stroke="#89d8ff" stroke-width="1" stroke-dasharray="3,2" opacity=".4"/>
+                <line x1="85"  y1="115" x2="175" y2="115" stroke="#89d8ff" stroke-width="1" stroke-dasharray="3,2" opacity=".4"/>
+                <text x="130" y="185" fill="#4cd98a" font-size="8" text-anchor="middle" font-family="Nunito">ε = −N dΦ/dt</text>
+                <text x="130" y="198" fill="#cde8d8" font-size="7" text-anchor="middle" font-family="Nunito">Lenz's Law: induced current opposes change</text>
+                <defs>
+                  <marker id="ma" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#f6d365"/></marker>
+                  <marker id="fa" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#89d8ff"/></marker>
+                </defs>
+              </svg>
+              <div class="exp-diagram-cap">Moving magnet changes flux Φ through solenoid → galvanometer deflects</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 9. Millikan Oil Drop -->
+      <div class="exp-card">
+        <div class="exp-header">
+          <span class="exp-title">9. Millikan Oil Drop Experiment</span>
+          <span><span class="exp-tag tag-modern">Modern Physics</span> <span class="level-pill level-adv">Advanced</span></span>
+        </div>
+        <div class="exp-body">
+          <div class="exp-layout">
+            <div class="exp-left">
+              <div class="exp-row"><div class="exp-row-label">Aim</div><div class="exp-row-val">Measure the charge on a single electron <em>e</em> by balancing gravitational and electric forces on a charged oil droplet.</div></div>
+              <div class="exp-divider"></div>
+              <div class="exp-row"><div class="exp-row-label">Setup</div><div class="exp-row-val">Oil sprayed between two parallel plates. Plates connected to variable HT supply. View droplets through microscope. Adjust voltage until a droplet is stationary.</div></div>
+              <div class="exp-divider"></div>
+              <div class="exp-row"><div class="exp-row-label">Key Equations</div>
+                <div class="exp-eq">
+                  <span class="kw">Equilibrium:</span>  <span class="var">qE</span> = <span class="var">mg</span><br>
+                  <span class="kw">Electric field:</span>  <span class="var">E</span> = <span class="var">V</span>/<span class="var">d</span><br>
+                  <span class="kw">Charge:</span>  <span class="var">q</span> = <span class="var">mgd</span>/<span class="var">V</span><br>
+                  <span class="kw">Result:</span>  <span class="var">q</span> = <span class="var">ne</span>  → <span class="var">e</span> = 1.6×10⁻¹⁹ C
+                </div>
+              </div>
+              <div class="exp-row"><div class="exp-row-label">Significance</div><div class="exp-row-val">First direct measurement of the elementary charge. Showed charge is quantised in units of e.</div></div>
+            </div>
+            <div class="exp-right">
+              <svg viewBox="0 0 230 220" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:250px">
+                <rect width="230" height="220" fill="#0f1c14" rx="8"/>
+                <!-- Top plate (positive) -->
+                <rect x="30" y="45" width="160" height="14" fill="#cc2222" rx="3"/>
+                <text x="200" y="55" fill="#cc2222" font-size="9" font-family="Nunito">+</text>
+                <!-- Bottom plate (negative) -->
+                <rect x="30" y="155" width="160" height="14" fill="#2255cc" rx="3"/>
+                <text x="200" y="165" fill="#89d8ff" font-size="9" font-family="Nunito">−</text>
+                <!-- Electric field lines -->
+                <line x1="65"  y1="59" x2="65"  y2="155" stroke="#f6d365" stroke-width="1" stroke-dasharray="3,3" opacity=".5"/>
+                <line x1="95"  y1="59" x2="95"  y2="155" stroke="#f6d365" stroke-width="1" stroke-dasharray="3,3" opacity=".5"/>
+                <line x1="125" y1="59" x2="125" y2="155" stroke="#f6d365" stroke-width="1" stroke-dasharray="3,3" opacity=".5"/>
+                <line x1="155" y1="59" x2="155" y2="155" stroke="#f6d365" stroke-width="1" stroke-dasharray="3,3" opacity=".5"/>
+                <text x="170" y="108" fill="#f6d365" font-size="7" font-family="Nunito">E↓</text>
+                <!-- Oil drop -->
+                <circle cx="110" cy="107" r="8" fill="#fda085" stroke="#f6d365" stroke-width="1.5"/>
+                <text x="110" y="111" fill="#0f1c14" font-size="7" text-anchor="middle" font-family="Nunito" font-weight="800">q</text>
+                <!-- Force arrows on drop -->
+                <line x1="110" y1="99" x2="110" y2="82" stroke="#89d8ff" stroke-width="2.5" marker-end="url(#upa)"/>
+                <text x="115" y="82" fill="#89d8ff" font-size="8" font-family="Nunito">qE↑</text>
+                <line x1="110" y1="115" x2="110" y2="132" stroke="#ff7c7c" stroke-width="2.5" marker-end="url(#dna)"/>
+                <text x="115" y="132" fill="#ff7c7c" font-size="8" font-family="Nunito">mg↓</text>
+                <!-- V supply on side -->
+                <line x1="30" y1="52" x2="15" y2="52" stroke="#cde8d8" stroke-width="1.5"/>
+                <line x1="30" y1="162" x2="15" y2="162" stroke="#cde8d8" stroke-width="1.5"/>
+                <line x1="15" y1="52" x2="15" y2="80"  stroke="#cde8d8" stroke-width="1.5"/>
+                <line x1="15" y1="162" x2="15" y2="135" stroke="#cde8d8" stroke-width="1.5"/>
+                <rect x="6" y="80" width="18" height="55" fill="#2a5c3a" rx="3" stroke="#4cd98a" stroke-width="1"/>
+                <text x="15" y="110" fill="#4cd98a" font-size="7" text-anchor="middle" font-family="Nunito">HT</text>
+                <text x="15" y="120" fill="#4cd98a" font-size="7" text-anchor="middle" font-family="Nunito">V</text>
+                <!-- d label -->
+                <line x1="196" y1="59" x2="196" y2="155" stroke="#4cd98a" stroke-width="1"/>
+                <text x="205" y="108" fill="#4cd98a" font-size="9" font-family="Nunito">d</text>
+                <!-- Equilibrium label -->
+                <text x="110" y="185" fill="#4cd98a" font-size="8" text-anchor="middle" font-family="Nunito">When qE = mg: drop stationary</text>
+                <text x="110" y="198" fill="#cde8d8" font-size="7.5" text-anchor="middle" font-family="Nunito">q = mgd/V → e = 1.6×10⁻¹⁹ C</text>
+                <defs>
+                  <marker id="upa" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#89d8ff"/></marker>
+                  <marker id="dna" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#ff7c7c"/></marker>
+                </defs>
+              </svg>
+              <div class="exp-diagram-cap">Drop levitated when electric force qE exactly balances gravity mg</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 10. Hooke's Law Verification -->
+      <div class="exp-card">
+        <div class="exp-header">
+          <span class="exp-title">10. Hooke's Law — Spring Extension</span>
+          <span><span class="exp-tag tag-mech">Mechanics</span> <span class="level-pill level-basic">Basic</span></span>
+        </div>
+        <div class="exp-body">
+          <div class="exp-layout">
+            <div class="exp-left">
+              <div class="exp-row"><div class="exp-row-label">Aim</div><div class="exp-row-val">Verify that extension of a spring is proportional to the applied force (within the elastic limit).</div></div>
+              <div class="exp-divider"></div>
+              <div class="exp-row"><div class="exp-row-label">Setup</div><div class="exp-row-val">Spring clamped vertically. Add 100 g masses one at a time. Measure extension <em>x</em> with a ruler after each addition. Record F = mg.</div></div>
+              <div class="exp-divider"></div>
+              <div class="exp-row"><div class="exp-row-label">Key Equations</div>
+                <div class="exp-eq">
+                  <span class="kw">Hooke's Law:</span>  <span class="var">F</span> = <span class="var">kx</span>  (within elastic limit)<br>
+                  <span class="kw">Spring constant:</span>  <span class="var">k</span> = <span class="var">F</span>/<span class="var">x</span>  [N/m]<br>
+                  <span class="kw">Graph:</span>  <span class="var">F</span> vs <span class="var">x</span> → straight line; gradient = <span class="var">k</span><br>
+                  <span class="kw">Elastic PE:</span>  <span class="var">E</span> = ½<span class="var">kx</span>²
+                </div>
+              </div>
+              <div class="exp-row"><div class="exp-row-label">Graph Features</div><div class="exp-row-val">Linear region (Hooke's Law obeyed) → elastic limit → plastic region (permanent deformation) → breaking point.</div></div>
+            </div>
+            <div class="exp-right">
+              <svg viewBox="0 0 220 230" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:240px">
+                <rect width="220" height="230" fill="#0f1c14" rx="8"/>
+                <!-- Support -->
+                <rect x="60" y="15" width="100" height="10" fill="#4cd98a" rx="2"/>
+                <!-- Natural spring -->
+                <line x1="110" y1="25" x2="110" y2="35" stroke="#cde8d8" stroke-width="2"/>
+                <path d="M110,35 Q97,40 110,47 Q123,54 110,61 Q97,68 110,75 Q123,82 110,89 Q97,96 110,103 Q123,110 110,117" fill="none" stroke="#fda085" stroke-width="2"/>
+                <line x1="110" y1="117" x2="110" y2="128" stroke="#cde8d8" stroke-width="2"/>
+                <!-- Mass -->
+                <rect x="90" y="128" width="40" height="24" fill="#2a5c3a" rx="4" stroke="#4cd98a" stroke-width="1.5"/>
+                <text x="110" y="143" fill="#4cd98a" font-size="9" text-anchor="middle" font-family="Nunito" font-weight="800">mg</text>
+                <!-- x arrow -->
+                <line x1="158" y1="25" x2="158" y2="128" stroke="#89d8ff" stroke-width="1.5" marker-end="url(#xa)" marker-start="url(#xs)"/>
+                <text x="168" y="80" fill="#89d8ff" font-size="9" font-family="Nunito">x</text>
+                <!-- F=kx label -->
+                <text x="110" y="170" fill="#4cd98a" font-size="8" text-anchor="middle" font-family="Nunito">F = kx</text>
+                <!-- F-x graph inset -->
+                <rect x="20" y="178" width="80" height="42" fill="#1a2e20" rx="4"/>
+                <line x1="28" y1="215" x2="96" y2="215" stroke="#cde8d8" stroke-width="1"/>
+                <line x1="28" y1="215" x2="28" y2="182" stroke="#cde8d8" stroke-width="1"/>
+                <!-- Linear region -->
+                <line x1="28" y1="215" x2="68" y2="188" stroke="#4cd98a" stroke-width="2"/>
+                <!-- Elastic limit -->
+                <circle cx="68" cy="188" r="3" fill="#f6d365"/>
+                <!-- Non-linear beyond -->
+                <path d="M68,188 Q78,185 82,180" fill="none" stroke="#ff7c7c" stroke-width="1.5"/>
+                <text x="28" y="178" fill="#cde8d8" font-size="6" font-family="Nunito">F</text>
+                <text x="98" y="217" fill="#cde8d8" font-size="6" font-family="Nunito">x</text>
+                <text x="62" y="227" fill="#4cd98a" font-size="6" text-anchor="middle" font-family="Nunito">gradient = k</text>
+                <text x="72" y="182" fill="#f6d365" font-size="6" font-family="Nunito">EL</text>
+                <defs>
+                  <marker id="xa" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#89d8ff"/></marker>
+                  <marker id="xs" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto-start-reverse"><path d="M0,0 L6,3 L0,6 Z" fill="#89d8ff"/></marker>
+                </defs>
+              </svg>
+              <div class="exp-diagram-cap">F vs x graph: linear up to elastic limit (EL), then plastic deformation</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="container text-center">
+    <p class="mb-1">🏕 <strong style="color:#fff">SchoolCamp</strong> — The student community for Cameroon 🇨🇲</p>
+    <small><a href="{% url 'forum:home' %}">Forum</a> · <a href="{% url 'groups:list' %}">Groups</a> · <a href="{% url 'materials:list' %}">Materials</a> · <a href="{% url 'quiz:list' %}">Quiz</a></small>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebarOverlay').classList.toggle('open');
+  }
+
+  function goTo(id, e) {
+    if (e) e.preventDefault();
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (window.innerWidth <= 768) toggleSidebar();
+    document.querySelectorAll('.category-link').forEach(l => l.classList.remove('active'));
+    if (e && e.currentTarget) e.currentTarget.classList.add('active');
+  }
+
+  function filterSections(query) {
+    const q = query.toLowerCase().trim();
+    document.querySelectorAll('.formula-section').forEach(s => {
+      s.classList.toggle('hidden', q && !s.textContent.toLowerCase().includes(q));
+    });
+  }
+
+  function copyFormula(btn) {
+    const box = btn.closest('.formula-box');
+    const text = box.innerText.replace(/^Copy\n|^✓ Copied!\n/,'').trim();
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = '✓ Copied!';
+      btn.style.cssText = 'background:var(--sc-green);color:#fff;border-color:var(--sc-green)';
+      setTimeout(() => { btn.textContent = 'Copy'; btn.style.cssText = ''; }, 2000);
+    });
+  }
+
+  const sections = document.querySelectorAll('.formula-section');
+  const links = document.querySelectorAll('.category-link');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => { if (window.scrollY + 100 >= s.offsetTop) current = s.id; });
+    links.forEach(l => {
+      l.classList.remove('active');
+      if ((l.getAttribute('onclick')||'').includes(`'${current}'`)) l.classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>

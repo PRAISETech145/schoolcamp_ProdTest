@@ -1,0 +1,216 @@
+{% extends 'base.html' %}
+{% block title %}New Message{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ── Page ── */
+  .nm-page { max-width: 640px; margin: 0 auto; padding: 28px 16px 48px; }
+
+  /* ── Header ── */
+  .nm-header { display: flex; align-items: center; gap: 14px; margin-bottom: 26px; }
+  .nm-back {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: #fff; border: 1.5px solid #dde8e3;
+    display: flex; align-items: center; justify-content: center;
+    color: #5a8a6a; font-size: 1rem; text-decoration: none;
+    transition: background .2s, border-color .2s;
+  }
+  .nm-back:hover { background: var(--sc-light-green); border-color: var(--sc-green); color: var(--sc-green); }
+  .nm-title { font-size: 1.5rem; font-weight: 800; color: var(--sc-dark); }
+
+  /* ── Search card ── */
+  .search-card {
+    background: #fff; border-radius: 16px;
+    box-shadow: 0 2px 14px rgba(0,0,0,.07); overflow: hidden;
+  }
+  .search-bar-wrap {
+    display: flex; align-items: center; gap: 10px;
+    padding: 14px 18px; border-bottom: 1px solid #eef4f0;
+  }
+  .search-bar-wrap i { color: var(--sc-green); font-size: 1.1rem; flex-shrink: 0; }
+  .search-bar-wrap input {
+    flex: 1; border: none; outline: none;
+    font-size: .97rem; font-family: 'Segoe UI', sans-serif;
+    color: #1a2e22; background: transparent;
+  }
+  .search-bar-wrap input::placeholder { color: #b0c8b8; }
+  .search-bar-wrap button {
+    background: var(--sc-green); color: #fff; border: none;
+    border-radius: 20px; padding: 7px 18px; font-weight: 700;
+    font-size: .85rem; cursor: pointer; transition: background .2s;
+    white-space: nowrap;
+  }
+  .search-bar-wrap button:hover { background: #158048; }
+
+  /* ── Results ── */
+  .result-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 12px 18px; text-decoration: none; color: inherit;
+    transition: background .15s; border-bottom: 1px solid #f4f8f5;
+  }
+  .result-item:last-child { border-bottom: none; }
+  .result-item:hover { background: #f8fbf9; }
+  .av-lg {
+    width: 50px; height: 50px; border-radius: 50%; object-fit: cover;
+    flex-shrink: 0; border: 2px solid #e8f0eb;
+  }
+  .av-lg-ph {
+    width: 50px; height: 50px; border-radius: 50%;
+    background: var(--sc-green); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 1.2rem; flex-shrink: 0;
+  }
+  .r-name  { font-weight: 700; font-size: .97rem; color: #1a2e22; }
+  .r-sub   { font-size: .8rem; color: #7aaa8a; margin-top: 1px; }
+  .r-xp    { font-size: .75rem; background: linear-gradient(135deg,#f6d365,#fda085); color: #fff; border-radius: 20px; padding: 2px 8px; font-weight: 700; }
+  .r-arrow { color: #c5d8ce; font-size: .9rem; }
+
+  /* ── Suggestions ── */
+  .suggestion-label {
+    font-size: .72rem; font-weight: 800; letter-spacing: 1.2px;
+    text-transform: uppercase; color: #7aaa8a; padding: 14px 18px 6px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .suggestion-label i { color: var(--sc-green); }
+
+  /* ── No results ── */
+  .no-results {
+    text-align: center; padding: 40px 24px; color: #8aaa9a;
+  }
+  .no-results .nr-icon { font-size: 2.5rem; margin-bottom: 10px; }
+  .no-results h6 { color: #4a7a5a; font-weight: 700; }
+
+  /* ── Empty / initial state ── */
+  .initial-state {
+    text-align: center; padding: 48px 24px; color: #8aaa9a;
+  }
+  .initial-state .is-icon {
+    width: 80px; height: 80px; border-radius: 50%;
+    background: var(--sc-light-green); margin: 0 auto 16px;
+    display: flex; align-items: center; justify-content: center; font-size: 2.2rem;
+  }
+  .initial-state h5 { color: var(--sc-dark); font-weight: 800; margin-bottom: 6px; }
+  .initial-state p  { font-size: .88rem; }
+
+  /* ── Chip strip (selected recipients, optional) ── */
+  .chip-strip { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 16px; min-height: 44px; }
+  .chip {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--sc-light-green); border: 1px solid #c0ddc8;
+    border-radius: 20px; padding: 4px 10px 4px 8px; font-size: .82rem;
+    font-weight: 700; color: var(--sc-dark);
+  }
+  .chip-av { width: 20px; height: 20px; border-radius: 50%; background: var(--sc-green); color: #fff; display: flex; align-items: center; justify-content: center; font-size: .65rem; font-weight: 800; }
+  .chip-x { cursor: pointer; color: #7aaa8a; font-size: .8rem; line-height: 1; }
+  .chip-x:hover { color: #c0392b; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="nm-page">
+
+  <!-- Header -->
+  <div class="nm-header">
+    <a href="{% url 'chat:inbox' %}" class="nm-back">
+      <i class="bi bi-arrow-left"></i>
+    </a>
+    <h2 class="nm-title">New Message</h2>
+  </div>
+
+  <!-- Search Card -->
+  <div class="search-card">
+    <form method="get">
+      <div class="search-bar-wrap">
+        <i class="bi bi-search"></i>
+        <input
+          type="text" name="q" value="{{ query }}"
+          placeholder="Search by username or name…"
+          autofocus autocomplete="off" id="searchInput">
+        <button type="submit">Search</button>
+      </div>
+    </form>
+
+    {% if query %}
+      {% if results %}
+        <!-- Results -->
+        {% for user in results %}
+        <a href="{% url 'chat:direct' user.username %}" class="result-item">
+          <div>
+            {% if user.avatar %}
+              <img src="{{ user.avatar.url }}" class="av-lg" alt="">
+            {% else %}
+              <div class="av-lg-ph">{{ user.username|first|upper }}</div>
+            {% endif %}
+          </div>
+          <div class="flex-grow-1 min-width-0">
+            <div class="r-name">{{ user.username }}</div>
+            <div class="r-sub">
+              {{ user.school_name|default:"SchoolCamp Student" }}
+              {% if user.level %} · {{ user.get_level_display }}{% endif %}
+            </div>
+          </div>
+          {% if user.xp_points %}
+            <span class="r-xp">{{ user.xp_points }} XP</span>
+          {% endif %}
+          <i class="bi bi-chat-dots-fill r-arrow" style="color:var(--sc-green)"></i>
+        </a>
+        {% endfor %}
+
+      {% else %}
+        <!-- No results -->
+        <div class="no-results">
+          <div class="nr-icon">🔍</div>
+          <h6>No users found for "{{ query }}"</h6>
+          <p style="font-size:.85rem">Try a different username or check the spelling.</p>
+        </div>
+      {% endif %}
+
+    {% else %}
+      <!-- Suggestions -->
+      {% if suggestions %}
+        <div class="suggestion-label"><i class="bi bi-clock-history"></i> Recent Contacts</div>
+        {% for user in suggestions %}
+        <a href="{% url 'chat:direct' user.username %}" class="result-item">
+          <div>
+            {% if user.avatar %}
+              <img src="{{ user.avatar.url }}" class="av-lg" alt="">
+            {% else %}
+              <div class="av-lg-ph">{{ user.username|first|upper }}</div>
+            {% endif %}
+          </div>
+          <div class="flex-grow-1 min-width-0">
+            <div class="r-name">{{ user.username }}</div>
+            <div class="r-sub">{{ user.school_name|default:"SchoolCamp Student" }}</div>
+          </div>
+          <i class="bi bi-chevron-right r-arrow"></i>
+        </a>
+        {% endfor %}
+      {% else %}
+        <!-- Initial empty state -->
+        <div class="initial-state">
+          <div class="is-icon">👋</div>
+          <h5>Find a classmate</h5>
+          <p>Search by username to start a private conversation on SchoolCamp.</p>
+        </div>
+      {% endif %}
+    {% endif %}
+
+  </div><!-- /.search-card -->
+
+</div><!-- /.nm-page -->
+
+<script>
+// Live search with debounce
+const searchInput = document.getElementById('searchInput');
+let debounceTimer;
+searchInput.addEventListener('input', () => {
+  clearTimeout(debounceTimer);
+  const q = searchInput.value.trim();
+  if (q.length >= 2) {
+    debounceTimer = setTimeout(() => {
+      window.location.href = '?q=' + encodeURIComponent(q);
+    }, 500);
+  }
+});
+</script>
+{% endblock %}

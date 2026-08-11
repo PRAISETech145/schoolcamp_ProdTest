@@ -1,0 +1,4 @@
+{% extends 'base.html' %}
+{% load humanize dashboard_extras %}
+
+{% block title %}Detailed Statistics - SchoolCamp{% endblock %}

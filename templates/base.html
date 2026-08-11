@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}SchoolCamp{% endblock %} | SchoolCamp 🏕</title>
+  <!-- Apply saved theme immediately to prevent flash -->
+  <script>
+    (function() {
+      const saved = localStorage.getItem('sc-theme') || 
+        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-bs-theme', saved);
+    })();
+  </script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+
+  <style>
+    /* ── LIGHT MODE (default) ── */
+    :root {
+      --sc-green: #1a9e5a;
+      --sc-dark: #0f1c14;
+      --sc-light-green: #e8f5ee;
+
+      --bg-body:       #f4f7f5;
+      --bg-card:       #ffffff;
+      --bg-card-header:#e8f5ee;
+      --text-main:     #1a1a1a;
+      --text-muted:    #555555;
+      --border-color:  #d2e8db;
+      --card-shadow:   0 2px 12px rgba(0,0,0,0.07);
+      --accepted-bg:   #f0fbf5;
+      --input-bg:      #ffffff;
+      --input-border:  #ced4da;
+      --dropdown-bg:   #ffffff;
+      --dropdown-text: #1a1a1a;
+      --dropdown-hover:#f0fbf5;
+    }
+
+    /* ── DARK MODE ── */
+    [data-bs-theme="dark"] {
+      --sc-green: #2ecc71;
+      --sc-dark: #0a110c;
+      --sc-light-green: #1a2e22;
+
+      --bg-body:       #0d1710;
+      --bg-card:       #141f17;
+      --bg-card-header:#1a2e22;
+      --text-main:     #e8f5ee;
+      --text-muted:    #7aad92;
+      --border-color:  #1e3828;
+      --card-shadow:   0 2px 16px rgba(0,0,0,0.4);
+      --accepted-bg:   #0f2018;
+      --input-bg:      #1a2e22;
+      --input-border:  #2a5c3a;
+      --dropdown-bg:   #141f17;
+      --dropdown-text: #e8f5ee;
+      --dropdown-hover:#1a3323;
+    }
+
+    body {
+      background: var(--bg-body) !important;
+      color: var(--text-main) !important;
+      font-family: 'Segoe UI', sans-serif;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    .navbar { background: var(--sc-dark) !important; }
+    .navbar-brand { color: #fff !important; font-weight: 800; font-size: 1.4rem; }
+    .navbar-brand span { color: #4cd98a; }
+    .nav-link { color: #cde8d8 !important; }
+    .nav-link:hover { color: #fff !important; }
+
+    .btn-primary { background: var(--sc-green); border-color: var(--sc-green); }
+    .btn-primary:hover { background: #158048; border-color: #158048; }
+    .btn-outline-primary { color: var(--sc-green); border-color: var(--sc-green); }
+    .btn-outline-primary:hover { background: var(--sc-green); color: #fff; }
+
+    .badge-notification {
+      position: absolute; top: -6px; right: -6px;
+      background: #e74c3c; color: #fff;
+      border-radius: 50%; width: 18px; height: 18px;
+      font-size: 11px; display: flex; align-items: center; justify-content: center;
+    }
+
+    /* Cards */
+    .card {
+      border: 1px solid var(--border-color) !important;
+      border-radius: 12px;
+      box-shadow: var(--card-shadow);
+      background: var(--bg-card) !important;
+      color: var(--text-main) !important;
+      transition: background 0.3s ease, border-color 0.3s ease;
+    }
+    .card-header {
+      background: var(--bg-card-header) !important;
+      border-bottom: 1px solid var(--border-color) !important;
+      font-weight: 600;
+      color: var(--text-main) !important;
+    }
+    .card-body, .card-footer { color: var(--text-main) !important; }
+
+    /* Badges & tags */
+    .tag-badge {
+      background: var(--sc-light-green);
+      color: var(--sc-green);
+      border: 1px solid var(--border-color);
+      border-radius: 20px; padding: 2px 10px; font-size: 12px; text-decoration: none;
+    }
+    .tag-badge:hover { background: var(--sc-green); color: #fff; }
+    .xp-badge { background: linear-gradient(135deg, #f6d365, #fda085); color: #fff; border-radius: 20px; padding: 2px 10px; font-size: 12px; font-weight: 600; }
+    .accepted-answer { border-left: 4px solid var(--sc-green); background: var(--accepted-bg) !important; }
+
+    /* Inputs & forms */
+    .form-control, .form-select, textarea {
+      background: var(--input-bg) !important;
+      border-color: var(--input-border) !important;
+      color: var(--text-main) !important;
+    }
+    .form-control:focus, .form-select:focus, textarea:focus {
+      background: var(--input-bg) !important;
+      color: var(--text-main) !important;
+      border-color: var(--sc-green) !important;
+      box-shadow: 0 0 0 0.2rem rgba(26,158,90,0.25) !important;
+    }
+    .form-control::placeholder { color: var(--text-muted) !important; }
+
+    /* Dropdowns */
+    .dropdown-menu {
+      background: var(--dropdown-bg) !important;
+      border-color: var(--border-color) !important;
+    }
+    .dropdown-item {
+      color: var(--dropdown-text) !important;
+    }
+    .dropdown-item:hover, .dropdown-item:focus {
+      background: var(--dropdown-hover) !important;
+      color: var(--sc-green) !important;
+    }
+    .dropdown-divider { border-color: var(--border-color) !important; }
+
+    /* Tables */
+    .table {
+      color: var(--text-main) !important;
+      border-color: var(--border-color) !important;
+    }
+    .table th { background: var(--bg-card-header) !important; }
+    .table td { border-color: var(--border-color) !important; }
+
+    /* List groups */
+    .list-group-item {
+      background: var(--bg-card) !important;
+      border-color: var(--border-color) !important;
+      color: var(--text-main) !important;
+    }
+    .list-group-item:hover { background: var(--bg-card-header) !important; }
+
+    /* Text utilities */
+    .text-muted { color: var(--text-muted) !important; }
+
+    /* Modals */
+    .modal-content {
+      background: var(--bg-card) !important;
+      border-color: var(--border-color) !important;
+      color: var(--text-main) !important;
+    }
+    .modal-header, .modal-footer {
+      border-color: var(--border-color) !important;
+    }
+
+    /* Theme toggle button */
+    #theme-toggle {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.25);
+      color: #cde8d8;
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    #theme-toggle:hover {
+      background: rgba(255,255,255,0.1);
+      border-color: #4cd98a;
+      color: #4cd98a;
+    }
+
+    .messages-container { position: fixed; top: 70px; right: 20px; z-index: 9999; min-width: 300px; }
+    footer { background: var(--sc-dark); color: #7aad92; padding: 30px 0; margin-top: 60px; }
+    footer a { color: #4cd98a; text-decoration: none; }
+
+    /* ═══════════════════════════════════════
+       SCHOOLCAMP PAGE LOADER
+    ═══════════════════════════════════════ */
+    #sc-page-loader {
+      position: fixed;
+      inset: 0;
+      background: #0f1c14;
+      z-index: 99999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+    #sc-page-loader.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    /* Animated forest background dots */
+    .loader-bg {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .loader-bg span {
+      position: absolute;
+      font-size: 18px;
+      opacity: 0.07;
+      animation: floatUp linear infinite;
+    }
+
+    @keyframes floatUp {
+      0%   { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10%  { opacity: 0.07; }
+      90%  { opacity: 0.07; }
+      100% { transform: translateY(-120px) rotate(20deg); opacity: 0; }
+    }
+
+    /* Logo */
+    .loader-logo {
+      font-size: 56px;
+      margin-bottom: 6px;
+      animation: logoBounce 2s ease-in-out infinite;
+      position: relative;
+      z-index: 1;
+    }
+    @keyframes logoBounce {
+      0%, 100% { transform: translateY(0px); }
+      50%       { transform: translateY(-12px); }
+    }
+
+    .loader-brand {
+      font-size: 26px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.5px;
+      margin-bottom: 2px;
+      position: relative;
+      z-index: 1;
+    }
+    .loader-brand span { color: #4cd98a; }
+
+    .loader-tagline {
+      font-size: 12px;
+      color: #6aad82;
+      margin-bottom: 40px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Step pills */
+    .loader-steps {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 28px;
+      position: relative;
+      z-index: 1;
+    }
+    .loader-step {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 14px;
+      border-radius: 99px;
+      border: 1px solid #2a5c3a;
+      color: #4a7a5a;
+      background: transparent;
+      transition: all 0.4s ease;
+      letter-spacing: 0.3px;
+    }
+    .loader-step.step-done {
+      background: #1a3323;
+      color: #4cd98a;
+      border-color: #4cd98a;
+    }
+    .loader-step.step-active {
+      background: #1a9e5a;
+      color: #fff;
+      border-color: #1a9e5a;
+      box-shadow: 0 0 12px rgba(26,158,90,0.5);
+    }
+
+    /* Progress bar */
+    .loader-bar-wrap {
+      width: 320px;
+      position: relative;
+      z-index: 1;
+      margin-bottom: 14px;
+    }
+    .loader-bar-track {
+      width: 100%;
+      height: 8px;
+      background: #1a2e20;
+      border-radius: 99px;
+      overflow: hidden;
+      border: 1px solid #2a5c3a;
+    }
+    .loader-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #1a9e5a, #4cd98a);
+      border-radius: 99px;
+      transition: width 0.35s cubic-bezier(.4,0,.2,1);
+      position: relative;
+    }
+    .loader-bar-fill::after {
+      content: '';
+      position: absolute;
+      top: 0; right: 0; bottom: 0;
+      width: 40px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3));
+      border-radius: 99px;
+      animation: barShimmer 1.2s ease-in-out infinite;
+    }
+    @keyframes barShimmer {
+      0%,100% { opacity: 0.3; }
+      50%      { opacity: 1; }
+    }
+
+    /* Status text */
+    .loader-status {
+      font-size: 13px;
+      color: #6aad82;
+      text-align: center;
+      height: 20px;
+      position: relative;
+      z-index: 1;
+      transition: opacity 0.3s;
+    }
+    .loader-pct {
+      font-size: 11px;
+      color: #3a6a4a;
+      margin-top: 6px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Dot indicators */
+    .loader-dots {
+      display: flex;
+      gap: 8px;
+      margin-top: 28px;
+      position: relative;
+      z-index: 1;
+    }
+    .loader-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #2a5c3a;
+      transition: background 0.3s, transform 0.3s;
+    }
+    .loader-dot.dot-active {
+      background: #4cd98a;
+      transform: scale(1.3);
+    }
+
+    /* Done state */
+    .loader-done {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      margin-top: 24px;
+      position: relative;
+      z-index: 1;
+    }
+    .loader-done-check {
+      font-size: 36px;
+      animation: popIn 0.5s cubic-bezier(.175,.885,.32,1.275);
+    }
+    @keyframes popIn {
+      0%   { transform: scale(0) rotate(-20deg); opacity: 0; }
+      100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+    .loader-done-text {
+      font-size: 15px;
+      font-weight: 700;
+      color: #4cd98a;
+    }
+  </style>
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════
+     SCHOOLCAMP PAGE LOADER OVERLAY
+═══════════════════════════════════════ -->
+<div id="sc-page-loader">
+
+  <!-- Floating background emojis -->
+  <div class="loader-bg" id="loaderBg"></div>
+
+  <!-- Logo -->
+  <div class="loader-logo">🏕</div>
+  <div class="loader-brand">School<span>Camp</span></div>
+  <div class="loader-tagline">Student community · Cameroon</div>
+
+  <!-- Step pills -->
+  <div class="loader-steps">
+    <div class="loader-step step-active" id="lst-0">Connecting</div>
+    <div class="loader-step"            id="lst-1">Profile</div>
+    <div class="loader-step"            id="lst-2">Forum</div>
+    <div class="loader-step"            id="lst-3">Ready</div>
+  </div>
+
+  <!-- Progress bar -->
+  <div class="loader-bar-wrap">
+    <div class="loader-bar-track">
+      <div class="loader-bar-fill" id="scBarFill"></div>
+    </div>
+  </div>
+
+  <div class="loader-status" id="scStatus">Connecting to sever</div>
+  <div class="loader-pct"    id="scPct">0%</div>
+
+  <!-- Dots -->
+  <div class="loader-dots">
+    <div class="loader-dot dot-active" id="ld-0"></div>
+    <div class="loader-dot"            id="ld-1"></div>
+    <div class="loader-dot"            id="ld-2"></div>
+    <div class="loader-dot"            id="ld-3"></div>
+    <div class="loader-dot"            id="ld-4"></div>
+  </div>
+
+  <!-- Done -->
+  <div class="loader-done" id="scDone">
+    <div class="loader-done-check">✅</div>
+    <div class="loader-done-text">Welcome to SchoolCamp !</div>
+  </div>
+</div>
+<!-- END LOADER -->
+
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+  <div class="container">
+    <a class="navbar-brand" href="{% url 'forum:home' %}">🏕 School<span>Camp</span></a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item"><a class="nav-link" href="{% url 'forum:home' %}"><i class="bi bi-chat-dots"></i> Forum</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'groups:list' %}"><i class="bi bi-people"></i> Groups</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'materials:list' %}"><i class="bi bi-book"></i> Materials</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'quiz:list' %}"><i class="bi bi-trophy"></i> Quiz</a></li>
+        
+         <li class="nav-item"><a class="nav-link" href="{% url 'timetable:dashboard' %}"><i class="bi bi-calendar3"></i> Timetable</a></li>
+
+        <li class="nav-item"><a class="nav-link" href="{% url 'dashboard:home' %}"><i class="bi bi-bar-chart-line"></i> Dashboard</a></li>
+  
+        {% if user.is_authenticated %}
+          <li class="nav-item me-2">
+            <a class="nav-link position-relative" href="{% url 'chat:inbox' %}" id="messagesNavLink">
+              <i class="bi bi-envelope"></i> Chat
+              <span id="msgBadge" class="badge-notification d-none">0</span>
+            </a>
+            
+          </li>
+           
+         <li class="nav-item me-2">
+            <a class="nav-link position-relative "href="{% url 'friends:list' %}" id="friendsNavLink">
+              <i class="bi bi-people"></i> Friends
+              <span id="friendBadge" class="badge-notification d-none">0</span>
+            </a>
+            
+            <li class="nav-item me-2">
+    <a class="nav-link position-relative" href="{% url 'notifications:list' %}" id="notificationsNavLink">
+        <i class="bi bi-bell"></i> Notifications
+        <span id="notifyBadge" class="badge-notification d-none">0</span>
+    </a>
+</li>
+          
+     </li>
+           
+
+          <!-- Subscription badge -->
+          {% if subscription %}
+            {% if subscription.status == 'trial' and not subscription.is_trial_expired %}
+              <li class="nav-item d-flex align-items-center me-2">
+                <a href="{% url 'payment:wall' %}"
+                   class="btn btn-sm"
+                   style="background:#f6d365;color:#0f1c14;font-weight:700;border-radius:20px;padding:4px 14px;font-size:12px;">
+                  ⚡ Upgrade — 200 XAF
+                </a>
+              </li>
+            {% elif subscription.status == 'active' %}
+              <li class="nav-item d-flex align-items-center me-2">
+                <span style="color:#4cd98a;font-size:12px;font-weight:700;">
+                  ✅ Premium · {{ subscription.paid_until|date:"d M Y" }}
+                </span>
+              </li>
+            {% endif %}
+          {% endif %}
+
+      </ul>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" data-bs-toggle="dropdown">
+              {% if user.avatar %}
+                <img src="{{ user.avatar.url }}" width="28" height="28" class="rounded-circle object-fit-cover">
+              {% else %}
+                <i class="bi bi-person-circle fs-5"></i>
+              {% endif %}
+              {{ user.username }}
+              <span class="xp-badge ms-1">{{ user.xp_points }} XP</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" href="{% url 'accounts:profile' user.username %}"><i class="bi bi-person me-2"></i>My Profile</a></li>
+              <li><a class="dropdown-item" href="{% url 'accounts:edit_profile' %}"><i class="bi bi-gear me-2"></i>Edit Profile</a></li>
+              <li><a class="dropdown-item" href="{% url 'payment:subscription' %}"><i class="bi bi-credit-card me-2"></i>My Subscription</a></li>
+              
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <button id="theme-toggle" class="dropdown-item d-flex align-items-center gap-2">
+                  <i class="bi bi-moon-fill" id="theme-icon"></i>
+                  <span id="theme-label">Dark Mode</span>
+                </button>
+              </li>
+                <form method="post" action="{% url 'accounts:logout' %}">
+                  {% csrf_token %}
+                  <button class="dropdown-item text-danger" type="submit"><i class="bi bi-box-arrow-right me-2"></i>Logout</button>
+                </form>
+              </li>
+            </ul>
+          </li>
+        {% else %}
+          <li class="nav-item"><a class="nav-link" href="{% url 'accounts:login' %}">Login</a></li>
+          <li class="nav-item"><a class="btn btn-sm btn-primary ms-2" href="{% url 'accounts:register' %}">Sign Up Free</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- FLASH MESSAGES -->
+<div class="messages-container">
+  {% for message in messages %}
+    <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show shadow" role="alert">
+      {{ message }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  {% endfor %}
+</div>
+
+<!-- MAIN CONTENT -->
+<main class="container py-4">
+  {% block content %}{% endblock %}
+</main>
+
+<footer>
+  <div class="container text-center">
+    <p class="mb-1">🏕 <strong style="color:#fff">SchoolCamp</strong> — The student community for Cameroon 🇨🇲</p>
+    <small>
+      <a href="{% url 'forum:home' %}">Forum</a> ·
+      <a href="{% url 'groups:list' %}">Groups</a> ·
+      <a href="{% url 'materials:list' %}">Materials</a> ·
+      <a href="{% url 'quiz:list' %}">Quiz</a>' </small>
+  </div>
+  <div class="container text-center">
+    <small>
+<a href="{% url 'legal:terms' %}">Terms</a> ·
+<a href="{% url 'legal:privacy' %}">Privacy</a> ·
+<a href="{% url 'legal:payment' %}">Payment</a> ·
+<a href="{% url 'legal:cookies' %}">Cookies</a>
+      </small>
+      </div>
+   <p class="mt-2 mb-0" style="font-size:12px;color:#7aad92;">&copy; 2026 SchoolCamp. All rights reserved.</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  /* ══════════════════════════════════════
+     DARK MODE TOGGLE
+  ══════════════════════════════════════ */
+  (function() {
+    const html    = document.documentElement;
+    const toggle  = document.getElementById('theme-toggle');
+    const icon    = document.getElementById('theme-icon');
+    const label   = document.getElementById('theme-label');
+
+    function applyTheme(theme) {
+      html.setAttribute('data-bs-theme', theme);
+      localStorage.setItem('sc-theme', theme);
+      if (icon)  icon.className  = theme === 'dark' ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
+      if (label) label.textContent = theme === 'dark' ? 'Light Mode' : 'Dark Mode';
+    }
+
+    // Sync icon with current theme on load
+    const current = html.getAttribute('data-bs-theme') || 'light';
+    applyTheme(current);
+
+    if (toggle) {
+      toggle.addEventListener('click', function(e) {
+        e.stopPropagation(); // keep dropdown open
+        const next = html.getAttribute('data-bs-theme') === 'dark' ? 'light' : 'dark';
+        applyTheme(next);
+      });
+    }
+  })();
+</script>
+
+<script>
+  /* ══════════════════════════════════════
+     SCHOOLCAMP PAGE LOADER SCRIPT
+  ══════════════════════════════════════ */
+  (function() {
+    const loader = document.getElementById('sc-page-loader');
+
+  
+    if (sessionStorage.getItem('sc_loaded')) {
+      loader.style.display = 'none';
+      return;
+    }
+
+    const barFill  = document.getElementById('scBarFill');
+    const statusEl = document.getElementById('scStatus');
+    const pctEl    = document.getElementById('scPct');
+    const doneEl   = document.getElementById('scDone');
+    const dotsEl   = [0,1,2,3,4].map(i => document.getElementById('ld-' + i));
+    const stepsEl  = [0,1,2,3].map(i => document.getElementById('lst-' + i));
+
+    const messages = [
+      [0,  "Connecting to server"],
+      [20, "Account Verification…"],
+      [38, "Loading Profile…"],
+      [55, "Loading Forum…"],
+      [70, "Loading Materials…"],
+      [85, "Synchronisation of Groups…"],
+      [94, "Finalisation…"],
+      [100,"Welcome to SchoolCamp !"],
+    ];
+
+    const bg = document.getElementById('loaderBg');
+    const icons = ['🌿','🌱','📚','✏️','🎓','🔬','📐','🌍'];
+    for (let i = 0; i < 14; i++) {
+      const s = document.createElement('span');
+      s.textContent = icons[i % icons.length];
+      s.style.left = (Math.random() * 100) + '%';
+      s.style.animationDuration = (8 + Math.random() * 10) + 's';
+      s.style.animationDelay    = (Math.random() * 10) + 's';
+      bg.appendChild(s);
+    }
+
+    let pct = 0;
+    let pageReady = false;
+    let animDone  = false;
+    let timer;
+
+    function setStep(p) {
+      stepsEl.forEach((el, i) => {
+        const threshold = i * 26;
+        if (p > threshold + 26) {
+          el.className = 'loader-step step-done';
+        } else if (p > threshold) {
+          el.className = 'loader-step step-active';
+        } else {
+          el.className = 'loader-step';
+        }
+      });
+    }
+
+    function setDot(p) {
+      const idx = Math.min(4, Math.floor(p / 22));
+      dotsEl.forEach((d, i) => {
+        d.className = 'loader-dot' + (i === idx ? ' dot-active' : '');
+      });
+    }
+
+    function setStatus(p) {
+      for (let i = messages.length - 1; i >= 0; i--) {
+        if (p >= messages[i][0]) {
+          statusEl.textContent = messages[i][1];
+          break;
+        }
+      }
+    }
+
+    function dismissLoader() {
+      doneEl.style.display = 'flex';
+      sessionStorage.setItem('sc_loaded', '1');
+      setTimeout(() => {
+        loader.classList.add('hidden');
+      }, 600);
+    }
+
+    function tick() {
+
+      let speed;
+      if (pct < 40)      speed = 2.2;
+      else if (pct < 70) speed = 1.6;
+      else if (pct < 88) speed = 1.0;
+      else if (pageReady) speed = 3.0;  
+      else               speed = 0.30;   
+
+      pct = Math.min(100, pct + speed);
+      const p = Math.round(pct);
+
+      barFill.style.width = p + '%';
+      pctEl.textContent   = p + '%';
+      setStep(p);
+      setDot(p);
+      setStatus(p);
+
+      if (pct >= 100) {
+        clearInterval(timer);
+        animDone = true;
+        statusEl.style.opacity = '0';
+        pctEl.style.opacity    = '0';
+        dotsEl.forEach(d => d.style.opacity = '0');
+        dismissLoader();
+      }
+    }
+
+    /* Start the animation immediately */
+    timer = setInterval(tick, 55);
+
+    /* Listen for the page to finish loading */
+    window.addEventListener('load', function() {
+      pageReady = true;
+    });
+  })();
+
+  /* ══════════════════════════════════════
+     AUTO-DISMISS FLASH ALERTS
+  ══════════════════════════════════════ */
+  setTimeout(() => {
+    document.querySelectorAll('.alert').forEach(a => {
+      const bs = bootstrap.Alert.getOrCreateInstance(a);
+      bs.close();
+    });
+  }, 4000);
+
+  /* ══════════════════════════════════════
+     BADGE POLLING
+  ══════════════════════════════════════ */
+  {% if user.is_authenticated %}
+  fetch("{% url 'friends:pending_count' %}")
+    .then(r => r.json())
+    .then(data => {
+      if (data.count > 0) {
+        const badge = document.getElementById('friendBadge');
+        badge.textContent = data.count;
+        badge.classList.remove('d-none');
+      }
+    }).catch(() => {});
+
+  function fetchUnreadMessages() {
+    fetch("{% url 'chat:unread_count' %}")
+      .then(r => r.json())
+      .then(data => {
+        const badge = document.getElementById('msgBadge');
+        if (data.unread > 0) {
+          badge.textContent = data.unread;
+          badge.classList.remove('d-none');
+        } else {
+          badge.classList.add('d-none');
+        }
+      }).catch(() => {});
+  }
+  fetchUnreadMessages();
+  setInterval(fetchUnreadMessages, 15000);
+  {% endif %}
+
+  // Notification badge updater
+  function updateNotificationCount() {
+    const notifyBadge = document.getElementById('notifyBadge');
+    if (notifyBadge) {
+      fetch("{% url 'notifications:unread_count' %}", {
+        headers: {
+          "X-Requested-With": "XMLHttpRequest"
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        const count = data.count || 0;
+        if (count > 0) {
+          notifyBadge.textContent = count;
+          notifyBadge.classList.remove('d-none');
+        } else {
+          notifyBadge.classList.add('d-none');
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching notification count:', error);
+      });
+    }
+  }
+  // Update every 60 seconds
+  setInterval(updateNotificationCount, 60000);
+  // Update immediately on load
+  updateNotificationCount();
+</script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

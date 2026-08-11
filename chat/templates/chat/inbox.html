@@ -1,0 +1,299 @@
+{% extends 'base.html' %}
+{% block title %}Messages{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ── Page wrapper ── */
+  .inbox-page { max-width: 720px; margin: 0 auto; padding: 28px 16px 40px; }
+
+  /* ── Top bar ── */
+  .inbox-topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 22px; gap: 12px;
+  }
+  .inbox-title {
+    font-size: 1.5rem; font-weight: 800; color: var(--sc-dark);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .inbox-title .ic {
+    width: 40px; height: 40px; border-radius: 12px;
+    background: var(--sc-light-green); color: var(--sc-green);
+    display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+  }
+
+  /* ── Search bar ── */
+  .inbox-search {
+    display: flex; gap: 0; margin-bottom: 20px;
+    background: #fff; border: 2px solid #dde8e3; border-radius: 30px;
+    overflow: hidden; transition: border-color .2s;
+  }
+  .inbox-search:focus-within { border-color: var(--sc-green); }
+  .inbox-search input {
+    flex: 1; border: none; outline: none; padding: 10px 18px;
+    font-size: .92rem; font-family: 'Segoe UI', sans-serif; background: transparent;
+  }
+  .inbox-search button {
+    background: var(--sc-green); border: none; padding: 0 20px;
+    color: #fff; cursor: pointer; font-size: 1rem; transition: background .2s;
+  }
+  .inbox-search button:hover { background: #158048; }
+
+  /* ── Section labels ── */
+  .section-label {
+    font-size: .73rem; font-weight: 800; letter-spacing: 1.2px;
+    text-transform: uppercase; color: #7aaa8a; margin: 18px 0 8px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .section-label i { color: var(--sc-green); }
+
+  /* ── Conversation list card ── */
+  .conv-card {
+    background: #fff; border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.06);
+    overflow: hidden; margin-bottom: 8px;
+  }
+
+  /* ── Conversation item ── */
+  .conv-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 13px 16px; text-decoration: none; color: inherit;
+    transition: background .15s; border-bottom: 1px solid #f0f4f2;
+    position: relative;
+  }
+  .conv-item:last-child { border-bottom: none; }
+  .conv-item:hover { background: #f8fbf9; }
+  .conv-item.unread { background: #f0fbf5; }
+  .conv-item.unread::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 3px; background: var(--sc-green); border-radius: 0 2px 2px 0;
+  }
+
+  /* ── Avatars ── */
+  .av-wrap { position: relative; flex-shrink: 0; }
+  .av-img  {
+    width: 48px; height: 48px; border-radius: 50%; object-fit: cover;
+    border: 2px solid #e8f0eb;
+  }
+  .av-ph   {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: var(--sc-green); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 1.1rem;
+  }
+  .grp-av  {
+    width: 48px; height: 48px; border-radius: 12px; object-fit: cover;
+    border: 2px solid #e8f0eb;
+  }
+  .grp-av-ph {
+    width: 48px; height: 48px; border-radius: 12px;
+    background: var(--sc-dark); color: #4cd98a;
+    display: flex; align-items: center; justify-content: center; font-size: 1.4rem;
+  }
+  .online-badge {
+    position: absolute; bottom: 1px; right: 1px;
+    width: 12px; height: 12px; border-radius: 50%;
+    background: #4cd98a; border: 2px solid #fff;
+  }
+
+  /* ── Conv body ── */
+  .conv-body { flex: 1; min-width: 0; }
+  .conv-row1 { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 2px; }
+  .conv-name { font-weight: 700; font-size: .95rem; color: #1a2e22; }
+  .conv-item.unread .conv-name { color: var(--sc-dark); }
+  .conv-time { font-size: .72rem; color: #9abaaa; white-space: nowrap; }
+  .conv-row2 { display: flex; justify-content: space-between; align-items: center; }
+  .conv-preview {
+    font-size: .83rem; color: #7aaa8a; white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis; max-width: 340px;
+  }
+  .conv-item.unread .conv-preview { color: #3a6a4a; font-weight: 600; }
+  .unread-badge {
+    background: var(--sc-green); color: #fff; border-radius: 20px;
+    font-size: .7rem; font-weight: 800; padding: 2px 8px;
+    min-width: 22px; text-align: center; flex-shrink: 0; margin-left: 8px;
+  }
+
+  /* ── Empty state ── */
+  .empty-state {
+    text-align: center; padding: 52px 24px; background: #fff;
+    border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,.06);
+  }
+  .empty-state .es-icon {
+    width: 80px; height: 80px; border-radius: 50%;
+    background: var(--sc-light-green); margin: 0 auto 16px;
+    display: flex; align-items: center; justify-content: center; font-size: 2.2rem;
+  }
+  .empty-state h5 { color: var(--sc-dark); font-weight: 800; margin-bottom: 6px; }
+  .empty-state p  { color: #7aaa8a; font-size: .9rem; }
+
+  /* ── New message fab ── */
+  .fab-btn {
+    position: fixed; bottom: 28px; right: 24px;
+    width: 54px; height: 54px; border-radius: 50%;
+    background: var(--sc-green); color: #fff; border: none;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem; box-shadow: 0 4px 18px rgba(26,158,90,.45);
+    cursor: pointer; transition: background .2s, transform .15s;
+    text-decoration: none; z-index: 99;
+  }
+  .fab-btn:hover { background: #158048; transform: scale(1.08); color: #fff; }
+
+  /* ── Tabs ── */
+  .inbox-tabs {
+    display: flex; gap: 4px; background: #eef4f0; border-radius: 12px;
+    padding: 4px; margin-bottom: 18px;
+  }
+  .inbox-tab {
+    flex: 1; text-align: center; padding: 8px; border-radius: 9px;
+    font-weight: 700; font-size: .85rem; cursor: pointer;
+    color: #7aaa8a; border: none; background: transparent;
+    transition: background .2s, color .2s;
+  }
+  .inbox-tab.active { background: #fff; color: var(--sc-green); box-shadow: 0 1px 6px rgba(0,0,0,.08); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="inbox-page">
+
+  <!-- Top Bar -->
+  <div class="inbox-topbar">
+    <div class="inbox-title">
+      <div class="ic"><i class="bi bi-chat-dots-fill"></i></div>
+      Messages
+    </div>
+    <a href="{% url 'chat:new_message' %}" class="btn btn-primary btn-sm d-none d-sm-inline-flex align-items-center gap-1">
+      <i class="bi bi-pencil-square"></i> New
+    </a>
+  </div>
+
+  <!-- Search -->
+  <form method="get" class="inbox-search">
+    <input type="text" name="q" value="{{ request.GET.q }}" placeholder="Search messages or people…">
+    <button type="submit"><i class="bi bi-search"></i></button>
+  </form>
+
+  <!-- Tabs -->
+  <div class="inbox-tabs">
+    <button class="inbox-tab active" onclick="showTab('all', this)">All</button>
+    <button class="inbox-tab" onclick="showTab('direct', this)">Direct</button>
+    <button class="inbox-tab" onclick="showTab('groups', this)">Groups</button>
+  </div>
+
+  <!-- ── GROUP CHATS ── -->
+  <div id="tab-groups">
+    {% if my_groups %}
+      <div class="section-label"><i class="bi bi-people-fill"></i> Group Chats</div>
+      <div class="conv-card">
+        {% for group in my_groups %}
+        <a href="{% url 'chat:group' group.pk %}" class="conv-item">
+          <div class="av-wrap">
+            {% if group.cover_image %}
+              <img src="{{ group.cover_image.url }}" class="grp-av" alt="">
+            {% else %}
+              <div class="grp-av-ph">🏕</div>
+            {% endif %}
+          </div>
+          <div class="conv-body">
+            <div class="conv-row1">
+              <span class="conv-name">{{ group.name }}</span>
+              {% if group.last_message %}
+                <span class="conv-time">{{ group.last_message.created_at|timesince|truncatechars:12 }} ago</span>
+              {% endif %}
+            </div>
+            <div class="conv-row2">
+              <span class="conv-preview">
+                {% if group.last_message %}
+                  <strong>{{ group.last_message.sender.username }}:</strong> {{ group.last_message.content|truncatechars:45 }}
+                {% else %}
+                  {{ group.member_count }} member{{ group.member_count|pluralize }} · Tap to chat
+                {% endif %}
+              </span>
+              <i class="bi bi-chevron-right" style="color:#c5d8ce;font-size:.8rem"></i>
+            </div>
+          </div>
+        </a>
+        
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- ── DIRECT MESSAGES ── -->
+  <div id="tab-direct">
+    <div class="section-label"><i class="bi bi-person-fill"></i> Direct Messages</div>
+    {% if conversations %}
+      <div class="conv-card">
+        {% for item in conversations %}
+        {% if item.other_user %}
+        <a href="{% url 'chat:direct' item.other_user.username %}"
+           class="conv-item {% if item.unread %}unread{% endif %}">
+          <div class="av-wrap">
+            {% if item.other_user.avatar %}
+              <img src="{{ item.other_user.avatar.url }}" class="av-img" alt="">
+            {% else %}
+              <div class="av-ph">{{ item.other_user.username|first|upper }}</div>
+            {% endif %}
+            {% if item.other_user.is_online %}
+              <div class="online-badge"></div>
+            {% endif %}
+          </div>
+          <div class="conv-body">
+            <div class="conv-row1">
+              <span class="conv-name">{{ item.other_user.username }}</span>
+                
+              {% if item.last_msg %}
+                <span class="conv-time">{{ item.last_msg.created_at|timesince|truncatechars:12 }} ago</span>
+              {% endif %}
+            </div>
+            <div class="conv-row2">
+              <span class="conv-preview">
+                {% if item.last_msg %}
+                  {% if item.last_msg.sender == request.user %}
+                    <i class="bi bi-check2" style="color:var(--sc-green);font-size:.8rem"></i> You:
+                  {% endif %}
+                  {{ item.last_msg.content|truncatechars:48 }}
+                {% else %}
+                  No messages yet — say hello!
+                {% endif %}
+              </span>
+              {% if item.unread %}
+                <span class="unread-badge">{{ item.unread }}</span>
+              {% endif %}
+            </div>
+          </div>
+        </a>
+        {% endif %}
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <div class="es-icon">💬</div>
+        <h5>No conversations yet</h5>
+        <p>Start chatting with a classmate on SchoolCamp!</p>
+        <a href="{% url 'chat:new_message' %}" class="btn btn-primary mt-3">
+          <i class="bi bi-pencil-square me-1"></i> Start a Conversation
+        </a>
+      </div>
+    {% endif %}
+  </div>
+ <span class="conv-name">Make a call</span>
+</div>
+
+<!-- FAB -->
+<a href="{% url 'chat:new_message' %}" class="fab-btn d-sm-none" title="New Message">
+  <i class="bi bi-pencil-fill"></i>
+</a>
+
+<script>
+function showTab(tab, btn) {
+  document.querySelectorAll('.inbox-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const grpEl = document.getElementById('tab-groups');
+  const dirEl = document.getElementById('tab-direct');
+  if (tab === 'all')    { grpEl.style.display=''; dirEl.style.display=''; }
+  if (tab === 'direct') { grpEl.style.display='none'; dirEl.style.display=''; }
+  if (tab === 'groups') { grpEl.style.display=''; dirEl.style.display='none'; }
+}
+</script>
+{% endblock %}

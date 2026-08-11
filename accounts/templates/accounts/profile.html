@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ profile_user.username }}'s Profile{% endblock %}
+
+{% block content %}
+<div class="row">
+  <!-- LEFT: Profile info -->
+  <div class="col-md-4">
+    <div class="card p-4 text-center mb-3">
+      {% if profile_user.avatar %}
+        <img src="{{ profile_user.avatar.url }}" class="rounded-circle mx-auto mb-3" width="100" height="100" style="object-fit:cover">
+      {% else %}
+        <div class="mx-auto mb-3 rounded-circle bg-success d-flex align-items-center justify-content-center" style="width:100px;height:100px;font-size:2.5rem">
+          {{ profile_user.username.0|upper }}
+        </div>
+      {% endif %}
+      <h4 class="fw-bold mb-1">{{ profile_user.username }}</h4>
+      <p class="text-muted small mb-2">{{ profile_user.school_name|default:"No school set" }}</p>
+
+      {% if profile_user.region %}
+        <span class="badge bg-light text-dark me-1"><i class="bi bi-geo-alt"></i> {{ profile_user.get_region_display }}</span>
+      {% endif %}
+      {% if profile_user.level %}
+        <span class="badge bg-light text-dark"><i class="bi bi-mortarboard"></i> {{ profile_user.get_level_display }}</span>
+      {% endif %}
+
+      <div class="mt-3">
+        <span class="xp-badge">⚡ {{ profile_user.xp_points }} XP</span>
+      </div>
+
+      {% if profile_user.bio %}
+        <p class="mt-3 text-muted small">{{ profile_user.bio }}</p>
+      {% endif %}
+
+      <!-- Action buttons -->
+      <div class="mt-3">
+        {% if user == profile_user %}
+          <a href="{% url 'accounts:edit_profile'%}" class="btn btn-outline-primary btn-sm w-100">
+            <i class="bi bi-pencil"></i> Edit Profile
+          </a>
+           
+        {% elif user.is_authenticated %}
+          {% if friend_status == 'accepted' %}
+            <span class="badge bg-success mb-2">✓ Friends</span>
+            <form method="post" action="{% url 'friends:unfriend' profile_user.username %}">
+              {% csrf_token %}
+              <button class="btn btn-outline-danger btn-sm w-100 mt-1">Unfriend</button>
+            </form>
+          {% elif friend_status == 'pending' %}
+            <span class="badge bg-warning text-dark">Request Pending...</span>
+          {% else %}
+            <form method="post" action="{% url 'friends:send' profile_user.username %}">
+              {% csrf_token %}
+              <button class="btn btn-primary btn-sm w-100"><i class="bi bi-person-plus"></i> Add Friend</button>
+            </form>
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Questions -->
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header">
+        <i class="bi bi-chat-dots"></i> Questions by {{ profile_user.username }}
+      </div>
+      <div class="list-group list-group-flush">
+        {% for q in questions %}
+          <a href="{% url 'forum:detail' q.pk %}" class="list-group-item list-group-item-action">
+            <div class="d-flex justify-content-between">
+              <strong>{{ q.title }}</strong>
+              <small class="text-muted">{{ q.created_at|timesince }} ago</small>
+            </div>
+            <small class="text-muted">
+              <i class="bi bi-heart"></i> {{ q.like_count }} &nbsp;
+              <i class="bi bi-chat"></i> {{ q.reply_count }}
+            </small>
+          </a>
+        {% empty %}
+          <div class="list-group-item text-muted text-center py-4">No questions posted yet.</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

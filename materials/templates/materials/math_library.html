@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+ 
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Fira+Code:wght@400;500&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --sc-green: #1a9e5a;
+      --sc-dark: #0f1c14;
+      --sc-light-green: #e8f5ee;
+      --sc-accent: #4cd98a;
+      --sidebar-w: 270px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      background: #f4f7f5;
+      font-family: 'Nunito', sans-serif;
+      margin: 0;
+    }
+
+    /* ── NAVBAR ── */
+    .navbar { background: var(--sc-dark) !important; position: sticky; top: 0; z-index: 1030; }
+    .navbar-brand { color: #fff !important; font-weight: 800; font-size: 1.4rem; }
+    .navbar-brand span { color: var(--sc-accent); }
+    .nav-link { color: #cde8d8 !important; }
+    .nav-link:hover { color: #fff !important; }
+    .btn-primary { background: var(--sc-green); border-color: var(--sc-green); }
+    .btn-primary:hover { background: #158048; border-color: #158048; }
+
+    /* ── LAYOUT ── */
+    .page-wrapper {
+      display: flex;
+      min-height: calc(100vh - 56px);
+    }
+
+    /* ── SIDEBAR ── */
+    #sidebar {
+      width: var(--sidebar-w);
+      min-width: var(--sidebar-w);
+      background: var(--sc-dark);
+      color: #cde8d8;
+      padding: 0;
+      position: sticky;
+      top: 56px;
+      height: calc(100vh - 56px);
+      overflow-y: auto;
+      transition: transform 0.3s ease;
+      z-index: 1020;
+      flex-shrink: 0;
+    }
+    #sidebar::-webkit-scrollbar { width: 5px; }
+    #sidebar::-webkit-scrollbar-thumb { background: #2a5c3a; border-radius: 10px; }
+
+    .sidebar-header {
+      background: #0a1510;
+      padding: 16px 20px;
+      font-weight: 800;
+      font-size: 0.85rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--sc-accent);
+      border-bottom: 1px solid #1e3828;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sidebar-search {
+      padding: 12px 14px;
+      border-bottom: 1px solid #1e3828;
+    }
+    .sidebar-search input {
+      background: #1a2e20;
+      border: 1px solid #2a5c3a;
+      color: #cde8d8;
+      border-radius: 8px;
+      padding: 7px 12px;
+      width: 100%;
+      font-size: 13px;
+      outline: none;
+    }
+    .sidebar-search input::placeholder { color: #6aad82; }
+    .sidebar-search input:focus { border-color: var(--sc-accent); }
+
+    .sidebar-nav .category-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 20px;
+      color: #9ecfb0;
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 600;
+      border-left: 3px solid transparent;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    .sidebar-nav .category-link:hover,
+    .sidebar-nav .category-link.active {
+      color: #fff;
+      background: rgba(76,217,138,0.1);
+      border-left-color: var(--sc-accent);
+    }
+    .sidebar-nav .category-link i { font-size: 1rem; color: var(--sc-accent); }
+
+    /* ── MOBILE SIDEBAR OVERLAY ── */
+    #sidebarOverlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 1019;
+    }
+
+    /* ── MAIN CONTENT ── */
+    #mainContent {
+      flex: 1;
+      padding: 28px 24px;
+      overflow-x: hidden;
+      min-width: 0;
+    }
+
+    .page-title {
+      font-family: 'Merriweather', serif;
+      font-size: 1.9rem;
+      font-weight: 700;
+      color: var(--sc-dark);
+      margin-bottom: 4px;
+    }
+    .page-subtitle { color: #5a8a6a; font-size: 0.95rem; margin-bottom: 28px; }
+
+    /* ── SECTION CARDS ── */
+    .formula-section {
+      margin-bottom: 40px;
+      scroll-margin-top: 80px;
+    }
+    .section-title {
+      font-family: 'Merriweather', serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--sc-dark);
+      border-left: 4px solid var(--sc-green);
+      padding-left: 12px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-title i { color: var(--sc-green); font-size: 1.1rem; }
+
+    .formula-card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+      overflow: hidden;
+      margin-bottom: 14px;
+      border: none;
+      transition: box-shadow 0.2s;
+    }
+    .formula-card:hover { box-shadow: 0 4px 20px rgba(26,158,90,0.15); }
+
+    .formula-card-header {
+      background: var(--sc-light-green);
+      border-bottom: 1px solid #d2e8db;
+      padding: 10px 16px;
+      font-weight: 700;
+      font-size: 0.92rem;
+      color: #0f3d22;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .formula-body { padding: 14px 16px; }
+
+    .formula-box {
+      background: #0f1c14;
+      border-radius: 8px;
+      padding: 14px 18px;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.95rem;
+      color: #4cd98a;
+      margin: 8px 0;
+      position: relative;
+      overflow-x: auto;
+      line-height: 1.7;
+    }
+    .formula-box .var { color: #fda085; }
+    .formula-box .kw  { color: #f6d365; font-weight: bold; }
+    .formula-box .sym { color: #89d8ff; }
+    .formula-box .frac {
+      display: inline-flex; flex-direction: column;
+      align-items: center; vertical-align: middle;
+      margin: 0 4px;
+    }
+    .formula-box .frac .num { border-bottom: 1.5px solid #4cd98a; padding: 0 4px; line-height: 1.4; }
+    .formula-box .frac .den { padding: 0 4px; line-height: 1.4; }
+
+    .copy-btn {
+      position: absolute; top: 8px; right: 8px;
+      background: rgba(76,217,138,0.15);
+      border: 1px solid rgba(76,217,138,0.3);
+      color: var(--sc-accent);
+      border-radius: 6px;
+      padding: 2px 8px;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .copy-btn:hover { background: var(--sc-green); color: #fff; border-color: var(--sc-green); }
+
+    .formula-note {
+      font-size: 0.83rem;
+      color: #5a8a6a;
+      margin-top: 6px;
+      font-style: italic;
+    }
+    .formula-note strong { color: #1a7a42; font-style: normal; }
+
+    /* ── TABLE FORMULA ── */
+    .formula-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    .formula-table th {
+      background: var(--sc-light-green);
+      color: #0f3d22;
+      padding: 8px 12px;
+      text-align: left;
+      font-weight: 700;
+      border-bottom: 2px solid #d2e8db;
+    }
+    .formula-table td {
+      padding: 8px 12px;
+      border-bottom: 1px solid #eef5f1;
+      vertical-align: middle;
+    }
+    .formula-table tr:hover td { background: #f8fbf9; }
+    .formula-table code {
+      background: #0f1c14;
+      color: #4cd98a;
+      border-radius: 5px;
+      padding: 2px 7px;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.88rem;
+    }
+
+    /* ── MOBILE TOGGLE ── */
+    #sidebarToggle {
+      display: none;
+      background: var(--sc-green);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* ── SEARCH HIGHLIGHT ── */
+    .formula-section.hidden { display: none; }
+    mark { background: #f6d36555; border-radius: 3px; }
+
+    /* ── BREADCRUMB ── */
+    .sc-breadcrumb {
+      font-size: 0.82rem;
+      color: #7aad92;
+      margin-bottom: 20px;
+    }
+    .sc-breadcrumb a { color: var(--sc-green); text-decoration: none; }
+
+    /* ── FOOTER ── */
+    footer { background: var(--sc-dark); color: #7aad92; padding: 30px 0; margin-top: 20px; }
+    footer a { color: var(--sc-accent); text-decoration: none; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      #sidebar {
+        position: fixed;
+        top: 56px;
+        left: 0;
+        height: calc(100vh - 56px);
+        transform: translateX(-100%);
+        box-shadow: 4px 0 20px rgba(0,0,0,0.3);
+      }
+      #sidebar.open { transform: translateX(0); }
+      #sidebarOverlay.open { display: block; }
+      #sidebarToggle { display: flex; }
+      #mainContent { padding: 20px 16px; }
+      .page-title { font-size: 1.45rem; }
+      .formula-box { font-size: 0.82rem; }
+    }
+
+    /* ── TAG PILL ── */
+    .level-pill {
+      font-size: 10px;
+      border-radius: 20px;
+      padding: 2px 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .level-basic { background: #d4edda; color: #155724; }
+    .level-inter { background: #fff3cd; color: #856404; }
+    .level-adv   { background: #f8d7da; color: #721c24; }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+  <div class="container-fluid px-3">
+    <a class="navbar-brand" href="#">🏕 School<span>Camp</span></a>
+    <div class="ms-auto d-flex align-items-center gap-3">
+      <button id="sidebarToggle" onclick="toggleSidebar()">
+        <i class="bi bi-list"></i> Topics
+      </button>
+      <a class="nav-link d-none d-lg-block" href="{% url 'forum:home' %}"><i class="bi bi-house"></i> Home</a>
+      <a class="nav-link d-none d-lg-block" href="{% url 'GCE:list' %}"></i> GCE</a>
+    </div>
+  </div>
+</nav>
+
+<!-- SIDEBAR OVERLAY (mobile) -->
+<div id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<!-- PAGE WRAPPER -->
+<div class="page-wrapper">
+
+  <!-- SIDEBAR -->
+  <aside id="sidebar">
+    <div class="sidebar-header">
+      <i class="bi bi-journal-code"></i> Formula Topics
+    </div>
+    <div class="sidebar-search">
+      <input type="text" id="sidebarSearch" placeholder="🔍 Search formulas…" oninput="filterSections(this.value)">
+    </div>
+    <nav class="sidebar-nav" id="sidebarNav">
+      <a class="category-link active" onclick="scrollTo('algebra')" href="#">
+        <i class="bi bi-calculator"></i> Algebra
+      </a>
+      <a class="category-link" onclick="scrollTo('geometry')" href="#">
+        <i class="bi bi-square"></i> Geometry
+      </a>
+      <a class="category-link" onclick="scrollTo('trigonometry')" href="#">
+        <i class="bi bi-pie-chart"></i> Trigonometry
+      </a>
+      <a class="category-link" onclick="scrollTo('calculus')" href="#">
+        <i class="bi bi-graph-up"></i> Calculus
+      </a>
+      <a class="category-link" onclick="scrollTo('statistics')" href="#">
+        <i class="bi bi-bar-chart"></i> Statistics & Probability
+      </a>
+      <a class="category-link" onclick="scrollTo('numbers')" href="#">
+        <i class="bi bi-hash"></i> Number Theory
+      </a>
+      <a class="category-link" onclick="scrollTo('vectors')" href="#">
+        <i class="bi bi-arrow-up-right"></i> Vectors & Matrices
+      </a>
+      <a class="category-link" onclick="scrollTo('series')" href="#">
+        <i class="bi bi-infinity"></i> Sequences & Series
+      </a>
+      <a class="category-link" onclick="scrollTo('sets')" href="#">
+        <i class="bi bi-diagram-3"></i> Sets & Logic
+      </a>
+      <a class="category-link" onclick="scrollTo('financial')" href="#">
+        <i class="bi bi-currency-dollar"></i> Financial Maths
+      </a>
+      <a class="category-link" onclick="scrollTo('mensuration')" href="#">
+        <i class="bi bi-bounding-box"></i> Mensuration
+      </a>
+      <a class="category-link" onclick="scrollTo('coordinate')" href="#">
+        <i class="bi bi-grid"></i> Coordinate Geometry
+      </a>
+    </nav>
+  </aside>
+
+  <!-- MAIN -->
+  <main id="mainContent">
+    <div class="sc-breadcrumb">
+       
+    </div>
+
+    <h1 class="page-title">📐 Maths Formula Library</h1>
+    <p class="page-subtitle">Every essential formula — from Basic to Advanced — in one place. Use the sidebar to jump to a topic.</p>
+
+    <!-- ═══════════ ALGEBRA ═══════════ -->
+    <section class="formula-section" id="algebra" data-title="Algebra">
+      <div class="section-title"><i class="bi bi-calculator"></i> Algebra</div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">
+          Quadratic Formula <span class="level-pill level-basic">Basic</span>
+        </div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            <span class="var">x</span> <span class="sym">=</span>
+            <span class="frac">
+              <span class="num"><span class="sym">−</span><span class="var">b</span> <span class="sym">±</span> √(<span class="var">b</span>² <span class="sym">−</span> 4<span class="var">a</span><span class="var">c</span>)</span>
+              <span class="den">2<span class="var">a</span></span>
+            </span>
+          </div>
+          <p class="formula-note">For <strong>ax² + bx + c = 0</strong>. The discriminant Δ = b² − 4ac determines the nature of roots.</p>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Algebraic Identities <span class="level-pill level-basic">Basic</span></div>
+        <div class="formula-body">
+          <table class="formula-table">
+            <tr><th>Identity</th><th>Expansion</th></tr>
+            <tr><td>(a + b)²</td><td><code>a² + 2ab + b²</code></td></tr>
+            <tr><td>(a − b)²</td><td><code>a² − 2ab + b²</code></td></tr>
+            <tr><td>(a + b)(a − b)</td><td><code>a² − b²</code></td></tr>
+            <tr><td>(a + b)³</td><td><code>a³ + 3a²b + 3ab² + b³</code></td></tr>
+            <tr><td>(a − b)³</td><td><code>a³ − 3a²b + 3ab² − b³</code></td></tr>
+            <tr><td>a³ + b³</td><td><code>(a + b)(a² − ab + b²)</code></td></tr>
+            <tr><td>a³ − b³</td><td><code>(a − b)(a² + ab + b²)</code></td></tr>
+            <tr><td>(a + b + c)²</td><td><code>a² + b² + c² + 2ab + 2bc + 2ca</code></td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Laws of Indices (Exponents) <span class="level-pill level-basic">Basic</span></div>
+        <div class="formula-body">
+          <table class="formula-table">
+            <tr><th>Rule</th><th>Formula</th></tr>
+            <tr><td>Product Rule</td><td><code>aᵐ × aⁿ = aᵐ⁺ⁿ</code></td></tr>
+            <tr><td>Quotient Rule</td><td><code>aᵐ ÷ aⁿ = aᵐ⁻ⁿ</code></td></tr>
+            <tr><td>Power Rule</td><td><code>(aᵐ)ⁿ = aᵐⁿ</code></td></tr>
+            <tr><td>Zero Exponent</td><td><code>a⁰ = 1  (a ≠ 0)</code></td></tr>
+            <tr><td>Negative Exponent</td><td><code>a⁻ⁿ = 1/aⁿ</code></td></tr>
+            <tr><td>Fractional Exponent</td><td><code>aᵐ/ⁿ = ⁿ√(aᵐ)</code></td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Logarithm Laws <span class="level-pill level-inter">Intermediate</span></div>
+        <div class="formula-body">
+          <table class="formula-table">
+            <tr><th>Rule</th><th>Formula</th></tr>
+            <tr><td>Product</td><td><code>log(ab) = log a + log b</code></td></tr>
+            <tr><td>Quotient</td><td><code>log(a/b) = log a − log b</code></td></tr>
+            <tr><td>Power</td><td><code>log(aⁿ) = n·log a</code></td></tr>
+            <tr><td>Change of Base</td><td><code>log_b(a) = log(a)/log(b)</code></td></tr>
+            <tr><td>Natural Log</td><td><code>ln(eˣ) = x,  e^(ln x) = x</code></td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Factor & Remainder Theorems <span class="level-pill level-inter">Intermediate</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            <span class="kw">Remainder Theorem:</span>  f(<span class="var">a</span>) = remainder when f(<span class="var">x</span>) ÷ (<span class="var">x</span> <span class="sym">−</span> <span class="var">a</span>)<br>
+            <span class="kw">Factor Theorem:</span>  (<span class="var">x</span> <span class="sym">−</span> <span class="var">a</span>) is a factor ↔ f(<span class="var">a</span>) <span class="sym">=</span> 0
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ GEOMETRY ═══════════ -->
+    <section class="formula-section" id="geometry" data-title="Geometry">
+      <div class="section-title"><i class="bi bi-square"></i> Geometry</div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Area Formulas <span class="level-pill level-basic">Basic</span></div>
+        <div class="formula-body">
+          <table class="formula-table">
+            <tr><th>Shape</th><th>Area</th></tr>
+            <tr><td>Rectangle</td><td><code>A = l × w</code></td></tr>
+            <tr><td>Square</td><td><code>A = s²</code></td></tr>
+            <tr><td>Triangle</td><td><code>A = ½ × b × h</code></td></tr>
+            <tr><td>Parallelogram</td><td><code>A = b × h</code></td></tr>
+            <tr><td>Trapezium</td><td><code>A = ½(a + b) × h</code></td></tr>
+            <tr><td>Circle</td><td><code>A = πr²</code></td></tr>
+            <tr><td>Sector</td><td><code>A = ½r²θ  (θ in radians)</code></td></tr>
+            <tr><td>Ellipse</td><td><code>A = πab</code></td></tr>
+            <tr><td>Rhombus</td><td><code>A = ½ × d₁ × d₂</code></td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Perimeter & Circumference <span class="level-pill level-basic">Basic</span></div>
+        <div class="formula-body">
+          <table class="formula-table">
+            <tr><th>Shape</th><th>Perimeter</th></tr>
+            <tr><td>Rectangle</td><td><code>P = 2(l + w)</code></td></tr>
+            <tr><td>Square</td><td><code>P = 4s</code></td></tr>
+            <tr><td>Triangle</td><td><code>P = a + b + c</code></td></tr>
+            <tr><td>Circle</td><td><code>C = 2πr = πd</code></td></tr>
+            <tr><td>Arc length</td><td><code>L = rθ  (θ in radians)</code></td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Volume & Surface Area <span class="level-pill level-inter">Intermediate</span></div>
+        <div class="formula-body">
+          <table class="formula-table">
+            <tr><th>Solid</th><th>Volume</th><th>Surface Area</th></tr>
+            <tr><td>Cube</td><td><code>s³</code></td><td><code>6s²</code></td></tr>
+            <tr><td>Cuboid</td><td><code>l·w·h</code></td><td><code>2(lw+lh+wh)</code></td></tr>
+            <tr><td>Sphere</td><td><code>⁴⁄₃πr³</code></td><td><code>4πr²</code></td></tr>
+            <tr><td>Cylinder</td><td><code>πr²h</code></td><td><code>2πr(r+h)</code></td></tr>
+            <tr><td>Cone</td><td><code>⅓πr²h</code></td><td><code>πr(r+l)</code></td></tr>
+            <tr><td>Pyramid</td><td><code>⅓ × base area × h</code></td><td>base + lateral faces</td></tr>
+          </table>
+          <p class="formula-note"><strong>l</strong> = slant height for cone.</p>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Pythagoras & Triangle Theorems <span class="level-pill level-basic">Basic</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            <span class="kw">Pythagoras:</span>  <span class="var">c</span>² <span class="sym">=</span> <span class="var">a</span>² <span class="sym">+</span> <span class="var">b</span>²<br>
+            <span class="kw">Hero's Formula:</span>  A <span class="sym">=</span> √[<span class="var">s</span>(<span class="var">s−a</span>)(<span class="var">s−b</span>)(<span class="var">s−c</span>)]  where <span class="var">s</span> <span class="sym">=</span> (a<span class="sym">+</span>b<span class="sym">+</span>c)<span class="sym">/</span>2<br>
+            <span class="kw">Sine Rule:</span>  <span class="var">a</span>/sin<span class="var">A</span> <span class="sym">=</span> <span class="var">b</span>/sin<span class="var">B</span> <span class="sym">=</span> <span class="var">c</span>/sin<span class="var">C</span><br>
+            <span class="kw">Cosine Rule:</span>  <span class="var">c</span>² <span class="sym">=</span> <span class="var">a</span>² <span class="sym">+</span> <span class="var">b</span>² <span class="sym">−</span> 2<span class="var">ab</span>·cos<span class="var">C</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ TRIGONOMETRY ═══════════ -->
+    <section class="formula-section" id="trigonometry" data-title="Trigonometry">
+      <div class="section-title"><i class="bi bi-pie-chart"></i> Trigonometry</div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Basic Trig Ratios <span class="level-pill level-basic">Basic</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            sin<span class="var">θ</span> <span class="sym">=</span> opposite/hypotenuse &nbsp;|&nbsp;
+            cos<span class="var">θ</span> <span class="sym">=</span> adjacent/hypotenuse &nbsp;|&nbsp;
+            tan<span class="var">θ</span> <span class="sym">=</span> opposite/adjacent<br>
+            cosec<span class="var">θ</span> <span class="sym">=</span> 1/sin<span class="var">θ</span> &nbsp;|&nbsp;
+            sec<span class="var">θ</span> <span class="sym">=</span> 1/cos<span class="var">θ</span> &nbsp;|&nbsp;
+            cot<span class="var">θ</span> <span class="sym">=</span> 1/tan<span class="var">θ</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Pythagorean Identities <span class="level-pill level-inter">Intermediate</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            sin²<span class="var">θ</span> <span class="sym">+</span> cos²<span class="var">θ</span> <span class="sym">=</span> <span class="kw">1</span><br>
+            1 <span class="sym">+</span> tan²<span class="var">θ</span> <span class="sym">=</span> sec²<span class="var">θ</span><br>
+            1 <span class="sym">+</span> cot²<span class="var">θ</span> <span class="sym">=</span> cosec²<span class="var">θ</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Compound & Double Angle <span class="level-pill level-inter">Intermediate</span></div>
+        <div class="formula-body">
+          <table class="formula-table">
+            <tr><th>Identity</th><th>Formula</th></tr>
+            <tr><td>sin(A ± B)</td><td><code>sin A·cos B ± cos A·sin B</code></td></tr>
+            <tr><td>cos(A ± B)</td><td><code>cos A·cos B ∓ sin A·sin B</code></td></tr>
+            <tr><td>tan(A ± B)</td><td><code>(tan A ± tan B)/(1 ∓ tan A·tan B)</code></td></tr>
+            <tr><td>sin 2A</td><td><code>2 sin A cos A</code></td></tr>
+            <tr><td>cos 2A</td><td><code>cos²A − sin²A = 2cos²A − 1 = 1 − 2sin²A</code></td></tr>
+            <tr><td>tan 2A</td><td><code>2 tan A / (1 − tan²A)</code></td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Special Angles <span class="level-pill level-basic">Basic</span></div>
+        <div class="formula-body">
+          <table class="formula-table">
+            <tr><th>θ</th><th>sin θ</th><th>cos θ</th><th>tan θ</th></tr>
+            <tr><td>0°</td><td><code>0</code></td><td><code>1</code></td><td><code>0</code></td></tr>
+            <tr><td>30°</td><td><code>½</code></td><td><code>√3/2</code></td><td><code>1/√3</code></td></tr>
+            <tr><td>45°</td><td><code>1/√2</code></td><td><code>1/√2</code></td><td><code>1</code></td></tr>
+            <tr><td>60°</td><td><code>√3/2</code></td><td><code>½</code></td><td><code>√3</code></td></tr>
+            <tr><td>90°</td><td><code>1</code></td><td><code>0</code></td><td><code>—</code></td></tr>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ CALCULUS ═══════════ -->
+    <section class="formula-section" id="calculus" data-title="Calculus">
+      <div class="section-title"><i class="bi bi-graph-up"></i> Calculus</div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Differentiation — Standard Results <span class="level-pill level-adv">Advanced</span></div>
+        <div class="formula-body">
+          <table class="formula-table">
+            <tr><th>f(x)</th><th>f′(x)</th></tr>
+            <tr><td><code>xⁿ</code></td><td><code>nxⁿ⁻¹</code></td></tr>
+            <tr><td><code>eˣ</code></td><td><code>eˣ</code></td></tr>
+            <tr><td><code>ln x</code></td><td><code>1/x</code></td></tr>
+            <tr><td><code>sin x</code></td><td><code>cos x</code></td></tr>
+            <tr><td><code>cos x</code></td><td><code>−sin x</code></td></tr>
+            <tr><td><code>tan x</code></td><td><code>sec²x</code></td></tr>
+            <tr><td><code>aˣ</code></td><td><code>aˣ · ln a</code></td></tr>
+            <tr><td><code>sin⁻¹x</code></td><td><code>1/√(1−x²)</code></td></tr>
+            <tr><td><code>cos⁻¹x</code></td><td><code>−1/√(1−x²)</code></td></tr>
+            <tr><td><code>tan⁻¹x</code></td><td><code>1/(1+x²)</code></td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Differentiation Rules <span class="level-pill level-adv">Advanced</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            <span class="kw">Product Rule:</span>  d/dx[<span class="var">uv</span>] <span class="sym">=</span> <span class="var">u</span>·<span class="var">v</span>' <span class="sym">+</span> <span class="var">v</span>·<span class="var">u</span>'<br>
+            <span class="kw">Quotient Rule:</span>  d/dx[<span class="var">u/v</span>] <span class="sym">=</span> (<span class="var">v</span>·<span class="var">u</span>' <span class="sym">−</span> <span class="var">u</span>·<span class="var">v</span>') <span class="sym">/</span> <span class="var">v</span>²<br>
+            <span class="kw">Chain Rule:</span>  d/dx[f(g(<span class="var">x</span>))] <span class="sym">=</span> f'(g(<span class="var">x</span>)) · g'(<span class="var">x</span>)
+          </div>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Integration — Standard Results <span class="level-pill level-adv">Advanced</span></div>
+        <div class="formula-body">
+          <table class="formula-table">
+            <tr><th>∫ f(x) dx</th><th>Result + C</th></tr>
+            <tr><td><code>xⁿ  (n≠−1)</code></td><td><code>xⁿ⁺¹/(n+1)</code></td></tr>
+            <tr><td><code>1/x</code></td><td><code>ln|x|</code></td></tr>
+            <tr><td><code>eˣ</code></td><td><code>eˣ</code></td></tr>
+            <tr><td><code>sin x</code></td><td><code>−cos x</code></td></tr>
+            <tr><td><code>cos x</code></td><td><code>sin x</code></td></tr>
+            <tr><td><code>sec²x</code></td><td><code>tan x</code></td></tr>
+            <tr><td><code>1/√(1−x²)</code></td><td><code>sin⁻¹x</code></td></tr>
+            <tr><td><code>1/(1+x²)</code></td><td><code>tan⁻¹x</code></td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Limits & Continuity <span class="level-pill level-adv">Advanced</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            lim<sub>x→0</sub> (sin <span class="var">x</span> / <span class="var">x</span>) <span class="sym">=</span> <span class="kw">1</span><br>
+            lim<sub>x→∞</sub> (1 <span class="sym">+</span> 1/<span class="var">x</span>)^<span class="var">x</span> <span class="sym">=</span> <span class="kw">e</span><br>
+            lim<sub>x→0</sub> (e^<span class="var">x</span> <span class="sym">−</span> 1) / <span class="var">x</span> <span class="sym">=</span> <span class="kw">1</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ STATISTICS ═══════════ -->
+    <section class="formula-section" id="statistics" data-title="Statistics">
+      <div class="section-title"><i class="bi bi-bar-chart"></i> Statistics & Probability</div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Measures of Central Tendency <span class="level-pill level-basic">Basic</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            <span class="kw">Mean:</span>  x̄ <span class="sym">=</span> Σ<span class="var">x</span> / <span class="var">n</span><br>
+            <span class="kw">Weighted Mean:</span>  x̄ <span class="sym">=</span> Σ(<span class="var">f·x</span>) / Σ<span class="var">f</span><br>
+            <span class="kw">Median:</span>  middle value when sorted<br>
+            <span class="kw">Mode:</span>  most frequent value
+          </div>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Measures of Dispersion <span class="level-pill level-inter">Intermediate</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            <span class="kw">Variance (σ²):</span>  Σ(<span class="var">x</span> <span class="sym">−</span> x̄)² / <span class="var">n</span><br>
+            <span class="kw">Std Deviation (σ):</span>  √[Σ(<span class="var">x</span> <span class="sym">−</span> x̄)² / <span class="var">n</span>]<br>
+            <span class="kw">Range:</span>  max <span class="sym">−</span> min<br>
+            <span class="kw">IQR:</span>  Q₃ <span class="sym">−</span> Q₁
+          </div>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Probability <span class="level-pill level-inter">Intermediate</span></div>
+        <div class="formula-body">
+          <table class="formula-table">
+            <tr><th>Rule</th><th>Formula</th></tr>
+            <tr><td>Basic</td><td><code>P(E) = favourable outcomes / total outcomes</code></td></tr>
+            <tr><td>Complement</td><td><code>P(A') = 1 − P(A)</code></td></tr>
+            <tr><td>Addition (Mutually Exclusive)</td><td><code>P(A∪B) = P(A) + P(B)</code></td></tr>
+            <tr><td>Addition (General)</td><td><code>P(A∪B) = P(A)+P(B)−P(A∩B)</code></td></tr>
+            <tr><td>Conditional</td><td><code>P(A|B) = P(A∩B)/P(B)</code></td></tr>
+            <tr><td>Independent Events</td><td><code>P(A∩B) = P(A)·P(B)</code></td></tr>
+            <tr><td>Bayes' Theorem</td><td><code>P(A|B) = P(B|A)·P(A)/P(B)</code></td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Permutations & Combinations <span class="level-pill level-inter">Intermediate</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            <span class="kw">Permutation:</span>  P(<span class="var">n,r</span>) <span class="sym">=</span> <span class="var">n</span>! / (<span class="var">n−r</span>)!<br>
+            <span class="kw">Combination:</span>  C(<span class="var">n,r</span>) <span class="sym">=</span> <span class="var">n</span>! / [<span class="var">r</span>!(<span class="var">n−r</span>)!]<br>
+            <span class="kw">n! = </span>  <span class="var">n</span> <span class="sym">×</span> (<span class="var">n−1</span>) <span class="sym">×</span> ... <span class="sym">×</span> 2 <span class="sym">×</span> 1
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ NUMBER THEORY ═══════════ -->
+    <section class="formula-section" id="numbers" data-title="Number Theory">
+      <div class="section-title"><i class="bi bi-hash"></i> Number Theory</div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Divisibility & GCD/LCM <span class="level-pill level-basic">Basic</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            <span class="kw">GCD × LCM</span> <span class="sym">=</span> <span class="var">a</span> <span class="sym">×</span> <span class="var">b</span><br>
+            <span class="kw">Euclidean Alg:</span>  GCD(<span class="var">a,b</span>) <span class="sym">=</span> GCD(<span class="var">b</span>, <span class="var">a</span> mod <span class="var">b</span>)
+          </div>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Prime Numbers & Factors <span class="level-pill level-basic">Basic</span></div>
+        <div class="formula-body">
+          <p class="formula-note"><strong>Fundamental Theorem:</strong> Every integer > 1 can be written uniquely as a product of primes.<br>
+          <strong>Number of factors of n = p₁ᵃ·p₂ᵇ·...:</strong> (a+1)(b+1)...</p>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Surds & Radicals <span class="level-pill level-inter">Intermediate</span></div>
+        <div class="formula-body">
+          <table class="formula-table">
+            <tr><th>Rule</th><th>Formula</th></tr>
+            <tr><td>Product</td><td><code>√a × √b = √(ab)</code></td></tr>
+            <tr><td>Quotient</td><td><code>√a / √b = √(a/b)</code></td></tr>
+            <tr><td>Rationalise</td><td><code>1/(a+√b) × (a−√b)/(a−√b)</code></td></tr>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ VECTORS & MATRICES ═══════════ -->
+    <section class="formula-section" id="vectors" data-title="Vectors">
+      <div class="section-title"><i class="bi bi-arrow-up-right"></i> Vectors & Matrices</div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Vector Operations <span class="level-pill level-inter">Intermediate</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            <span class="kw">Magnitude:</span>  |<span class="var">a</span>| <span class="sym">=</span> √(<span class="var">a₁</span>² <span class="sym">+</span> <span class="var">a₂</span>² <span class="sym">+</span> <span class="var">a₃</span>²)<br>
+            <span class="kw">Dot Product:</span>  <span class="var">a</span>·<span class="var">b</span> <span class="sym">=</span> |<span class="var">a</span>||<span class="var">b</span>|cos<span class="var">θ</span> <span class="sym">=</span> a₁b₁<span class="sym">+</span>a₂b₂<span class="sym">+</span>a₃b₃<br>
+            <span class="kw">Cross Product:</span>  |<span class="var">a</span>×<span class="var">b</span>| <span class="sym">=</span> |<span class="var">a</span>||<span class="var">b</span>|sin<span class="var">θ</span><br>
+            <span class="kw">Unit Vector:</span>  â <span class="sym">=</span> <span class="var">a</span> / |<span class="var">a</span>|
+          </div>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Matrix Operations <span class="level-pill level-adv">Advanced</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            <span class="kw">2×2 Determinant:</span>  det[a b; c d] <span class="sym">=</span> <span class="var">ad</span> <span class="sym">−</span> <span class="var">bc</span><br>
+            <span class="kw">Inverse (2×2):</span>  A⁻¹ <span class="sym">=</span> (1/det A) × [d <span class="sym">−</span>b; <span class="sym">−</span>c a]<br>
+            <span class="kw">Property:</span>  A × A⁻¹ <span class="sym">=</span> I  (identity matrix)
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ SEQUENCES & SERIES ═══════════ -->
+    <section class="formula-section" id="series" data-title="Sequences">
+      <div class="section-title"><i class="bi bi-infinity"></i> Sequences & Series</div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Arithmetic Progression (AP) <span class="level-pill level-basic">Basic</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            <span class="kw">nth term:</span>  <span class="var">Tₙ</span> <span class="sym">=</span> <span class="var">a</span> <span class="sym">+</span> (<span class="var">n</span><span class="sym">−</span>1)<span class="var">d</span><br>
+            <span class="kw">Sum:</span>  <span class="var">Sₙ</span> <span class="sym">=</span> <span class="var">n</span>/2 × [2<span class="var">a</span> <span class="sym">+</span> (<span class="var">n</span><span class="sym">−</span>1)<span class="var">d</span>]  <span class="sym">=</span>  <span class="var">n</span>/2 × (<span class="var">a</span> <span class="sym">+</span> <span class="var">l</span>)
+          </div>
+          <p class="formula-note"><strong>a</strong> = first term, <strong>d</strong> = common difference, <strong>l</strong> = last term.</p>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Geometric Progression (GP) <span class="level-pill level-basic">Basic</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            <span class="kw">nth term:</span>  <span class="var">Tₙ</span> <span class="sym">=</span> <span class="var">a</span>·<span class="var">r</span>ⁿ⁻¹<br>
+            <span class="kw">Sum (r≠1):</span>  <span class="var">Sₙ</span> <span class="sym">=</span> <span class="var">a</span>(<span class="var">rⁿ</span><span class="sym">−</span>1) / (<span class="var">r</span><span class="sym">−</span>1)<br>
+            <span class="kw">Sum to ∞ (|r|&lt;1):</span>  S∞ <span class="sym">=</span> <span class="var">a</span> / (1<span class="sym">−</span><span class="var">r</span>)
+          </div>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Binomial Theorem <span class="level-pill level-adv">Advanced</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            (<span class="var">a</span><span class="sym">+</span><span class="var">b</span>)ⁿ <span class="sym">=</span> Σ C(<span class="var">n,r</span>) · <span class="var">a</span>ⁿ⁻ʳ · <span class="var">b</span>ʳ  &nbsp; (r = 0 to n)<br>
+            <span class="kw">General term:</span>  T<sub>r+1</sub> <span class="sym">=</span> C(<span class="var">n,r</span>) · <span class="var">a</span>ⁿ⁻ʳ · <span class="var">b</span>ʳ
+          </div>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Standard Summations <span class="level-pill level-inter">Intermediate</span></div>
+        <div class="formula-body">
+          <table class="formula-table">
+            <tr><th>Series</th><th>Sum</th></tr>
+            <tr><td>Σ 1 to n</td><td><code>n(n+1)/2</code></td></tr>
+            <tr><td>Σ r² (1 to n)</td><td><code>n(n+1)(2n+1)/6</code></td></tr>
+            <tr><td>Σ r³ (1 to n)</td><td><code>[n(n+1)/2]²</code></td></tr>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ SETS & LOGIC ═══════════ -->
+    <section class="formula-section" id="sets" data-title="Sets">
+      <div class="section-title"><i class="bi bi-diagram-3"></i> Sets & Logic</div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Set Formulas <span class="level-pill level-basic">Basic</span></div>
+        <div class="formula-body">
+          <table class="formula-table">
+            <tr><th>Operation</th><th>Notation / Formula</th></tr>
+            <tr><td>Union</td><td><code>A ∪ B</code></td></tr>
+            <tr><td>Intersection</td><td><code>A ∩ B</code></td></tr>
+            <tr><td>Complement</td><td><code>A' = U − A</code></td></tr>
+            <tr><td>n(A ∪ B)</td><td><code>n(A) + n(B) − n(A ∩ B)</code></td></tr>
+            <tr><td>n(A ∪ B ∪ C)</td><td><code>n(A)+n(B)+n(C)−n(A∩B)−n(B∩C)−n(A∩C)+n(A∩B∩C)</code></td></tr>
+            <tr><td>De Morgan's 1st</td><td><code>(A ∪ B)' = A' ∩ B'</code></td></tr>
+            <tr><td>De Morgan's 2nd</td><td><code>(A ∩ B)' = A' ∪ B'</code></td></tr>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ FINANCIAL MATHS ═══════════ -->
+    <section class="formula-section" id="financial" data-title="Financial">
+      <div class="section-title"><i class="bi bi-currency-dollar"></i> Financial Mathematics</div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Interest Formulas <span class="level-pill level-basic">Basic</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            <span class="kw">Simple Interest:</span>  SI <span class="sym">=</span> <span class="var">P</span> × <span class="var">R</span> × <span class="var">T</span> / 100<br>
+            <span class="kw">Compound Interest:</span>  A <span class="sym">=</span> <span class="var">P</span>(1 <span class="sym">+</span> <span class="var">r</span>/<span class="var">n</span>)^(<span class="var">n</span>·<span class="var">t</span>)<br>
+            <span class="kw">CI Earned:</span>  CI <span class="sym">=</span> A <span class="sym">−</span> <span class="var">P</span>
+          </div>
+          <p class="formula-note"><strong>P</strong> = Principal, <strong>R</strong> = Rate %, <strong>T</strong> = Time (years), <strong>n</strong> = compounding frequency.</p>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Percentage & Profit/Loss <span class="level-pill level-basic">Basic</span></div>
+        <div class="formula-body">
+          <table class="formula-table">
+            <tr><th>Formula</th><th>Expression</th></tr>
+            <tr><td>% Profit</td><td><code>(Profit/CP) × 100</code></td></tr>
+            <tr><td>% Loss</td><td><code>(Loss/CP) × 100</code></td></tr>
+            <tr><td>Discount</td><td><code>Marked Price − Selling Price</code></td></tr>
+            <tr><td>% Discount</td><td><code>(Discount/MP) × 100</code></td></tr>
+            <tr><td>VAT/Tax Amount</td><td><code>Price × Tax% / 100</code></td></tr>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ MENSURATION ═══════════ -->
+    <section class="formula-section" id="mensuration" data-title="Mensuration">
+      <div class="section-title"><i class="bi bi-bounding-box"></i> Mensuration</div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Unit Conversions (Length) <span class="level-pill level-basic">Basic</span></div>
+        <div class="formula-body">
+          <table class="formula-table">
+            <tr><th>From</th><th>To</th><th>Factor</th></tr>
+            <tr><td>km</td><td>m</td><td><code>× 1000</code></td></tr>
+            <tr><td>m</td><td>cm</td><td><code>× 100</code></td></tr>
+            <tr><td>cm</td><td>mm</td><td><code>× 10</code></td></tr>
+            <tr><td>inch</td><td>cm</td><td><code>× 2.54</code></td></tr>
+            <tr><td>mile</td><td>km</td><td><code>× 1.609</code></td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Speed, Distance & Time <span class="level-pill level-basic">Basic</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            <span class="var">Speed</span> <span class="sym">=</span> <span class="var">Distance</span> / <span class="var">Time</span><br>
+            <span class="var">Distance</span> <span class="sym">=</span> <span class="var">Speed</span> × <span class="var">Time</span><br>
+            <span class="var">Time</span> <span class="sym">=</span> <span class="var">Distance</span> / <span class="var">Speed</span><br>
+            <span class="kw">Relative Speed (same dir):</span>  v₁ <span class="sym">−</span> v₂<br>
+            <span class="kw">Relative Speed (opp dir):</span>  v₁ <span class="sym">+</span> v₂
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ COORDINATE GEOMETRY ═══════════ -->
+    <section class="formula-section" id="coordinate" data-title="Coordinate Geometry">
+      <div class="section-title"><i class="bi bi-grid"></i> Coordinate Geometry</div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Key Formulas <span class="level-pill level-inter">Intermediate</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            <span class="kw">Distance:</span>  d <span class="sym">=</span> √[(x₂<span class="sym">−</span>x₁)² <span class="sym">+</span> (y₂<span class="sym">−</span>y₁)²]<br>
+            <span class="kw">Midpoint:</span>  M <span class="sym">=</span> ((x₁<span class="sym">+</span>x₂)/2,  (y₁<span class="sym">+</span>y₂)/2)<br>
+            <span class="kw">Gradient:</span>  m <span class="sym">=</span> (y₂<span class="sym">−</span>y₁) / (x₂<span class="sym">−</span>x₁)<br>
+            <span class="kw">Slope-Intercept:</span>  y <span class="sym">=</span> mx <span class="sym">+</span> c<br>
+            <span class="kw">Point-Slope:</span>  y<span class="sym">−</span>y₁ <span class="sym">=</span> m(x<span class="sym">−</span>x₁)<br>
+            <span class="kw">Two Points:</span>  (y<span class="sym">−</span>y₁)/(y₂<span class="sym">−</span>y₁) <span class="sym">=</span> (x<span class="sym">−</span>x₁)/(x₂<span class="sym">−</span>x₁)
+          </div>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Conic Sections <span class="level-pill level-adv">Advanced</span></div>
+        <div class="formula-body">
+          <table class="formula-table">
+            <tr><th>Conic</th><th>Standard Equation</th></tr>
+            <tr><td>Circle</td><td><code>(x−h)² + (y−k)² = r²</code></td></tr>
+            <tr><td>Parabola</td><td><code>y = ax² + bx + c  or  x² = 4py</code></td></tr>
+            <tr><td>Ellipse</td><td><code>x²/a² + y²/b² = 1</code></td></tr>
+            <tr><td>Hyperbola</td><td><code>x²/a² − y²/b² = 1</code></td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Perpendicular & Parallel Lines <span class="level-pill level-inter">Intermediate</span></div>
+        <div class="formula-body">
+          <div class="formula-box">
+            <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+            <span class="kw">Parallel:</span>  m₁ <span class="sym">=</span> m₂<br>
+            <span class="kw">Perpendicular:</span>  m₁ × m₂ <span class="sym">=</span> <span class="sym">−</span>1<br>
+            <span class="kw">Distance from point (x₀,y₀) to line ax+by+c=0:</span><br>
+            d <span class="sym">=</span> |ax₀ <span class="sym">+</span> by₀ <span class="sym">+</span> c| / √(a² <span class="sym">+</span> b²)
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container text-center">
+    <p class="mb-1">🏕 <strong style="color:#fff">SchoolCamp</strong> — The student community for Cameroon 🇨🇲</p>
+    <small>
+      <a href="{% url 'forum:home' %}">Forum</a> ·
+      <a href="{% url 'groups:list' %}">Groups</a> ·
+      <a href="{% url 'materials:list' %}">Materials</a> ·
+      <a href="{% url 'quiz:list' %}">Quiz</a>
+    </small>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  /* ── SIDEBAR TOGGLE (mobile) ── */
+  function toggleSidebar() {
+    const sidebar  = document.getElementById('sidebar');
+    const overlay  = document.getElementById('sidebarOverlay');
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('open');
+  }
+
+  /* ── SCROLL TO SECTION ── */
+  function scrollTo(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    // Close sidebar on mobile after click
+    if (window.innerWidth <= 768) toggleSidebar();
+
+    // Update active link
+    document.querySelectorAll('.category-link').forEach(l => l.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+    return false;
+  }
+
+  /* ── SIDEBAR SEARCH / FILTER ── */
+  function filterSections(query) {
+    const q = query.toLowerCase().trim();
+    document.querySelectorAll('.formula-section').forEach(section => {
+      if (!q) { section.classList.remove('hidden'); return; }
+      const text = section.textContent.toLowerCase();
+      section.classList.toggle('hidden', !text.includes(q));
+    });
+  }
+
+  /* ── COPY FORMULA ── */
+  function copyFormula(btn) {
+    const box = btn.closest('.formula-box');
+    const text = box.innerText.replace('Copy\n','').trim();
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = '✓ Copied!';
+      btn.style.background = 'var(--sc-green)';
+      btn.style.color = '#fff';
+      setTimeout(() => { btn.textContent = 'Copy'; btn.style.background = ''; btn.style.color = ''; }, 2000);
+    });
+  }
+
+  /* ── ACTIVE SECTION HIGHLIGHTING ON SCROLL ── */
+  const sections = document.querySelectorAll('.formula-section');
+  const links = document.querySelectorAll('.category-link');
+
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY + 80 >= s.offsetTop) current = s.id;
+    });
+    links.forEach(l => {
+      l.classList.remove('active');
+      if (l.getAttribute('onclick') && l.getAttribute('onclick').includes(current)) {
+        l.classList.add('active');
+      }
+    });
+  });
+</script>
+</body>
+</html>

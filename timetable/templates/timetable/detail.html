@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+{% load static timetable_tags %}
+
+{% block title %}{{ timetable.name }} – SchoolCamp{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'timetable/css/timetable.css' %}">
+<style>
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+  .modal-box {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    max-width: 380px;
+    width: 100%;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+    position: relative;
+  }
+  .modal-close {
+    position: absolute;
+    top: 12px; right: 16px;
+    font-size: 1.3rem;
+    cursor: pointer;
+    color: #999;
+    background: none; border: none;
+  }
+  .course-detail-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    margin-bottom: 8px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Messages -->
+{% for message in messages %}
+<div class="tt-alert {% if message.tags == 'error' %}tt-alert-error{% elif message.tags == 'success' %}tt-alert-success{% else %}tt-alert-info{% endif %}">
+  {{ message }}
+</div>
+{% endfor %}
+
+<!-- Header -->
+<div class="tt-page-header">
+  <div class="d-flex justify-content-between align-items-start">
+    <div>
+      <a href="{% url 'timetable:dashboard' %}" style="color:rgba(255,255,255,0.75);font-size:0.8rem;text-decoration:none;">← Dashboard</a>
+      <h1 style="margin-top:4px;">{{ timetable.name }}</h1>
+      <p>{{ timetable.get_semester_display }} · {{ timetable.academic_year }}</p>
+    </div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
+      <a href="{% url 'timetable:course_add' timetable.pk %}" class="btn-sc-primary" style="font-size:0.8rem;padding:8px 12px;">+ Course</a>
+      <a href="{% url 'timetable:edit' timetable.pk %}" class="btn-sc-outline" style="font-size:0.8rem;padding:8px 12px;color:white;border-color:rgba(255,255,255,0.5);">⚙️</a>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid px-3">
+
+  <!-- Quick Actions -->
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
+    <a href="{% url 'timetable:free_periods' timetable.pk %}" class="btn-sc-outline" style="font-size:0.8rem;padding:7px 12px;">🕐 Free Periods</a>
+    <a href="{% url 'timetable:share' timetable.pk %}" class="btn-sc-outline" style="font-size:0.8rem;padding:7px 12px;">🔗 Share</a>
+    {% if not timetable.is_active %}
+    <a href="{% url 'timetable:set_active' timetable.pk %}" class="btn-sc-outline" style="font-size:0.8rem;padding:7px 12px;">📌 Set Active</a>
+    {% endif %}
+    <a href="{% url 'timetable:delete' timetable.pk %}" class="btn-sc-danger" style="font-size:0.8rem;padding:7px 12px;">🗑️</a>
+  </div>
+
+  <!-- Day Tab Navigation (mobile) -->
+  <div class="hide-desktop" style="display:flex;overflow-x:auto;gap:6px;margin-bottom:12px;padding-bottom:4px;">
+    {% for day_idx, day_name in days_list %}
+    <a href="{% url 'timetable:day_view' timetable.pk day_idx %}"
+       style="flex-shrink:0;padding:7px 14px;border-radius:20px;font-size:0.8rem;font-weight:600;text-decoration:none;
+              {% if day_idx == today_index %}background:var(--sc-green);color:white;{% else %}background:white;color:var(--sc-green);border:1.5px solid var(--sc-green);{% endif %}">
+      {{ day_name|slice:":3" }}
+    </a>
+    {% endfor %}
+  </div>
+
+  <!-- Weekly Grid (desktop) -->
+  <div class="tt-card hide-mobile" style="padding:12px;">
+    <div class="tt-week-grid">
+      <table class="tt-grid-table">
+        <thead>
+          <tr>
+            {% for day_idx, day_name in days_list %}
+            <th class="{% if day_idx == today_index %}today-col{% endif %}">
+              {{ day_name|slice:":3" }}
+              {% if day_idx == today_index %}<br><small style="font-weight:400;opacity:0.85;font-size:0.65rem;">Today</small>{% endif %}
+            </th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            {% for day_idx, day_name in days_list %}
+            <td>
+              {% with courses_by_day|get_item:day_idx as day_courses %}
+              {% if day_courses %}
+                {% for course in day_courses %}
+                <div class="tt-grid-course-block"
+                     style="background: {{ course.color }};"
+                     data-course-id="{{ course.pk }}"
+                     data-course-name="{{ course.name }}"
+                     data-course-code="{{ course.code }}"
+                     data-course-lecturer="{{ course.lecturer }}"
+                     data-course-room="{{ course.room }}"
+                     data-course-time="{{ course.start_time|time:'g:i A' }} – {{ course.end_time|time:'g:i A' }}"
+                     data-course-duration="{{ course.duration_minutes }}"
+                     data-course-notes="{{ course.notes }}"
+                     data-course-color="{{ course.color }}"
+                     data-edit-url="{% url 'timetable:course_edit' course.pk %}"
+                     data-delete-url="{% url 'timetable:course_delete' course.pk %}">
+                  <span class="block-name">{{ course.name }}</span>
+                  <span class="block-time">{{ course.start_time|time:"g:i A" }}</span>
+                  {% if course.room %}<span class="block-room">📍 {{ course.room }}</span>{% endif %}
+                </div>
+                {% endfor %}
+              {% else %}
+                <div class="tt-empty-day">—</div>
+              {% endif %}
+              {% endwith %}
+              <a href="{% url 'timetable:course_add' timetable.pk %}?day={{ day_idx }}"
+                 style="display:block;text-align:center;font-size:0.72rem;color:var(--sc-green);margin-top:4px;text-decoration:none;opacity:0.7;">+ Add</a>
+            </td>
+            {% endfor %}
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Mobile: List by Day -->
+  <div class="hide-desktop">
+    {% for day_idx, day_name in days_list %}
+    {% with courses_by_day|get_item:day_idx as day_courses %}
+    {% if day_courses %}
+    <div class="tt-card" style="margin-bottom:12px;">
+      <div class="tt-card-header" style="margin-bottom:10px;">
+        <h3 class="tt-card-title" style="{% if day_idx == today_index %}color:var(--sc-green);{% endif %}">
+          {{ day_name }} {% if day_idx == today_index %}• Today{% endif %}
+        </h3>
+        <a href="{% url 'timetable:course_add' timetable.pk %}?day={{ day_idx %}" class="btn-sc-outline" style="font-size:0.72rem;padding:4px 10px;">+ Add</a>
+      </div>
+      {% for course in day_courses %}
+      <a href="{% url 'timetable:course_edit' course.pk %}" class="tt-course-pill">
+        <div class="course-color-bar" style="background:{{ course.color }};"></div>
+        <div class="course-info">
+          <div class="course-name">{{ course.name }}</div>
+          <div class="course-meta">{% if course.room %}📍 {{ course.room }}{% endif %}{% if course.lecturer %} · {{ course.lecturer }}{% endif %}</div>
+        </div>
+        <div class="course-time">{{ course.start_time|time:"g:i A" }}<br><small>{{ course.duration_display }}</small></div>
+      </a>
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+    {% endfor %}
+  </div>
+
+</div>
+
+<!-- Course Detail Modal -->
+<div class="modal-overlay" id="courseModal">
+  <div class="modal-box">
+    <button class="modal-close" id="modalClose">✕</button>
+    <div id="courseModalBody"></div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'timetable/js/timetable.js' %}"></script>
+{% endblock %}

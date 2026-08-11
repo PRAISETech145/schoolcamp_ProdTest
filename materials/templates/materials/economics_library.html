@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Economics Models & Formulas | SchoolCamp 🏕</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Fira+Code:wght@400;500&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --sc-blue: #2563eb;
+      --sc-dark: #0f172a;
+      --sc-light-blue: #dbeafe;
+      --sc-accent: #3b82f6;
+      --sidebar-w: 270px;
+    }
+    * { box-sizing: border-box; }
+    body { background: #f8fafc; font-family: 'Nunito', sans-serif; margin: 0; }
+
+    .navbar { background: var(--sc-dark) !important; position: sticky; top: 0; z-index: 1030; }
+    .navbar-brand { color: #fff !important; font-weight: 800; font-size: 1.4rem; }
+    .navbar-brand span { color: var(--sc-accent); }
+    .nav-link { color: #cbd5e1 !important; }
+    .nav-link:hover { color: #fff !important; }
+
+    .page-wrapper { display: flex; min-height: calc(100vh - 56px); }
+
+    #sidebar {
+      width: var(--sidebar-w); min-width: var(--sidebar-w);
+      background: var(--sc-dark); color: #cbd5e1;
+      position: sticky; top: 56px; height: calc(100vh - 56px);
+      overflow-y: auto; transition: transform 0.3s ease;
+      z-index: 1020; flex-shrink: 0;
+    }
+    #sidebar::-webkit-scrollbar { width: 5px; }
+    #sidebar::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
+
+    .sidebar-header {
+      background: #0f172a; padding: 16px 20px;
+      font-weight: 800; font-size: 0.85rem; letter-spacing: 1.5px;
+      text-transform: uppercase; color: var(--sc-accent);
+      border-bottom: 1px solid #1e293b;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .sidebar-search { padding: 12px 14px; border-bottom: 1px solid #1e293b; }
+    .sidebar-search input {
+      background: #1e293b; border: 1px solid #475569; color: #cbd5e1;
+      border-radius: 8px; padding: 7px 12px; width: 100%;
+      font-size: 13px; outline: none;
+    }
+    .sidebar-search input::placeholder { color: #64748b; }
+    .sidebar-search input:focus { border-color: var(--sc-accent); }
+
+    .sidebar-nav .topic-link {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 20px; color: #94a3b8; text-decoration: none;
+      font-size: 0.88rem; font-weight: 600;
+      border-left: 3px solid transparent; transition: all 0.2s; cursor: pointer;
+    }
+    .sidebar-nav .topic-link:hover,
+    .sidebar-nav .topic-link.active {
+      color: #fff; background: rgba(59,130,246,0.1); border-left-color: var(--sc-accent);
+    }
+    .sidebar-nav .topic-link i { font-size: 1rem; color: var(--sc-accent); }
+
+    #sidebarOverlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.55); z-index: 1019;
+    }
+
+    #mainContent { flex: 1; padding: 28px 24px; overflow-x: hidden; min-width: 0; }
+
+    .page-title { font-family: 'Merriweather', serif; font-size: 1.9rem; font-weight: 700; color: var(--sc-dark); margin-bottom: 4px; }
+    .page-subtitle { color: #64748b; font-size: 0.95rem; margin-bottom: 28px; }
+
+    .concept-section { margin-bottom: 40px; scroll-margin-top: 80px; }
+    .concept-section.hidden { display: none; }
+
+    .section-title {
+      font-family: 'Merriweather', serif; font-size: 1.25rem; font-weight: 700;
+      color: var(--sc-dark); border-left: 4px solid var(--sc-blue);
+      padding-left: 12px; margin-bottom: 16px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .section-title i { color: var(--sc-blue); font-size: 1.1rem; }
+
+    .concept-card {
+      background: #fff; border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+      overflow: hidden; margin-bottom: 14px; border: none;
+      transition: box-shadow 0.2s;
+    }
+    .concept-card:hover { box-shadow: 0 4px 20px rgba(37,99,235,0.1); }
+
+    .concept-card-header {
+      background: var(--sc-light-blue); border-bottom: 1px solid #bfdbfe;
+      padding: 10px 16px; font-weight: 700; font-size: 0.92rem; color: #1e40af;
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 6px;
+    }
+    .concept-body { padding: 14px 16px; }
+
+    .model-box {
+      background: #0f172a; border-radius: 8px; padding: 14px 18px;
+      font-family: 'Fira Code', monospace; font-size: 0.93rem;
+      color: #3b82f6; margin: 8px 0; position: relative;
+      overflow-x: auto; line-height: 1.9;
+    }
+    .model-box .var { color: #f87171; }
+    .model-box .kw  { color: #fbbf24; font-weight: bold; }
+    .model-box .sym { color: #a5b4fc; }
+    .model-box .unit { color: #a78bfa; font-size: 0.82rem; }
+
+    .copy-btn {
+      position: absolute; top: 8px; right: 8px;
+      background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.3);
+      color: var(--sc-accent); border-radius: 6px; padding: 2px 8px;
+      font-size: 11px; cursor: pointer; transition: all 0.2s;
+    }
+    .copy-btn:hover { background: var(--sc-blue); color: #fff; border-color: var(--sc-blue); }
+
+    .concept-note { font-size: 0.83rem; color: #64748b; margin-top: 6px; font-style: italic; }
+    .concept-note strong { color: #1e40af; font-style: normal; }
+
+    .model-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    .model-table th { background: var(--sc-light-blue); color: #1e40af; padding: 8px 12px; text-align: left; font-weight: 700; border-bottom: 2px solid #bfdbfe; }
+    .model-table td { padding: 8px 12px; border-bottom: 1px solid #eff6ff; vertical-align: middle; }
+    .model-table tr:hover td { background: #f8fafc; }
+    .model-table code { background: #0f172a; color: #3b82f6; border-radius: 5px; padding: 2px 7px; font-family: 'Fira Code', monospace; font-size: 0.88rem; }
+
+    #sidebarToggle {
+      display: none; background: var(--sc-blue); color: #fff; border: none;
+      border-radius: 8px; padding: 6px 12px; font-size: 0.85rem;
+      font-weight: 700; cursor: pointer; align-items: center; gap: 6px;
+    }
+
+    .level-pill { font-size: 10px; border-radius: 20px; padding: 2px 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    .level-intro { background: #dbeafe; color: #1e40af; }
+    .level-inter { background: #fef3c7; color: #92400e; }
+    .level-adv   { background: #fef2f2; color: #991b1b; }
+
+    .key-points { background: #f1f5f9; border-radius: 8px; padding: 12px; margin: 12px 0; border-left: 4px solid var(--sc-blue); }
+    .key-points h5 { margin-top: 0; color: #1e40af; }
+    .key-points ul { margin: 0; padding-left: 20px; }
+
+    .graph-placeholder {
+      background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 8px;
+      height: 200px; display: flex; align-items: center; justify-content: center;
+      color: #64748b; font-style: italic;
+    }
+
+    .sc-breadcrumb { font-size: 0.82rem; color: #94a3b8; margin-bottom: 20px; }
+    .sc-breadcrumb a { color: var(--sc-blue); text-decoration: none; }
+
+    footer { background: var(--sc-dark); color: #94a3b8; padding: 30px 0; margin-top: 20px; }
+    footer a { color: var(--sc-accent); text-decoration: none; }
+
+    @media (max-width: 768px) {
+      #sidebar {
+        position: fixed; top: 56px; left: 0; height: calc(100vh - 56px);
+        transform: translateX(-100%); box-shadow: 4px 0 20px rgba(0,0,0,0.3);
+      }
+      #sidebar.open { transform: translateX(0); }
+      #sidebarOverlay.open { display: block; }
+      #sidebarToggle { display: flex; }
+      #mainContent { padding: 20px 16px; }
+      .page-title { font-size: 1.45rem; }
+      .model-box { font-size: 0.8rem; }
+    }
+
+    @media (max-width: 480px) {
+      .model-table { font-size: 0.75rem; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark">
+  <div class="container-fluid px-3">
+    <a class="navbar-brand" href="#">🏕 School<span>Camp</span></a>
+    <div class="ms-auto d-flex align-items-center gap-3">
+      <button id="sidebarToggle" onclick="toggleSidebar()">
+        <i class="bi bi-list"></i> Topics
+      </button>
+      <a class="nav-link d-none d-lg-block" href="{% url 'forum:home' %}"><i class="bi bi-house"></i> Home</a>
+      <a class="nav-link d-none d-lg-block" href="{% url 'GCE:list' %}"><i class="bi bi-graph-up"></i> GCE</a>
+    </div>
+  </div>
+</nav>
+
+<div id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<div class="page-wrapper">
+  <aside id="sidebar">
+    <div class="sidebar-header"><i class="bi bi-graph-up-arrow"></i> Economics Topics</div>
+    <div class="sidebar-search">
+      <input type="text" id="sidebarSearch" placeholder="🔍 Search models…" oninput="filterSections(this.value)">
+    </div>
+    <nav class="sidebar-nav">
+      <a class="topic-link active" onclick="goTo('basics',event)" href="#"><i class="bi bi-calculator"></i> Basic Concepts</a>
+      <a class="topic-link" onclick="goTo('supplydemand',event)" href="#"><i class="bi bi-arrows-expand"></i> Supply & Demand</a>
+      <a class="topic-link" onclick="goTo('elasticity',event)" href="#"><i class="bi bi-arrows-left-right"></i> Elasticity</a>
+      <a class="topic-link" onclick="goTo('consumer',event)" href="#"><i class="bi bi-cart"></i> Consumer Theory</a>
+      <a class="topic-link" onclick="goTo('production',event)" href="#"><i class="bi bi-speedometer2"></i> Production & Costs</a>
+      <a class="topic-link" onclick="goTo('market',event)" href="#"><i class="bi bi-shop"></i> Market Structures</a>
+      <a class="topic-link" onclick="goTo('macro',event)" href="#"><i class="bi bi-bar-chart-line"></i> Macroeconomics</a>
+      <a class="topic-link" onclick="goTo('fiscal',event)" href="#"><i class="bi bi-collection"></i> Fiscal Policy</a>
+      <a class="topic-link" onclick="goTo('monetary',event)" href="#"><i class="bi bi-bind"></i> Monetary Policy</a>
+      <a class="topic-link" onclick="goTo('intl',event)" href="#"><i class="bi bi-globe"></i> International Trade</a>
+      <a class="topic-link" onclick="goTo('econometrics',event)" href="#"><i class="bi bi-graph-up"></i> Econometrics</a>
+    </nav>
+  </aside>
+
+  <main id="mainContent">
+      <h1 class="page-title">📈 Economics Models & Concepts</h1>
+      <p class="page-subtitle">Essential economic models, formulas, and theories — from Micro to Macro — in one interactive guide. Use the sidebar to jump to any topic.</p>
+
+      <!-- BASIC CONCEPTS -->
+      <section class="concept-section" id="basics" data-title="Basics opportunity cost scarcity PPF">
+        <div class="section-title"><i class="bi bi-calculator"></i> Basic Economic Concepts</div>
+
+        <div class="concept-card">
+          <div class="concept-card-header">Opportunity Cost & Trade-offs <span class="level-pill level-intro">Intro</span></div>
+          <div class="concept-body">
+            <div class="model-box">
+              <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+              Opportunity Cost = Value of Next Best Alternative<br>
+              Economic Profit = Total Revenue - (Explicit Costs + Implicit Costs)<br>
+              Accounting Profit = Total Revenue - Explicit Costs
+            </div>
+            <p class="concept-note"><strong>Explicit costs</strong> are actual monetary payments. <strong>Implicit costs</strong> are opportunity costs of using owned resources.</p>
+          </div>
+        </div>
+
+        <div class="concept-card">
+          <div class="concept-card-header">Production Possibilities Frontier (PPF) <span class="level-pill level-intro">Intro</span></div>
+          <div class="concept-body">
+            <div class="model-box">
+              <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+              PPF: Maximum output combinations of two goods given resources & technology<br>
+              Shape: Concave (bowed out) = Increasing opportunity cost<br>
+              Straight line = Constant opportunity cost<br>
+              Convex (bowed in) = Decreasing opportunity cost (rare)
+            </div>
+            <div class="key-points">
+              <h5>Key Points:</h5>
+              <ul>
+                <li>Points on the curve: Efficient production</li>
+                <li>Points inside the curve: Inefficient production (unemployment)</li>
+                <li>Points outside the curve: Unattainable with current resources</li>
+                <li>Outward shift: Economic growth (more resources/better tech)</li>
+                <li>Inward shift: Economic contraction (resource loss/tech decline)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="concept-card">
+          <div class="concept-card-header">Marginal Analysis <span class="level-pill level-intro">Intro</span></div>
+          <div class="concept-body">
+            <div class="model-box">
+              <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+              Marginal Benefit (MB) = Additional benefit from one more unit<br>
+              Marginal Cost (MC) = Additional cost from one more unit<br>
+              Optimal Quantity: MB = MC<br>
+              Net Benefit = Total Benefit - Total Cost
+            </div>
+            <p class="concept-note">Rational decision makers continue an activity as long as MB ≥ MC.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SUPPLY & DEMAND -->
+      <section class="concept-section" id="supplydemand" data-title="Supply Demand equilibrium surplus shortage">
+        <div class="section-title"><i class="bi bi-arrows-expand"></i> Supply & Demand</div>
+
+        <div class="concept-card">
+          <div class="concept-card-header">Demand Law & Curve <span class="level-pill level-intro">Intro</span></div>
+          <div class="concept-body">
+            <div class="model-box">
+              <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+              Law of Demand: As price ↑, quantity demanded ↓ (ceteris paribus)<br>
+              Demand Function: Q<sub>d</sub> = a - bP (where a, b > 0)<br>
+              Inverse Demand: P = (a/b) - (1/b)Q<sub>d</sub>
+            </div>
+            <div class="key-points">
+              <h5>Determinants of Demand (shift factors):</h5>
+              <ul>
+                <li>Income (normal vs inferior goods)</li>
+                <li>Prices of related goods (substitutes/complements)</li>
+                <li>Tastes & preferences</li>
+                <li>Expectations about future prices</li>
+                <li>Number of buyers</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="concept-card">
+          <div class="concept-card-header">Supply Law & Curve <span class="level-pill level-intro">Intro</span></div>
+          <div class="concept-body">
+            <div class="model-box">
+              <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+              Law of Supply: As price ↑, quantity supplied ↑ (ceteris paribus)<br>
+              Supply Function: Q<sub>s</sub> = c + dP (where c, d ≥ 0)<br>
+              Inverse Supply: P = (c/d) + (1/d)Q<sub>s</sub>
+            </div>
+            <div class="key-points">
+              <h5>Determinants of Supply (shift factors):</h5>
+              <ul>
+                <li>Input prices</li>
+                <li>Technology</li>
+                <li>Prices of related goods (substitutes in production)</li>
+                <li>Expectations about future prices</li>
+                <li>Number of sellers</li>
+                <li>Taxes & subsidies</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="concept-card">
+          <div class="concept-card-header">Market Equilibrium <span class="level-pill level-intro">Intro</span></div>
+          <div class="concept-body">
+            <div class="model-box">
+              <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+              Equilibrium Condition: Q<sub>d</sub> = Q<sub>s</sub><br>
+              Solve: a - bP = c + dP → P* = (a - c)/(b + d)<br>
+              Then: Q* = a - bP* = c + dP*
+            </div>
+            <div class="model-box" style="margin-top: 10px;">
+              <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+              Consumer Surplus (CS) = Area below demand curve & above price<br>
+              Producer Surplus (PS) = Area above supply curve & below price<br>
+              Total Surplus = CS + PS (maximized at equilibrium)<br>
+              Deadweight Loss (DWL) = Loss of total surplus from market inefficiency
+            </div>
+            <p class="concept-note">At equilibrium: No shortage or surplus. Markets tend toward equilibrium through price adjustments.</p>
+          </div>
+        </div>
+
+        <div class="concept-card">
+          <div class="concept-card-header">Price Controls & Quotas <span class="level-pill level-inter">Intermediate</span></div>
+          <div class="concept-body">
+            <div class="model-box">
+              <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+              Price Ceiling (max legal price):<br>
+              • Binding if P<sub>ceiling</sub> < P* → Shortage = Q<sub>d</sub> - Q<sub>s</sub> at P<sub>ceiling</sub><br>
+              • Non-binding if P<sub>ceiling</sub> ≥ P* → No effect<br>
+              <br>
+              Price Floor (min legal price):<br>
+              • Binding if P<sub>floor</sub> > P* → Surplus = Q<sub>s</sub> - Q<sub>d</sub> at P<sub>floor</sub><br>
+              • Non-binding if P<sub>floor</sub> ≤ P* → No effect
+            </div>
+            <div class="model-box" style="margin-top: 10px;">
+              <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+              Quota (limit on quantity):<br>
+              • Creates shortage if Q<sub>quota</sub> < Q*<br>
+              • Leads to black market & rent-seeking behavior
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ELASTICITY -->
+      <section class="concept-section" id="elasticity" data-title="Elasticity price income cross">
+        <div class="section-title"><i class="bi bi-arrows-left-right"></i> Elasticity</div>
+
+        <div class="concept-card">
+          <div class="concept-card-header">Price Elasticity of Demand <span class="level-pill level-intro">Intro</span></div>
+          <div class="concept-body">
+            <div class="model-box">
+              <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+              E<sub>d</sub> = (%ΔQ<sub>d</sub>) / (%ΔP) = (ΔQ<sub>d</sub>/Q<sub>d</sub>) / (ΔP/P)<br>
+              Midpoint Formula: E<sub>d</sub> = [(Q<sub>2</sub>-Q<sub>1</sub>)/((Q<sub>2</sub>+Q<sub>1</sub>)/2)] / [(P<sub>2</sub>-P<sub>1</sub>)/((P<sub>2</sub>+P<sub>1</sub>)/2)]
+            </div>
+            <div class="key-points">
+              <h5>Interpretation:</h5>
+              <ul>
+                <li>|E<sub>d</sub>| > 1: Elastic (sensitive to price)</li>
+                <li>|E<sub>d</sub>| = 1: Unit elastic</li>
+                <li>|E<sub>d</sub>| < 1: Inelastic (insensitive to price)</li>
+                <li>E<sub>d</sub> = 0: Perfectly inelastic (vertical demand)</li>
+                <li>|E<sub>d</sub>| → ∞: Perfectly elastic (horizontal demand)</li>
+              </ul>
+            </div>
+            <p class="concept-note">Total Revenue Test: If demand is elastic, price ↑ → TR ↓. If inelastic, price ↑ → TR ↑.</p>
+          </div>
+        </div>
+
+        <div class="concept-card">
+          <div class="concept-card-header">Income & Cross-Price Elasticity <span class="level-pill level-inter">Intermediate</span></div>
+          <div class="concept-body">
+            <div class="model-box">
+              <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+              Income Elasticity: E<sub>I</sub> = (%ΔQ<sub>d</sub>) / (%ΔI)<br>
+              • E<sub>I</sub> > 0: Normal good<br>
+              • E<sub>I</sub> > 1: Luxury good<br>
+              • 0 < E<sub>i</sub> < 1: Necessity<br>
+              • E<sub>I</sub> < 0: Inferior good<br>
+              <br>
+              Cross-Price Elasticity: E<sub>xy</sub> = (%ΔQ<sub>d,x</sub>) / (%ΔP<sub>y</sub>)<br>
+              • E<sub>xy</sub> > 0: Substitutes<br>
+              • E<sub>xy</sub> < 0: Complements<br>
+              • E<sub>xy</sub> = 0: Unrelated goods
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CONSUMER THEORY -->
+      <section class="concept-section" id="consumer" data-title="Consumer utility indifference budget">
+        <div class="section-title"><i class="bi bi-cart"></i> Consumer Theory</div>
+
+        <div class="concept-card">
+          <div class="concept-card-header">Utility Maximization <span class="level-pill level-inter">Intermediate</span></div>
+          <div class="concept-body">
+            <div class="model-box">
+              <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+              Maximize: U(x, y) subject to: P<sub>x</sub>x + P<sub>y</sub>y = I<br>
+              Tangency Condition: MRS<sub>xy</sub> = P<sub>x</sub>/P<sub>y</sub><br>
+              Where MRS<sub>xy</sub> = MU<sub>x</sub>/MU<sub>y</sub> (Marginal Rate of Substitution)<br>
+              And MU<sub>x</sub> = ∂U/∂x, MU<sub>y</sub> = ∂U/∂y
+            </div>
+            <div class="key-points">
+              <h5>Solution Methods:</h5>
+              <ul>
+                <li>Graphical: Indifference curve tangent to budget line</li>
+                <li>Analytical: Lagrange multiplier or substitution</li>
+                <li>Corner solutions possible for perfect substitutes/complements</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="concept-card">
+          <div class="concept-card-header">Demand from Utility Maximization <span class="level-pill level-adv">Advanced</span></div>
+          <div class="concept-body">
+            <div class="model-box">
+              <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+              For Cobb-Douglas: U = x<sup>α</sup>y<sup>β</sup><br>
+              Demand: x<sup>*</sup> = αI/P<sub>x</sub>, y<sup>*</sup> = βI/P<sub>y</sub><br>
+              (where α + β = 1)<br>
+              <br>
+              For Perfect Substitutes: U = ax + by<br>
+              Choose good with higher utility per dollar: max(a/P<sub>x</sub>, b/P<sub>y</sub>)<br>
+              <br>
+              For Perfect Complements: U = min(ax, by)<br>
+              Demand: x<sup>*</sup> = y<sup>*</sup> = I/(aP<sub>x</sub> + bP<sub>y</sub>)
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PRODUCTION & COSTS -->
+      <section class="concept-section" id="production" data-title="Production costs output labor capital">
+        <div class="section-title"><i class="bi bi-speedometer2"></i> Production & Costs</div>
+
+        <div class="concept-card">
+          <div class="concept-card-header">Production Function <span class="level-pill level-intro">Intro</span></div>
+          <div class="concept-body">
+            <div class="model-box">
+              <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+              Q = f(L, K) where Q = output, L = labor, K = capital<br>
+              Marginal Product of Labor: MP<sub>L</sub> = ΔQ/ΔL = ∂Q/∂L<br>
+              Average Product of Labor: AP<sub>L</sub> = Q/L<br>
+              Law of Diminishing MP: As L ↑ (holding K constant), MP<sub>L</sub> eventually ↓
+            </div>
+          </div>
+        </div>
+
+        <div class="concept-card">
+          <div class="concept-card-header">Cost Functions <span class="level-pill level-inter">Intermediate</span></div>
+          <div class="concept-body">
+            <div class="model-box">
+              <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+              Total Cost (TC) = Fixed Cost (FC) + Variable Cost (VC)<br>
+              Average Cost (AC) = TC/Q<br>
+              Marginal Cost (MC) = ΔTC/ΔQ = dTC/dQ<br>
+              <br>
+              Relationships:<br>
+              • MC < AC ⇒ AC falling<br>
+              • MC = AC ⇒ AC at minimum<br>
+              • MC > AC ⇒ AC rising<br>
+              • MC crosses AVC and ATC at their minimum points
+            </div>
+          </div>
+        </div>
+
+        <div class="concept-card">
+          <div class="concept-card-header">Short-Run vs Long-Run Costs <span class="level-pill level-inter">Intermediate</span></div>
+          <div class="concept-body">
+            <div class="model-box">
+              <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+              Short Run: At least one input fixed (usually K)<br>
+              Long Run: All inputs variable<br>
+              <br>
+              Long-Run Average Cost (LRAC) envelope of all SRAC curves<br>
+              Economies of Scale: LRAC ↓ as Q ↑<br>
+              Diseconomies of Scale: LRAC ↑ as Q ↑<br>
+              Constant Returns to Scale: LRAC constant as Q ↑
+            </div>
+            <div class="key-points">
+              <h5>Returns to Scale (production side):</h5>
+              <ul>
+                <li>Increasing: f(tL, tK) > t·f(L, K) for t > 1</li>
+                <li>Constant: f(tL, tK) = t·f(L, K)</li>
+                <li>Decreasing: f(tL, tK) < t·f(L, K) for t > 1</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- MARKET STRUCTURES -->
+      <section class="concept-section" id="market" data-title="Market perfect monopoly monopolistic oligopoly">
+        <div class="section-title"><i class="bi bi-shop"></i> Market Structures</div>
+
+        <div class="concept-card">
+          <div class="concept-card-header>Perfect Competition <span class="level-pill level-intro">Intro</span></div>
+          <div class="concept-body">
+            <div class="model-box">
+              <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+              Conditions:<br>
+              • Many buyers & sellers<br>
+              • Homogeneous product<br>
+              • Free entry & exit<br>
+              • Perfect information<br>
+              <br>
+              Firm Behavior:<br>
+              • Price taker: P = MR<br>
+              • Profit max: MR = MC → P = MC<br>
+              • Shutdown rule: Produce if P ≥ min AVC<br>
+              • Break-even: P = min ATC
+            </div>
+            <div class="key-points">
+              <h5>Market Outcomes:</h5>
+              <ul>
+                <li>Short run: May have economic profit/loss</li>
+                <li>Long run: Economic profit = 0 (normal profit only)</li>
+                <li>P = min ATC = MC (productive & allocative efficiency)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="concept-card">
+          <div class="concept-card-header>Monopoly <span class="level-pill level-inter">Intermediate</span></div>
+          <div class="concept-body">
+            <div class="model-box">
+              <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+              Demand faced by firm: Market demand curve<br>
+              Marginal Revenue: MR = P + Q(dP/dQ) < P (for downward-sloping demand)<br>
+              Profit max: MR = MC<br>
+              Markup over MC: (P - MC)/P = 1/|E<sub>d</sub>| (Lerner Index)<br>
+              <br>
+              Deadweight Loss: Area between demand & MC from Q<sub>m</sub> to Q<sub>c</sub>
+            </div>
+            <p class="concept-note">Monopolies produce less & charge more than competitive markets → inefficiency.</p>
+          </div>
+        </div>
+
+        <div class="concept-card">
+          <div class="concept-card-header>Monopolistic Competition & Oligopoly <span class="level-pill level-adv">Advanced</span></div>
+          <div class="concept-body">
+            <div class="model-box">
+              <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+              Monopolistic Competition:<br>
+              • Many firms, differentiated product<br>
+              • Free entry/exit → zero economic profit in LR<br>
+              • Excess capacity: Produce where ATC > min ATC<br>
+              <br>
+              Oligopoly Models:<br>
+              • Cournot: Firms choose quantity simultaneously<br>
+                Reaction function: q<sub>i</sub> = f(q<sub>j</sub>)<br>
+                Nash equilibrium: Best responses mutual<br>
+              • Bertrand: Firms choose price simultaneously<br>
+                Homogeneous goods: P = MC (Bertrand paradox)<br>
+                Differentiated goods: P > MC<br>
+              • Stackelberg: Leader-follower quantity game
+            </div class="concept-card">
+              <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+              Characteristics:<br>
+              • Few large firms dominate market<br>
+              • Significant barriers to entry<br>
+              • Interdependent decision-making<br>
+              • May collude (cartels) or compete<br>
+              • Game theory essential for analysis
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- MACROECONOMICS -->
+      <section class="concept-section" id="macro" data-title="Macro GDP inflation unemployment AD AS">
+        <div class="section-title"><i class="bi bi-bar-chart-line"></i> Macroeconomics</div>
+
+        <div class="concept-card">
+          <div class="concept-card-header">GDP Measurement <span class="level-pill level-intro">Intro</span></div>
+          <div class="concept-body">
+            <div class="model-box">
+              <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+              Expenditure Approach: GDP = C + I + G + (X - M)<br>
+              • C = Consumption, I = Investment, G = Government spending<br>
+              • X = Exports, M = Imports<br>
+              <br>
+              Income Approach: GDP = Wages + Rent + Interest + Profit<br>
+              Production Approach: Sum of value added across all industries<br>
+              <br>
+              Nominal GDP: Current prices<br>
+              Real GDP: Base-year prices (adjusts for inflation)<br>
+              GDP Deflator = (Nominal GDP / Real GDP) × 100
+            </div>
+          </div>
+        </div>
+
+        <div class="concept-card">
+          <div class="concept-card-header">Unemployment & Inflation <span class="level-pill level-inter">Intermediate</span></div>
+          <div class="concept-body">
+            <div class="model-box">
+              <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+              Unemployment Rate = (Unemployed / Labor Force) × 100<br>
+              Labor Force = Employed + Unemployed (actively seeking)<br>
+              <br>
+              Types of Unemployment:<br>
+              • Frictional: Between jobs/searching<br>
+              • Structural: Skills/location mismatch<br>
+              • Cyclical: Due to business downturns<br>
+              • Seasonal: Regular predictable patterns<br>
+              <br>
+              Natural Rate = Frictional + Structural<br>
+              Actual UR = Natural Rate + Cyclical<br>
+              <br>
+              Inflation Rate = [(CPI<sub>t</sub> - CPI<sub>t-1</sub>) / CPI<sub>t-1</sub>] × 100<br>
+              CPI = Cost of fixed basket of goods/services today vs base period
+            </div>
+            <div class="key-points">
+              <h5>Related Concepts:</h5>
+              <ul>
+                <li>Phillips Curve: Short-run tradeoff between inflation & unemployment</li>
+                <li>Stagflation: High inflation + high unemployment</li>
+                <li>Deflation: Negative inflation rate</li>
+                <li>Hyperinflation: Extremely high (>50% monthly) inflation</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="concept-card">
+          <div class="concept-card-header">Aggregate Demand & Supply <span class="level-pill level-inter">Intermediate</span></div>
+          <div class="concept-body">
+            <div class="model-box">
+              <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+              AD Curve: Shows relationship between price level & real GDP demanded<br>
+              AD = C + I + G + (X - M), where components depend on P<br>
+              Downward slope due to:<br>
+              • Wealth effect (P ↑ → real wealth ↓ → C ↓)<br>
+              • Interest rate effect (P ↑ → money demand ↑ → r ↓ → I ↓)<br>
+              • Exchange rate effect (P ↑ → domestic goods ↓ → NX ↓)<br>
+              <br>
+              AS Curve (Short Run): Shows relationship between price level & real GDP supplied<br>
+              Upward slope due to sticky wages/prices<br>
+              LRAS: Vertical at potential output (Y<sub>P</sub>)
+            </div>
+            <div class="model-box" style="margin-top: 10px;">
+              <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+              Macroeconomic Equilibrium: Where AD = AS<br>
+              <br>
+              Recessionary Gap: Y < Y<sub>P</sub> (unemployment)<br>
+              Inflationary Gap: Y > Y<sub>P</sub> (inflation pressure)<br>
+              Self-correction: Wage adjustments shift AS over time
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FISCAL POLICY -->
+      <section class="concept-section" id="fiscal" data-title="Fiscal policy taxes government spending multiplier">
+        <div class="section-title"><i class="bi bi-collection"></i> Fiscal Policy</div>
+
+        <div class="concept-card">
+          <div class="concept-card-header">Government Budget <span class="level-pill level-intro">Intro</span></div>
+          <div class="concept-body">
+            <div class="model-box">
+              <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+              Budget Balance = Tax Revenue - Government Spending<br>
+              • Surplus: Positive (T > G)<br>
+              • Deficit: Negative (T < G)<br>
+              • Balance: Zero (T = G)<br>
+              <br>
+              Primary Balance = Excludes interest payments on debt<br>
+              Structural Balance: Adjusts for business cycle effects<br>
+              Debt-to-GDP Ratio: Measures sustainability
+            </div>
+          </div>
+        </div>
+
+        <div class="concept-card">
+          <div class="concept-card-header">Tax Incidence & Multipliers <span class="level-pill level-inter">Intermediate</span></div>
+          <div class="concept-body">
+            <div class="model-box">
+              <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+              Tax Incidence depends on relative elasticities:<br>
+              Burden on consumers: E<sub>s</sub> / (E<sub>s</sub> - E<sub>d</sub>)<br>
+              Burden on producers: -E<sub>d</sub> / (E<sub>s</sub> - E<sub>d</sub>)<br>
+              (where E<sub>d</sub> < 0, E<sub>s</sub> > 0)<br>
+              <br>
+              Spending Multiplier: ΔY/ΔG = 1/(1 - MPC)<br>
+              Tax Multiplier: ΔY/ΔT = -MPC/(1 - MPC)<br>
+              Balanced Budget Multiplier: ΔY/ΔG = 1 (when ΔT = ΔG)<br>
+              MPC = Marginal Propensity to Consume (0 < MPC < 1)<br>
+              MPS = Marginal Propensity to Save = 1 - MPC
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- MONETARY POLICY -->
+      <section class="concept-section" id="monetary" data-title="Monetary policy money supply interest rates">
+        <div class="section-title"><i class="bi bi-bind"></i> Monetary Policy</div>
+
+        <div class="concept-card">
+          <div class="concept-card-header">Money Supply & Demand <span class="level-pill level-intro">Intro</span></div>
+          <div class="concept-body">
+            <div class="model-box">
+              <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+              Money Supply (M<sub>s</sub>): Set by central bank (exogenous)<br>
+              Money Demand (M<sub>d</sub>): L = kY - hi (transactions + speculative)<br>
+              • k = income sensitivity, h = interest sensitivity<br>
+              <br>
+              Money Market Equilibrium: M<sub>s</sub> = M<sub>d</sub><br>
+              Solve for i: i = (kY - M<sub>s</sub>) / h<br>
+              <br>
+              Money Multiplier: m = 1/rr (where rr = required reserve ratio)<br>
+              Actual multiplier < 1/rr due to cash drain & excess reserves
+            </div>
+          </div>
+        </div>
+
+        <div class="concept-card">
+          <div class="concept-card-header">LM Curve & IS-LM Model <span class="level-pill level-inter">Intermediate</span></div>
+          <div class="concept-body">
+            <div class="model-box">
+              <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+              LM Curve: Money market equilibrium<br>
+              Derived from: M/P = L(Y, i) → i = (kY - M/P)/h<br>
+              Upward slope: Y ↑ → money demand ↑ → i ↑ to restore equilibrium<br>
+              <br>
+              IS Curve: Goods market equilibrium<br>
+              Derived from: Y = C(Y - T) + I(i) + G + NX<br>
+              Downward slope: i ↑ → I ↓ → Y ↓<br>
+              <br>
+              Equilibrium: Intersection of IS & LM curves<br>
+              Determines Y* and i*
+            </div>
+          </div>
+        </div>
+
+        <div class="concept-card">
+          <div class="concept-card-header">Monetary Transmission & Phillips Curve <span class="level-pill level-adv">Advanced</span></div>
+          <div class="concept-body">
+            <div class="model-box">
+              <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+              Monetary Transmission Mechanism:<br>
+              Money supply ↑ → i ↓ → I ↑ → Y ↑ (via AD shift)<br>
+              <br>
+              Expectations-Augmented Phillips Curve:<br>
+              π = π<sup>e</sup> - β(u - u<sub>n</sub>) + ν<br>
+              • π = actual inflation, π<sup>e</sup> = expected inflation<br>
+              • u = unemployment rate, u<sub>n</sub> = natural rate<br>
+              • β > 0, ν = supply shock<br>
+              <br>
+              Long-Run Phillips Curve: Vertical at u = u<sub>n</sub><br>
+              Adaptive Expectations: π<sup>e</sup> = π<sub>-1</sub><br>
+              Rational Expectations: π<sup>e</sup> = E[π|Ω]
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- INTERNATIONAL TRADE -->
+      <section class="concept-section" id="intl" data-title="International trade comparative advantage tariffs">
+        <div class="section-title"><i class="bi bi-globe"></i> International Trade</div>
+
+        <div class="concept-card">
+          <div class="concept-card-header">Comparative Advantage <span class="level-pill level-intro">Intro</span></div>
+          <div class="concept-body">
+            <div class="model-box">
+              <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+              Opportunity Cost Approach:<br>
+              Country A has CA in good X if: (OC<sub>A</sub>(X) < OC<sub>B</sub>(X))<br>
+              Where OC = amount of Y given up to produce one unit of X<br>
+              <br>
+              Labor Productivity Approach (Ricardian Model):<br>
+              Country A has CA in X if: (a<sub>AX</sub>/a<sub>AY</sub>) < (a<sub>BX</sub>/a<sub>BY</sub>)<br>
+              Where a<sub>ij</sub> = labor needed to produce one unit of good i in country j
+            </div>
+            <div class="key-points">
+              <h5>Gains from Trade:</h5>
+              <ul>
+                <li>Both countries can consume beyond their individual PPFs</li>
+                <li>Specialization according to comparative advantage increases world output</li>
+                <li>Terms of trade determine distribution of gains</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="concept-card">
+          <div class="concept-card-header">Tariffs & Quotas <span class="level-pill level-inter">Intermediate</span></div>
+          <div class="concept-body">
+            <div class="model-box">
+              <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+              Tariff (t): Tax on imports<br>
+              Effects:<br>
+              • Domestic price rises: P<sub>d</sub> = P<sub>w</sub>(1 + t)<br>
+              • Domestic production ↑, consumption ↓, imports ↓<br>
+              • Government revenue: t × imports<br>
+              • Consumer loss: Area under demand curve above P<sub>d</sub><br>
+              • Producer gain: Area above supply curve below P<sub>d</sub><br>
+              • Deadweight loss: Production + consumption inefficiency<br>
+              • Net welfare effect: Usually negative for small country
+            </div>
+            <div class="model-box" style="margin-top: 10px;">
+              <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+              Quota (Q<sub>quota</sub>): Limit on import quantity<br>
+              Equivalent tariff: t such that imports with tariff = Q<sub>quota</sub><br>
+              Effects similar to tariff but:<br>
+              • No government revenue (unless auctioned)<br>
+              • Quota rents accrue to license holders<br>
+              • May lead to corruption & rent-seeking
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ECONOMETRICS -->
+      <section class="concept-section" id="econometrics" data-title="Econometrics regression hypothesis testing">
+        <div class="section-title"><i class="bi bi-graph-up"></i> Econometrics</div>
+
+        <div class="concept-card">
+          <div class="concept-card-header">Simple Linear Regression <span class="level-pill level-intro">Intro</span></div>
+          <div class="concept-body">
+            <div class="model-box">
+              <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+              Population Model: y<sub>i</sub> = β<sub>0</sub> + β<sub>1</sub>x<sub>i</sub> + u<sub>i</sub><br>
+              Sample Regression: ŷ<sub>i</sub> = b<sub>0</sub> + b<sub>1</sub>x<sub>i</sub><br>
+              OLS Estimators:<br>
+              b<sub>1</sub> = Σ(x<sub>i</sub> - x̄)(y<sub>i</sub> - ȳ) / Σ(x<sub>i</sub> - x̄)<sup>2</sup><br>
+              b<sub>0</sub> = ȳ - b<sub>1</sub>x̄<br>
+              <br>
+              Properties (Gauss-Markov):<br>
+              • Unbiased: E(b̂) = β<br>
+              • Minimum variance among linear unbiased estimators<br>
+              • Consistent & asymptotically normal
+            </div>
+          </div>
+        </div>
+
+        <div class="concept-card">
+          <div class="concept-card-header">Goodness of Fit & Inference <span class="level-pill level-inter">Intermediate</span></div>
+          <div class="concept-body">
+            <div class="model-box">
+              <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+              Total Sum of Squares: SST = Σ(y<sub>i</sub> - ȳ)<sup>2</sup><br>
+              Explained Sum of Squares: SSE = Σ(ŷ<sub>i</sub> - ȳ)<sup>2</)<br>
+              Residual Sum of Squares: SSR = Σ(y<sub>i</sub> - ŷ<sub>i</sub>)<sup>2</sup><br>
+              SST = SSE + SSR<br>
+              <br>
+              R<sup>2</sup> = SSE/SST = 1 - (SSR/SST)<br>
+              Adjusted R<sup>2</sup> = 1 - [(1-R<sup>2</sup>)(n-1)/(n-k-1)]<br>
+              Standard Error of Regression: SER = √(SSR/(n-2))<br>
+              <br>
+              Sampling Variance: Var(b̂<sub>1</sub>) = σ<sup>2</sup> / Σ(x<sub>i</sub> - x̄)<sup>2</sup><br>
+              Estimated: s<sup>2</sup>(b̂<sub>1</sub>) = s<sup>2</sup> / Σ(x<sub>i</sub> - x̄)<sup>2</sup><br>
+              where s<sup>2</sup> = SSR/(n-2)
+            </div>
+            <div class="model-box" style="margin-top: 10px;">
+              <button class="copy-btn" onclick="copyFormula(this)">Copy</button>
+              Hypothesis Testing (two-tailed):<br>
+              H<sub>0</sub>: β<sub>1</sub> = 0 vs H<sub>1</sub>: β<sub>1</sub> ≠ 0<br>
+              t-statistic: t = b̂<sub>1</sub> / s.e.(b̂<sub>1</sub>)<br>
+              Reject H<sub>0</sub> if |t| > t<sub>crit</sub>(α/2, df=n-2)<br>
+              <br>
+              Confidence Interval: b̂<sub>1</sub> ± t<sub>crit</sub>(α/2, df) × s.e.(b̂<sub>1</sub>)<br>
+              p-value: P(|t| > |t<sub>obs</sub>|) under H<sub>0</sub>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      sidebar.classList.toggle('open');
+      overlay.classList.toggle('open');
+    }
+
+    function goTo(sectionId, event) {
+      event.preventDefault();
+      // Update active link
+      document.querySelectorAll('.topic-link').forEach(link => {
+        link.classList.remove('active');
+      });
+      event.currentTarget.classList.add('active');
+
+      // Scroll to section
+      const section = document.getElementById(sectionId);
+      if (section) {
+        section.scrollIntoView({ behavior: 'smooth' });
+      }
+
+      // Close sidebar on mobile
+      if (window.innerWidth <= 768) {
+        toggleSidebar();
+      }
+    }
+
+    function filterSections(searchTerm) {
+      const sections = document.querySelectorAll('.concept-section');
+      searchTerm = searchTerm.toLowerCase().trim();
+
+      sections.forEach(section => {
+        const title = section.getAttribute('data-title') || '';
+        const shouldShow = title.includes(searchTerm) || searchTerm === '';
+        section.style.display = shouldShow ? 'block' : 'none';
+      });
+
+      // Optional: Show message if no results
+      const visibleSections = Array.from(sections).filter(s => s.style.display !== 'none');
+      if (visibleSections.length === 0 && searchTerm !== '') {
+        // Could show a "no results" message here
+      }
+    }
+
+    function copyFormula(button) {
+      const codeElement = button.parentElement;
+      const textToCopy = codeElement.textContent.trim();
+
+      // Create temporary textarea to copy text
+      const textarea = document.createElement('textarea');
+      textarea.value = textToCopy;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+
+      // Visual feedback
+      const originalText = button.textContent;
+      button.textContent = 'Copied!';
+      button.style.backgroundColor = '#10b981';
+      button.style.borderColor = '#10b981';
+
+      setTimeout(() => {
+        button.textContent = originalText;
+        button.style.backgroundColor = 'rgba(59,130,246,0.15)';
+        button.style.borderColor = 'rgba(59,130,246,0.3)';
+      }, 2000);
+    }
+
+    // Close sidebar when clicking outside on mobile
+    document.addEventListener('click', function(event) {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      if (window.innerWidth <= 768 &&
+          !sidebar.contains(event.target) &&
+          !overlay.contains(event.target) &&
+          !event.target.matches('#sidebarToggle') &&
+          !event.target.parentElement.matches('#sidebarToggle')) {
+        if (sidebar.classList.contains('open')) {
+          toggleSidebar();
+        }
+      }
+    });
+
+    // Close sidebar on escape key
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar && sidebar.classList.contains('open')) {
+          toggleSidebar();
+        }
+      }
+    });
+  </script>
+</body>
+</html>

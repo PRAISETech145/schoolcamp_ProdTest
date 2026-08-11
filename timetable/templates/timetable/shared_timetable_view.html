@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+{% load static timetable_tags %}
+
+{% block title %}{{ timetable.name }} – Shared by {{ share.from_user.username }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'timetable/css/timetable.css' %}">
+<style>
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.45); z-index: 1000;
+    align-items: center; justify-content: center; padding: 16px;
+  }
+  .modal-box {
+    background: white; border-radius: 16px; padding: 24px;
+    max-width: 380px; width: 100%;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.2); position: relative;
+  }
+  .modal-close {
+    position: absolute; top: 12px; right: 16px;
+    font-size: 1.3rem; cursor: pointer; color: #999;
+    background: none; border: none;
+  }
+  .course-detail-row { display: flex; align-items: center; gap: 8px; font-size: .85rem; margin-bottom: 8px; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Header -->
+<div class="tt-page-header">
+  <a href="{% url 'timetable:shared_with_me' %}" style="color:rgba(255,255,255,.75);font-size:.8rem;text-decoration:none;">← Shared With Me</a>
+  <h1 style="margin-top:6px;">{{ timetable.name }}</h1>
+  <p>
+    Shared by <strong>{{ share.from_user.get_full_name|default:share.from_user.username }}</strong>
+    · {{ timetable.get_semester_display }} {{ timetable.academic_year }}
+  </p>
+</div>
+
+<div class="container-fluid px-3">
+
+  <!-- Read-only notice -->
+  <div class="tt-alert tt-alert-info">
+    👀 You're viewing a read-only timetable shared by @{{ share.from_user.username }}.
+  </div>
+
+  <!-- Today's classes from this timetable -->
+  {% if today_courses %}
+  <div class="tt-card">
+    <div class="tt-card-header" style="margin-bottom:10px;">
+      <h2 class="tt-card-title">📅 Today – {{ today_name }}</h2>
+    </div>
+    {% for course in today_courses %}
+    <div class="tt-course-pill" style="cursor:default;">
+      <div class="course-color-bar" style="background:{{ course.color }};"></div>
+      <div class="course-info">
+        <div class="course-name">{{ course.name }}</div>
+        <div class="course-meta">
+          {% if course.lecturer %}👨‍🏫 {{ course.lecturer }}{% endif %}
+          {% if course.room %} · 📍 {{ course.room }}{% endif %}
+        </div>
+      </div>
+      <div class="course-time">
+        {{ course.start_time|time:"g:i A" }}<br>
+        <small>{{ course.duration_display }}</small>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Weekly Grid (desktop) -->
+  <div class="tt-card hide-mobile" style="padding:12px;">
+    <div class="tt-card-header" style="margin-bottom:10px;">
+      <h2 class="tt-card-title">Weekly Schedule</h2>
+    </div>
+    <div class="tt-week-grid">
+      <table class="tt-grid-table">
+        <thead>
+          <tr>
+            {% for day_idx, day_name in days_list %}
+            <th class="{% if day_idx == today_index %}today-col{% endif %}">
+              {{ day_name|slice:":3" }}
+              {% if day_idx == today_index %}<br><small style="font-weight:400;opacity:.85;font-size:.65rem;">Today</small>{% endif %}
+            </th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            {% for day_idx, day_name in days_list %}
+            <td>
+              {% with courses_by_day|get_item:day_idx as day_courses %}
+              {% if day_courses %}
+                {% for course in day_courses %}
+                <div class="tt-grid-course-block"
+                     style="background:{{ course.color }};"
+                     data-course-id="{{ course.pk }}"
+                     data-course-name="{{ course.name }}"
+                     data-course-code="{{ course.code }}"
+                     data-course-lecturer="{{ course.lecturer }}"
+                     data-course-room="{{ course.room }}"
+                     data-course-time="{{ course.start_time|time:'g:i A' }} – {{ course.end_time|time:'g:i A' }}"
+                     data-course-duration="{{ course.duration_minutes }}"
+                     data-course-notes="{{ course.notes }}"
+                     data-course-color="{{ course.color }}">
+                  <span class="block-name">{{ course.name }}</span>
+                  <span class="block-time">{{ course.start_time|time:"g:i A" }}</span>
+                  {% if course.room %}<span class="block-room">📍 {{ course.room }}</span>{% endif %}
+                </div>
+                {% endfor %}
+              {% else %}
+                <div class="tt-empty-day">—</div>
+              {% endif %}
+              {% endwith %}
+            </td>
+            {% endfor %}
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Mobile: List by day -->
+  <div class="hide-desktop">
+    {% for day_idx, day_name in days_list %}
+    {% with courses_by_day|get_item:day_idx as day_courses %}
+    {% if day_courses %}
+    <div class="tt-card" style="margin-bottom:12px;">
+      <div class="tt-card-header">
+        <h3 class="tt-card-title {% if day_idx == today_index %}" style="color:var(--sc-green);"{% else %}"{% endif %}>
+          {{ day_name }}{% if day_idx == today_index %} · Today{% endif %}
+        </h3>
+      </div>
+      {% for course in day_courses %}
+      <div class="tt-course-pill" style="cursor:default;">
+        <div class="course-color-bar" style="background:{{ course.color }};"></div>
+        <div class="course-info">
+          <div class="course-name">{{ course.name }}</div>
+          <div class="course-meta">{% if course.room %}📍 {{ course.room }}{% endif %}{% if course.lecturer %} · {{ course.lecturer }}{% endif %}</div>
+        </div>
+        <div class="course-time">{{ course.start_time|time:"g:i A" }}<br><small>{{ course.duration_display }}</small></div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+    {% endfor %}
+  </div>
+
+  <!-- Back link -->
+  <div style="text-align:center;padding:8px 0 24px;">
+    <a href="{% url 'timetable:shared_with_me' %}" style="font-size:.85rem;color:var(--sc-green);">← Back to Shared Timetables</a>
+  </div>
+
+</div>
+
+<!-- Course Detail Modal (read-only, no edit/delete buttons) -->
+<div class="modal-overlay" id="courseModal">
+  <div class="modal-box">
+    <button class="modal-close" id="modalClose">✕</button>
+    <div id="courseModalBody"></div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'timetable/js/timetable.js' %}"></script>
+<script>
+  // Override modal to hide edit/delete for read-only view
+  document.querySelectorAll('.tt-grid-course-block[data-course-id]').forEach(function(block) {
+    block.addEventListener('click', function() {
+      const name     = this.dataset.courseName || '';
+      const code     = this.dataset.courseCode || '';
+      const lecturer = this.dataset.courseLecturer || '';
+      const room     = this.dataset.courseRoom || '';
+      const time     = this.dataset.courseTime || '';
+      const duration = this.dataset.courseDuration || '';
+      const notes    = this.dataset.courseNotes || '';
+      const color    = this.dataset.courseColor || '#4CAF50';
+      const body     = document.getElementById('courseModalBody');
+
+      if (body) {
+        body.innerHTML = `
+          <div style="border-left:5px solid ${color};padding-left:12px;margin-bottom:16px;">
+            <h5 style="margin:0;font-weight:800;">${name}</h5>
+            ${code ? `<span style="font-size:.8rem;color:#6b7c73;">${code}</span>` : ''}
+          </div>
+          <div class="course-detail-row"><span>🕐</span><span>${time} &nbsp;(${duration} min)</span></div>
+          ${lecturer ? `<div class="course-detail-row"><span>👨‍🏫</span><span>${lecturer}</span></div>` : ''}
+          ${room     ? `<div class="course-detail-row"><span>📍</span><span>${room}</span></div>`     : ''}
+          ${notes    ? `<div style="margin-top:12px;font-size:.83rem;color:#6b7c73;">${notes}</div>` : ''}
+        `;
+      }
+      const modal = document.getElementById('courseModal');
+      if (modal) modal.style.display = 'flex';
+    });
+  });
+</script>
+{% endblock %}

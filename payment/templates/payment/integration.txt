@@ -1,0 +1,81 @@
+# ============================================================
+#  SCHOOLCAMP PAYMENT APP — INTEGRATION GUIDE
+# ============================================================
+#
+# 1. ADD to INSTALLED_APPS in settings.py:
+# ------------------------------------------
+INSTALLED_APPS_ADDITION = """
+    'payment',          # ← add this to your INSTALLED_APPS list
+"""
+
+# 2. ADD to your project-level urls.py:
+# ------------------------------------------
+URLS_ADDITION = """
+    path('payment/', include('payment.urls', namespace='payment')),
+"""
+# Example project urls.py:
+#
+#   from django.urls import path, include
+#   urlpatterns = [
+#       path('admin/', admin.site.urls),
+#       path('', include('forum.urls', namespace='forum')),
+#       path('groups/', include('groups.urls', namespace='groups')),
+#       path('materials/', include('materials.urls', namespace='materials')),
+#       path('quiz/', include('quiz.urls', namespace='quiz')),
+#       path('chat/', include('chat.urls', namespace='chat')),
+#       path('accounts/', include('accounts.urls', namespace='accounts')),
+#       path('friends/', include('friends.urls', namespace='friends')),
+#       path('notifications/', include('notifications.urls', namespace='notifications')),
+#       path('payment/', include('payment.urls', namespace='payment')),   ← ADD THIS
+#   ]
+
+# 3. RUN MIGRATIONS:
+# ------------------------------------------
+MIGRATE_COMMANDS = """
+python manage.py makemigrations payment
+python manage.py migrate
+"""
+
+# 4. PROTECT VIEWS WITH @subscription_required:
+# ------------------------------------------
+DECORATOR_EXAMPLE = """
+from payment.views import subscription_required
+
+@login_required
+@subscription_required
+def my_protected_view(request):
+    ...
+"""
+
+# 5. CREATE SUBSCRIPTIONS FOR EXISTING USERS (run once):
+# ------------------------------------------
+CREATE_SUBSCRIPTIONS_SCRIPT = """
+from django.contrib.auth import get_user_model
+from payment.models import Subscription
+User = get_user_model()
+for user in User.objects.all():
+    Subscription.objects.get_or_create(user=user)
+"""
+
+# 6. MTN MoMo API Integration (production):
+# ------------------------------------------
+MTN_INTEGRATION_NOTES = """
+Register at: https://momodeveloper.mtn.com
+- Create a sandbox/production app
+- Get API User, API Key, Subscription Key
+- Use the Collections API to request payment:
+  POST https://sandbox.momodeveloper.mtn.com/collection/v1_0/requesttopay
+  Headers: Authorization: Bearer <token>, X-Reference-Id: <UUID>, Ocp-Apim-Subscription-Key: <key>
+  Body: { amount, currency: "XAF", externalId, payer: {partyIdType:"MSISDN", partyId: phone}, payerMessage, payeeNote }
+- Set callbackUrl to: https://yourdomain.com/payment/webhook/
+"""
+
+# 7. Orange Money API Integration (production):
+# ------------------------------------------
+ORANGE_INTEGRATION_NOTES = """
+Register at: https://developer.orange.com/apis/orange-money-webpay-cm
+- Get Client ID and Secret
+- Use OAuth2 to get an access token
+- POST to the charge endpoint with amount and phone number
+- Set notification_url to: https://yourdomain.com/payment/webhook/
+"""

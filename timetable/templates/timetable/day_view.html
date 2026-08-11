@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ day_name }} – {{ timetable.name }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'timetable/css/timetable.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<!-- Day Navigation -->
+<div class="tt-day-nav">
+  <a href="{% url 'timetable:day_view' timetable.pk prev_day %}" id="dayNavPrev">‹</a>
+  <div class="day-title">
+    {{ day_name }}
+    {% if day == today_index %}<small>Today</small>{% endif %}
+  </div>
+  <a href="{% url 'timetable:day_view' timetable.pk next_day %}" id="dayNavNext">›</a>
+</div>
+
+<div class="container-fluid px-3">
+
+  <!-- Day Dots Navigation -->
+  <div style="display:flex;justify-content:center;gap:6px;margin-bottom:20px;">
+    {% for i in "0123456"|make_list %}
+    {% with i|add:"0" as day_num %}
+    <a href="{% url 'timetable:day_view' timetable.pk forloop.counter0 %}"
+       style="width:10px;height:10px;border-radius:50%;display:inline-block;text-decoration:none;
+              background:{% if forloop.counter0 == day %}var(--sc-green){% else %}var(--sc-border){% endif %};"></a>
+    {% endwith %}
+    {% endfor %}
+  </div>
+
+  {% if courses %}
+  {% for course in courses %}
+  <div class="tt-card" style="border-left: 5px solid {{ course.color }};padding:16px;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+      <div style="flex:1;">
+        <div style="font-weight:800;font-size:1rem;margin-bottom:4px;">{{ course.name }}</div>
+        {% if course.code %}<div style="font-size:0.78rem;color:var(--sc-text-muted);margin-bottom:8px;">{{ course.code }}</div>{% endif %}
+
+        <div style="display:flex;flex-wrap:wrap;gap:10px;font-size:0.82rem;">
+          <span>🕐 {{ course.start_time|time:"g:i A" }} – {{ course.end_time|time:"g:i A" }}</span>
+          <span style="color:var(--sc-text-muted);">{{ course.duration_display }}</span>
+        </div>
+
+        {% if course.room %}
+        <div style="font-size:0.82rem;margin-top:6px;">📍 {{ course.room }}</div>
+        {% endif %}
+        {% if course.lecturer %}
+        <div style="font-size:0.82rem;margin-top:4px;">👨‍🏫 {{ course.lecturer }}</div>
+        {% endif %}
+        {% if course.notes %}
+        <div style="font-size:0.8rem;color:var(--sc-text-muted);margin-top:8px;padding:8px;background:var(--sc-bg);border-radius:6px;">{{ course.notes }}</div>
+        {% endif %}
+      </div>
+      <a href="{% url 'timetable:course_edit' course.pk %}" style="font-size:0.8rem;padding:6px 10px;margin-left:10px;" class="btn-sc-outline">✏️</a>
+    </div>
+  </div>
+  {% endfor %}
+
+  {% else %}
+  <div class="tt-card">
+    <div class="tt-empty-state" style="padding:32px 16px;">
+      <div class="empty-icon">😴</div>
+      <h3>No Classes on {{ day_name }}</h3>
+      <p>A free day to study, rest, or explore.</p>
+      <a href="{% url 'timetable:course_add' timetable.pk %}?day={{ day }}" class="btn-sc-primary">+ Add a Course</a>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Quick Add Button -->
+  {% if courses %}
+  <div style="text-align:center;margin-top:4px;">
+    <a href="{% url 'timetable:course_add' timetable.pk %}?day={{ day }}" class="btn-sc-outline">+ Add Course on {{ day_name }}</a>
+  </div>
+  {% endif %}
+
+  <!-- Back to week -->
+  <div style="text-align:center;margin-top:20px;">
+    <a href="{% url 'timetable:detail' timetable.pk %}" style="font-size:0.82rem;color:var(--sc-green);">📋 View Full Week</a>
+  </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'timetable/js/timetable.js' %}"></script>
+{% endblock %}

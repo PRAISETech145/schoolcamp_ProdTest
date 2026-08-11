@@ -1,0 +1,321 @@
+{% extends 'base.html' %}
+{% block title %}Cookie Policy{% endblock %}
+
+{% block extra_css %}
+<style>
+  .legal-hero {
+    background: linear-gradient(135deg, var(--sc-dark) 0%, #1a3323 100%);
+    border-radius: 16px;
+    padding: 40px 36px 32px;
+    margin-bottom: 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .legal-hero::before {
+    content: '🍪';
+    position: absolute;
+    right: 32px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 80px;
+    opacity: 0.08;
+  }
+  .legal-hero h1 { color: #fff; font-weight: 800; font-size: 1.9rem; margin-bottom: 6px; }
+  .legal-hero p  { color: #7aad92; margin: 0; font-size: 0.9rem; }
+  .legal-badge {
+    display: inline-block;
+    background: rgba(76,217,138,0.15);
+    border: 1px solid rgba(76,217,138,0.3);
+    color: #4cd98a;
+    border-radius: 20px;
+    padding: 3px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+  .legal-section {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin-bottom: 16px;
+    transition: box-shadow 0.2s;
+  }
+  .legal-section:hover { box-shadow: 0 4px 20px rgba(26,158,90,0.1); }
+  .legal-section h5 {
+    color: var(--sc-green);
+    font-weight: 700;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .legal-section h5 .sec-num {
+    background: var(--sc-light-green);
+    color: var(--sc-green);
+    border-radius: 50%;
+    width: 26px; height: 26px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 800; flex-shrink: 0;
+  }
+  .legal-section p, .legal-section li {
+    color: var(--text-main);
+    font-size: 0.92rem;
+    line-height: 1.7;
+    margin-bottom: 6px;
+  }
+  .legal-section ul { padding-left: 20px; margin-bottom: 0; }
+  .legal-section ul li { margin-bottom: 4px; }
+  .legal-toc {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--sc-green);
+    border-radius: 10px;
+    padding: 18px 22px;
+    margin-bottom: 24px;
+  }
+  .legal-toc h6 { color: var(--sc-green); font-weight: 700; margin-bottom: 10px; font-size: 0.85rem; letter-spacing: 0.5px; text-transform: uppercase; }
+  .legal-toc a { color: var(--text-main); text-decoration: none; font-size: 0.88rem; display: block; padding: 2px 0; }
+  .legal-toc a:hover { color: var(--sc-green); }
+  .legal-contact {
+    background: linear-gradient(135deg, rgba(26,158,90,0.08), rgba(26,158,90,0.03));
+    border: 1px solid rgba(26,158,90,0.2);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-top: 8px;
+    text-align: center;
+  }
+  .legal-contact p { color: var(--text-main); margin: 0; font-size: 0.9rem; }
+  .legal-contact a { color: var(--sc-green); font-weight: 600; }
+  .legal-nav { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px; }
+  .legal-nav a {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 12px;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .legal-nav a:hover, .legal-nav a.active {
+    background: var(--sc-green);
+    border-color: var(--sc-green);
+    color: #fff;
+  }
+  /* Cookie table */
+  .cookie-table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 0.875rem; }
+  .cookie-table th {
+    background: var(--sc-dark);
+    color: #fff;
+    padding: 10px 14px;
+    text-align: left;
+    font-weight: 700;
+    font-size: 0.82rem;
+  }
+  .cookie-table th:first-child { border-radius: 8px 0 0 0; }
+  .cookie-table th:last-child  { border-radius: 0 8px 0 0; }
+  .cookie-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-main);
+    vertical-align: top;
+  }
+  .cookie-table tr:nth-child(even) td { background: var(--bg-card-header); }
+  .cookie-table tr:last-child td:first-child { border-radius: 0 0 0 8px; }
+  .cookie-table tr:last-child td:last-child  { border-radius: 0 0 8px 0; }
+  .cookie-table tr:last-child td { border-bottom: none; }
+  .cookie-name { font-family: monospace; background: var(--bg-card-header); padding: 2px 6px; border-radius: 4px; font-size: 0.82rem; color: var(--sc-green); }
+  .no-tracking {
+    background: rgba(26,158,90,0.06);
+    border: 1px solid rgba(26,158,90,0.2);
+    border-radius: 10px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-top: 14px;
+  }
+  .no-tracking .nt-icon { font-size: 24px; flex-shrink: 0; }
+  .no-tracking p { margin: 0; color: var(--text-main); font-size: 0.9rem; line-height: 1.6; }
+  .browser-steps { margin-top: 12px; }
+  .browser-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-color);
+  }
+  .browser-step:last-child { border-bottom: none; }
+  .browser-step .b-icon { font-size: 18px; flex-shrink: 0; margin-top: 2px; }
+  .browser-step .b-text { font-size: 0.87rem; color: var(--text-main); line-height: 1.5; }
+  .browser-step .b-name { font-weight: 700; display: block; margin-bottom: 2px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+
+    <div class="legal-nav">
+      <a href="{% url 'legal:terms' %}">📋 Terms of Service</a>
+      <a href="{% url 'legal:privacy' %}">🔒 Privacy Policy</a>
+      <a href="{% url 'legal:payment' %}">💳 Payment Policy</a>
+      <a href="{% url 'legal:cookies' %}" class="active">🍪 Cookie Policy</a>
+    </div>
+
+    <div class="legal-hero">
+      <div class="legal-badge">LEGAL</div>
+      <h1>Cookie Policy</h1>
+      <p>Effective Date: June 2026 &nbsp;·&nbsp; Version 1.0 &nbsp;·&nbsp; No ad tracking, ever</p>
+    </div>
+
+    <div class="legal-toc">
+      <h6>📑 Contents</h6>
+      <div class="row">
+        <div class="col-6">
+          <a href="#s1">1. What Are Cookies?</a>
+          <a href="#s2">2. Cookies We Use</a>
+          <a href="#s3">3. What We Do NOT Use</a>
+          <a href="#s4">4. Managing Cookies</a>
+        </div>
+        <div class="col-6">
+          <a href="#s5">5. Your Consent</a>
+          <a href="#s6">6. Changes to This Policy</a>
+          <a href="#s7">7. Contact</a>
+        </div>
+      </div>
+    </div>
+
+    <p class="text-muted mb-4" style="font-size:0.93rem;">
+      This Cookie Policy explains what cookies and similar technologies SchoolCamp uses,
+      why we use them, and how you can manage them.
+    </p>
+
+    <div class="legal-section" id="s1">
+      <h5><span class="sec-num">1</span> What Are Cookies?</h5>
+      <p>Cookies are small text files placed on your device when you visit a website. They allow the
+        website to remember information about your visit, making your next visit easier and the
+        site more useful to you.</p>
+      <p><strong>localStorage</strong> and <strong>sessionStorage</strong> are similar browser technologies
+        that store data locally on your device. localStorage persists until manually cleared;
+        sessionStorage is cleared when you close the browser tab.</p>
+    </div>
+
+    <div class="legal-section" id="s2">
+      <h5><span class="sec-num">2</span> Cookies We Use</h5>
+      <p>SchoolCamp uses only <strong>essential</strong> cookies and browser storage. Here is the complete list:</p>
+      <table class="cookie-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Purpose</th>
+            <th>Duration</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="cookie-name">sessionid</span></td>
+            <td>Cookie</td>
+            <td>Keeps you logged in to SchoolCamp (Django session management)</td>
+            <td>Session</td>
+          </tr>
+          <tr>
+            <td><span class="cookie-name">csrftoken</span></td>
+            <td>Cookie</td>
+            <td>Protects all forms against Cross-Site Request Forgery (CSRF) attacks</td>
+            <td>1 year</td>
+          </tr>
+          <tr>
+            <td><span class="cookie-name">sc-theme</span></td>
+            <td>localStorage</td>
+            <td>Remembers whether you prefer dark mode or light mode</td>
+            <td>Permanent*</td>
+          </tr>
+          <tr>
+            <td><span class="cookie-name">sc_loaded</span></td>
+            <td>sessionStorage</td>
+            <td>Remembers if the page loader animation has already played this session</td>
+            <td>Session</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="mt-2" style="font-size:0.82rem;color:var(--text-muted);">
+        * Permanent means it persists until you clear your browser data or uninstall the browser.
+      </p>
+    </div>
+
+    <div class="legal-section" id="s3">
+      <h5><span class="sec-num">3</span> What We Do NOT Use</h5>
+      <div class="no-tracking">
+        <div class="nt-icon">🚫</div>
+        <p>SchoolCamp does <strong>not</strong> use advertising cookies, social media tracking pixels,
+          Google Analytics, third-party ad networks, fingerprinting, or any cross-site tracking technology.
+          Your browsing on SchoolCamp stays on SchoolCamp.</p>
+      </div>
+    </div>
+
+    <div class="legal-section" id="s4">
+      <h5><span class="sec-num">4</span> Managing Cookies</h5>
+      <p>You can control and delete cookies through your browser settings:</p>
+      <div class="browser-steps">
+        <div class="browser-step">
+          <div class="b-icon">🦊</div>
+          <div class="b-text">
+            <span class="b-name">Firefox</span>
+            Menu → Settings → Privacy &amp; Security → Cookies and Site Data → Clear Data
+          </div>
+        </div>
+        <div class="browser-step">
+          <div class="b-icon">🌐</div>
+          <div class="b-text">
+            <span class="b-name">Chrome</span>
+            Menu → Settings → Privacy and Security → Clear browsing data
+          </div>
+        </div>
+        <div class="browser-step">
+          <div class="b-icon">🔵</div>
+          <div class="b-text">
+            <span class="b-name">Microsoft Edge</span>
+            Menu → Settings → Privacy, search, and services → Clear browsing data
+          </div>
+        </div>
+        <div class="browser-step">
+          <div class="b-icon">⚠️</div>
+          <div class="b-text">
+            <span class="b-name">Note</span>
+            Deleting cookies will log you out of SchoolCamp and reset your dark/light mode preference.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="legal-section" id="s5">
+      <h5><span class="sec-num">5</span> Your Consent</h5>
+      <p>By using SchoolCamp, you consent to our use of the essential cookies and browser storage
+        described in this policy. Since we only use strictly necessary cookies, no cookie
+        consent banner is required under most privacy regulations.</p>
+      <p>If we ever add non-essential cookies in the future, we will update this policy and
+        ask for your explicit consent.</p>
+    </div>
+
+    <div class="legal-section" id="s6">
+      <h5><span class="sec-num">6</span> Changes to This Policy</h5>
+      <p>We may update this Cookie Policy from time to time. Any changes will be posted on this
+        page with a new effective date. We will notify you of significant changes via an in-app notice.</p>
+    </div>
+
+    <div class="legal-section" id="s7">
+      <h5><span class="sec-num">7</span> Contact</h5>
+      <div class="legal-contact">
+        <p>Questions about our use of cookies?<br>
+          <a href="mailto:privacy@schoolcamp.cm">privacy@schoolcamp.cm</a>
+        </p>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-center mt-5">
+  <div class="col-md-5">
+    <div class="card text-center p-4">
+      <div style="font-size:3rem">🗑️</div>
+      <h4>Delete this material?</h4>
+      <p class="text-muted">This will permanently delete <strong>{{ material.title }}</strong> and the file. This cannot be undone.</p>
+      <form method="post" class="d-flex gap-2 justify-content-center">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Yes, Delete</button>
+        <a href="{% url 'materials:my_materials' %}" class="btn btn-outline-secondary">Cancel</a>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,287 @@
+{% extends 'base.html' %}
+{% block title %}Privacy Policy{% endblock %}
+
+{% block extra_css %}
+<style>
+  .legal-hero {
+    background: linear-gradient(135deg, var(--sc-dark) 0%, #1a3323 100%);
+    border-radius: 16px;
+    padding: 40px 36px 32px;
+    margin-bottom: 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .legal-hero::before {
+    content: '🔒';
+    position: absolute;
+    right: 32px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 80px;
+    opacity: 0.08;
+  }
+  .legal-hero h1 { color: #fff; font-weight: 800; font-size: 1.9rem; margin-bottom: 6px; }
+  .legal-hero p  { color: #7aad92; margin: 0; font-size: 0.9rem; }
+  .legal-badge {
+    display: inline-block;
+    background: rgba(76,217,138,0.15);
+    border: 1px solid rgba(76,217,138,0.3);
+    color: #4cd98a;
+    border-radius: 20px;
+    padding: 3px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+  .legal-section {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin-bottom: 16px;
+    transition: box-shadow 0.2s;
+  }
+  .legal-section:hover { box-shadow: 0 4px 20px rgba(26,158,90,0.1); }
+  .legal-section h5 {
+    color: var(--sc-green);
+    font-weight: 700;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .legal-section h5 .sec-num {
+    background: var(--sc-light-green);
+    color: var(--sc-green);
+    border-radius: 50%;
+    width: 26px; height: 26px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 800; flex-shrink: 0;
+  }
+  .legal-section p, .legal-section li {
+    color: var(--text-main);
+    font-size: 0.92rem;
+    line-height: 1.7;
+    margin-bottom: 6px;
+  }
+  .legal-section ul { padding-left: 20px; margin-bottom: 0; }
+  .legal-section ul li { margin-bottom: 4px; }
+  .legal-toc {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--sc-green);
+    border-radius: 10px;
+    padding: 18px 22px;
+    margin-bottom: 24px;
+  }
+  .legal-toc h6 { color: var(--sc-green); font-weight: 700; margin-bottom: 10px; font-size: 0.85rem; letter-spacing: 0.5px; text-transform: uppercase; }
+  .legal-toc a { color: var(--text-main); text-decoration: none; font-size: 0.88rem; display: block; padding: 2px 0; }
+  .legal-toc a:hover { color: var(--sc-green); }
+  .legal-contact {
+    background: linear-gradient(135deg, rgba(26,158,90,0.08), rgba(26,158,90,0.03));
+    border: 1px solid rgba(26,158,90,0.2);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-top: 8px;
+    text-align: center;
+  }
+  .legal-contact p { color: var(--text-main); margin: 0; font-size: 0.9rem; }
+  .legal-contact a { color: var(--sc-green); font-weight: 600; }
+  .legal-nav { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px; }
+  .legal-nav a {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 12px;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .legal-nav a:hover, .legal-nav a.active {
+    background: var(--sc-green);
+    border-color: var(--sc-green);
+    color: #fff;
+  }
+  .third-party-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: var(--bg-card-header);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+  }
+  .third-party-card .tp-icon { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+  .third-party-card .tp-name { font-weight: 700; color: var(--text-main); font-size: 0.9rem; }
+  .third-party-card .tp-desc { color: var(--text-muted); font-size: 0.85rem; margin: 0; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+
+    <div class="legal-nav">
+      <a href="{% url 'legal:terms' %}">📋 Terms of Service</a>
+      <a href="{% url 'legal:privacy' %}" class="active">🔒 Privacy Policy</a>
+      <a href="{% url 'legal:payment' %}">💳 Payment Policy</a>
+      <a href="{% url 'legal:cookies' %}">🍪 Cookie Policy</a>
+    </div>
+
+    <div class="legal-hero">
+      <div class="legal-badge">LEGAL</div>
+      <h1>Privacy Policy</h1>
+      <p>Effective Date: June 2026 &nbsp;·&nbsp; Version 1.0 &nbsp;·&nbsp; We protect your data</p>
+    </div>
+
+    <div class="legal-toc">
+      <h6>📑 Contents</h6>
+      <div class="row">
+        <div class="col-6">
+          <a href="#s1">1. Data We Collect</a>
+          <a href="#s2">2. How We Use Your Data</a>
+          <a href="#s3">3. Third-Party Services</a>
+          <a href="#s4">4. Data Storage &amp; Security</a>
+          <a href="#s5">5. Data Retention</a>
+        </div>
+        <div class="col-6">
+          <a href="#s6">6. Your Rights</a>
+          <a href="#s7">7. Cookies &amp; Local Storage</a>
+          <a href="#s8">8. Children's Privacy</a>
+          <a href="#s9">9. Changes to This Policy</a>
+          <a href="#s10">10. Contact</a>
+        </div>
+      </div>
+    </div>
+
+    <p class="text-muted mb-4" style="font-size:0.93rem;">
+      SchoolCamp is committed to protecting your privacy. This Privacy Policy explains what personal
+      data we collect, how we use it, and your rights regarding that data.
+    </p>
+
+    <div class="legal-section" id="s1">
+      <h5><span class="sec-num">1</span> Data We Collect</h5>
+      <p>When you register and use SchoolCamp, we may collect the following information:</p>
+      <ul>
+        <li><strong>Account data:</strong> username, email address, password (hashed), date of birth.</li>
+        <li><strong>Profile data:</strong> avatar/profile photo, bio, school, XP points.</li>
+        <li><strong>Content data:</strong> forum posts, chat messages, voice messages, uploaded materials.</li>
+        <li><strong>Payment data:</strong> MTN Mobile Money transaction references (we do not store full MoMo numbers).</li>
+        <li><strong>Usage data:</strong> pages visited, features used, login timestamps, IP address.</li>
+        <li><strong>Device data:</strong> browser type, operating system, screen size.</li>
+      </ul>
+    </div>
+
+    <div class="legal-section" id="s2">
+      <h5><span class="sec-num">2</span> How We Use Your Data</h5>
+      <p>We use your data only for the following purposes:</p>
+      <ul>
+        <li>To provide and operate the SchoolCamp platform and its features.</li>
+        <li>To process Premium subscription payments via MTN MoMo.</li>
+        <li>To personalise your experience (notifications, recommendations).</li>
+        <li>To send important account-related emails (password reset, subscription updates).</li>
+        <li>To detect and prevent fraud, spam, and misuse of the platform.</li>
+        <li>To improve the platform through anonymised analytics.</li>
+      </ul>
+    </div>
+
+    <div class="legal-section" id="s3">
+      <h5><span class="sec-num">3</span> Third-Party Services</h5>
+      <p>SchoolCamp uses the following third-party services that may process your data:</p>
+      <div class="mt-3">
+        <div class="third-party-card">
+          <div class="tp-icon">☁️</div>
+          <div>
+            <div class="tp-name">Cloudinary</div>
+            <p class="tp-desc">Stores your uploaded media files — avatars, voice messages, and study materials. <a href="https://cloudinary.com/privacy" target="_blank" style="color:var(--sc-green)">Privacy policy →</a></p>
+          </div>
+        </div>
+        <div class="third-party-card">
+          <div class="tp-icon">🚂</div>
+          <div>
+            <div class="tp-name">Railway</div>
+            <p class="tp-desc">Hosts our application servers and PostgreSQL database. <a href="https://railway.app/legal/privacy" target="_blank" style="color:var(--sc-green)">Privacy policy →</a></p>
+          </div>
+        </div>
+        <div class="third-party-card">
+          <div class="tp-icon">📱</div>
+          <div>
+            <div class="tp-name">MTN Mobile Money</div>
+            <p class="tp-desc">Processes subscription payments in XAF. Transaction references are shared with MTN to complete payments.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="legal-section" id="s4">
+      <h5><span class="sec-num">4</span> Data Storage &amp; Security</h5>
+      <p>Your data is stored on secure servers hosted on Railway. Media files are stored on Cloudinary servers.
+        We use HTTPS encryption for all data in transit.</p>
+      <p>Passwords are hashed using industry-standard algorithms and are never stored in plain text.
+        However, no system is 100% secure and we cannot guarantee absolute security.</p>
+    </div>
+
+    <div class="legal-section" id="s5">
+      <h5><span class="sec-num">5</span> Data Retention</h5>
+      <p>We retain your account data for as long as your account is active. If you delete your account,
+        we will delete your personal data within <strong>30 days</strong>, except where retention is required by law.</p>
+      <p>Chat messages and forum posts may remain visible to other users after account deletion,
+        but will be anonymised (shown as "Deleted User").</p>
+    </div>
+
+    <div class="legal-section" id="s6">
+      <h5><span class="sec-num">6</span> Your Rights</h5>
+      <p>You have the following rights regarding your personal data:</p>
+      <ul>
+        <li><strong>Access:</strong> request a copy of the data we hold about you.</li>
+        <li><strong>Correction:</strong> request correction of inaccurate data.</li>
+        <li><strong>Deletion:</strong> request deletion of your account and associated data.</li>
+        <li><strong>Portability:</strong> request your data in a machine-readable format.</li>
+        <li><strong>Objection:</strong> object to certain types of processing.</li>
+      </ul>
+      <p>To exercise any of these rights, contact us at <a href="mailto:privacy@schoolcamp.cm" style="color:var(--sc-green)">privacy@schoolcamp.cm</a>.</p>
+    </div>
+
+    <div class="legal-section" id="s7">
+      <h5><span class="sec-num">7</span> Cookies &amp; Local Storage</h5>
+      <p>SchoolCamp uses browser cookies and localStorage for the following purposes:</p>
+      <ul>
+        <li><strong>Session cookies:</strong> to keep you logged in (Django session).</li>
+        <li><strong>CSRF token:</strong> to protect forms against cross-site request forgery attacks.</li>
+        <li><strong>localStorage (sc-theme):</strong> to remember your dark/light mode preference.</li>
+      </ul>
+      <p>We do not use advertising cookies or third-party tracking cookies. See our full
+        <a href="{% url 'legal:cookies' %}" style="color:var(--sc-green)">Cookie Policy →</a></p>
+    </div>
+
+    <div class="legal-section" id="s8">
+      <h5><span class="sec-num">8</span> Children's Privacy</h5>
+      <p>SchoolCamp is intended for users aged <strong>13 and above</strong>. We do not knowingly collect
+        personal data from children under 13. If you believe a child under 13 has created an account,
+        please contact us immediately at
+        <a href="mailto:privacy@schoolcamp.cm" style="color:var(--sc-green)">privacy@schoolcamp.cm</a>
+        and we will delete the account.</p>
+    </div>
+
+    <div class="legal-section" id="s9">
+      <h5><span class="sec-num">9</span> Changes to This Policy</h5>
+      <p>We may update this Privacy Policy from time to time. We will notify you of significant changes
+        via email or a notice on the platform. Your continued use of SchoolCamp after changes
+        constitutes acceptance of the updated policy.</p>
+    </div>
+
+    <div class="legal-section" id="s10">
+      <h5><span class="sec-num">10</span> Contact</h5>
+      <div class="legal-contact">
+        <p>Privacy questions or data requests? Contact us at<br>
+          <a href="mailto:privacy@schoolcamp.cm">privacy@schoolcamp.cm</a>
+        </p>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

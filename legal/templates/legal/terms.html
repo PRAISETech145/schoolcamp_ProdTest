@@ -1,0 +1,257 @@
+{% extends 'base.html' %}
+{% block title %}Terms of Service{% endblock %}
+
+{% block extra_css %}
+<style>
+  .legal-hero {
+    background: linear-gradient(135deg, var(--sc-dark) 0%, #1a3323 100%);
+    border-radius: 16px;
+    padding: 40px 36px 32px;
+    margin-bottom: 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .legal-hero::before {
+    content: '📋';
+    position: absolute;
+    right: 32px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 80px;
+    opacity: 0.08;
+  }
+  .legal-hero h1 { color: #fff; font-weight: 800; font-size: 1.9rem; margin-bottom: 6px; }
+  .legal-hero p  { color: #7aad92; margin: 0; font-size: 0.9rem; }
+  .legal-badge {
+    display: inline-block;
+    background: rgba(76,217,138,0.15);
+    border: 1px solid rgba(76,217,138,0.3);
+    color: #4cd98a;
+    border-radius: 20px;
+    padding: 3px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+  .legal-section {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin-bottom: 16px;
+    transition: box-shadow 0.2s;
+  }
+  .legal-section:hover { box-shadow: 0 4px 20px rgba(26,158,90,0.1); }
+  .legal-section h5 {
+    color: var(--sc-green);
+    font-weight: 700;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .legal-section h5 .sec-num {
+    background: var(--sc-light-green);
+    color: var(--sc-green);
+    border-radius: 50%;
+    width: 26px; height: 26px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 800; flex-shrink: 0;
+  }
+  .legal-section p, .legal-section li {
+    color: var(--text-main);
+    font-size: 0.92rem;
+    line-height: 1.7;
+    margin-bottom: 6px;
+  }
+  .legal-section ul { padding-left: 20px; margin-bottom: 0; }
+  .legal-section ul li { margin-bottom: 4px; }
+  .legal-toc {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--sc-green);
+    border-radius: 10px;
+    padding: 18px 22px;
+    margin-bottom: 24px;
+  }
+  .legal-toc h6 { color: var(--sc-green); font-weight: 700; margin-bottom: 10px; font-size: 0.85rem; letter-spacing: 0.5px; text-transform: uppercase; }
+  .legal-toc a { color: var(--text-main); text-decoration: none; font-size: 0.88rem; display: block; padding: 2px 0; }
+  .legal-toc a:hover { color: var(--sc-green); }
+  .legal-contact {
+    background: linear-gradient(135deg, rgba(26,158,90,0.08), rgba(26,158,90,0.03));
+    border: 1px solid rgba(26,158,90,0.2);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-top: 8px;
+    text-align: center;
+  }
+  .legal-contact p { color: var(--text-main); margin: 0; font-size: 0.9rem; }
+  .legal-contact a { color: var(--sc-green); font-weight: 600; }
+  .legal-nav { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px; }
+  .legal-nav a {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 12px;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .legal-nav a:hover, .legal-nav a.active {
+    background: var(--sc-green);
+    border-color: var(--sc-green);
+    color: #fff;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+
+    <!-- Legal page nav -->
+    <div class="legal-nav">
+      <a href="{% url 'legal:terms' %}" class="active">📋 Terms of Service</a>
+      <a href="{% url 'legal:privacy' %}">🔒 Privacy Policy</a>
+      <a href="{% url 'legal:payment' %}">💳 Payment Policy</a>
+      <a href="{% url 'legal:cookies' %}">🍪 Cookie Policy</a>
+    </div>
+
+    <!-- Hero -->
+    <div class="legal-hero">
+      <div class="legal-badge">LEGAL</div>
+      <h1>Terms of Service</h1>
+      <p>Effective Date: June 2026 &nbsp;·&nbsp; Version 1.0 &nbsp;·&nbsp; Applies to all SchoolCamp users</p>
+    </div>
+
+    <!-- Table of contents -->
+    <div class="legal-toc">
+      <h6>📑 Contents</h6>
+      <div class="row">
+        <div class="col-6">
+          <a href="#s1">1. Acceptance of Terms</a>
+          <a href="#s2">2. Eligibility &amp; Accounts</a>
+          <a href="#s3">3. Acceptable Use</a>
+          <a href="#s4">4. Content &amp; Intellectual Property</a>
+          <a href="#s5">5. XP Points &amp; Gamification</a>
+        </div>
+        <div class="col-6">
+          <a href="#s6">6. Subscription &amp; Payments</a>
+          <a href="#s7">7. Termination</a>
+          <a href="#s8">8. Limitation of Liability</a>
+          <a href="#s9">9. Governing Law</a>
+          <a href="#s10">10. Contact</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Intro -->
+    <p class="text-muted mb-4" style="font-size:0.93rem;">
+      Welcome to SchoolCamp. By creating an account or using any part of our platform,
+      you agree to be bound by these Terms of Service. Please read them carefully.
+    </p>
+
+    <!-- Sections -->
+    <div class="legal-section" id="s1">
+      <h5><span class="sec-num">1</span> Acceptance of Terms</h5>
+      <p>By accessing or using SchoolCamp ("the Platform", "we", "us"), you confirm that you are at least
+        13 years of age and agree to these Terms. If you are under 18, you confirm that a parent or guardian
+        has reviewed and agreed to these Terms on your behalf.</p>
+      <p>We reserve the right to update these Terms at any time. Continued use of the Platform after
+        changes constitutes acceptance of the updated Terms.</p>
+    </div>
+
+    <div class="legal-section" id="s2">
+      <h5><span class="sec-num">2</span> Eligibility &amp; Accounts</h5>
+      <p>SchoolCamp is designed for students, educators, and academic communities in Cameroon and beyond.
+        You may only hold one account per person.</p>
+      <ul>
+        <li>You must provide accurate information when registering.</li>
+        <li>You are responsible for keeping your password secure.</li>
+        <li>You may not impersonate another person or create fake accounts.</li>
+        <li>Accounts found violating these rules may be suspended or permanently banned.</li>
+      </ul>
+    </div>
+
+    <div class="legal-section" id="s3">
+      <h5><span class="sec-num">3</span> Acceptable Use</h5>
+      <p>You agree to use SchoolCamp only for lawful, academic, and community purposes.
+        The following are strictly prohibited:</p>
+      <ul>
+        <li>Posting hate speech, harassment, or discriminatory content.</li>
+        <li>Sharing exam answers or facilitating academic dishonesty.</li>
+        <li>Uploading malware, viruses, or malicious code.</li>
+        <li>Sending spam, unsolicited messages, or phishing content.</li>
+        <li>Posting pornographic, violent, or otherwise inappropriate content.</li>
+        <li>Attempting to hack, scrape, or disrupt the Platform.</li>
+      </ul>
+    </div>
+
+    <div class="legal-section" id="s4">
+      <h5><span class="sec-num">4</span> Content &amp; Intellectual Property</h5>
+      <p>You retain ownership of content you post on SchoolCamp (forum posts, messages, uploaded materials).
+        By posting, you grant SchoolCamp a non-exclusive, royalty-free licence to display and store your
+        content for the purpose of operating the Platform.</p>
+      <p>SchoolCamp's name, logo, design, and underlying code are the intellectual property of SchoolCamp
+        and may not be copied or reproduced without written permission.</p>
+    </div>
+
+    <div class="legal-section" id="s5">
+      <h5><span class="sec-num">5</span> XP Points &amp; Gamification</h5>
+      <p>SchoolCamp awards XP (Experience Points) for community participation such as posting in the forum,
+        answering questions, and completing quizzes.</p>
+      <ul>
+        <li>XP points have no monetary value.</li>
+        <li>XP cannot be transferred, sold, or exchanged for cash.</li>
+        <li>We reserve the right to adjust, reset, or remove XP points at any time.</li>
+      </ul>
+    </div>
+
+    <div class="legal-section" id="s6">
+      <h5><span class="sec-num">6</span> Subscription &amp; Payments</h5>
+      <p>SchoolCamp offers a Premium subscription at <strong>500 XAF/month</strong>, processed via
+        MTN Mobile Money (MoMo). A free trial period may be offered to new users.</p>
+      <ul>
+        <li>Subscriptions renew automatically unless cancelled before the renewal date.</li>
+        <li>Premium features are only accessible while your subscription is active.</li>
+        <li>We reserve the right to change subscription pricing with 30 days notice.</li>
+        <li>See our <a href="{% url 'legal:payment' %}" style="color:var(--sc-green)">Payment &amp; Refund Policy</a> for full details.</li>
+      </ul>
+    </div>
+
+    <div class="legal-section" id="s7">
+      <h5><span class="sec-num">7</span> Termination</h5>
+      <p>We may suspend or terminate your account at our discretion if you violate these Terms,
+        engage in harmful behaviour, or if required by law. You may delete your own account at any
+        time from your profile settings.</p>
+    </div>
+
+    <div class="legal-section" id="s8">
+      <h5><span class="sec-num">8</span> Limitation of Liability</h5>
+      <p>SchoolCamp is provided "as is" without warranties of any kind. We are not liable for any
+        indirect, incidental, or consequential damages arising from your use of the Platform, including
+        loss of data, loss of XP, or service interruptions.</p>
+      <p>Our total liability to you shall not exceed the amount you paid us in the 3 months preceding
+        the claim.</p>
+    </div>
+
+    <div class="legal-section" id="s9">
+      <h5><span class="sec-num">9</span> Governing Law</h5>
+      <p>These Terms are governed by the laws of the Republic of Cameroon 🇨🇲. Any disputes shall be
+        resolved through good-faith negotiation, and if unresolved, through the competent courts of Cameroon.</p>
+    </div>
+
+    <div class="legal-section" id="s10">
+      <h5><span class="sec-num">10</span> Contact</h5>
+      <div class="legal-contact">
+        <p>Questions about these Terms? Reach us at<br>
+          <a href="mailto:support@schoolcamp.cm">support@schoolcamp.cm</a>
+        </p>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

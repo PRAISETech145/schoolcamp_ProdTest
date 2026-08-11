@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Add Question – {{ quiz.title }}{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+  <div class="col-lg-7">
+    <div class="card">
+      <div class="card-header">
+        <i class="bi bi-plus"></i> Add Question to: <strong>{{ quiz.title }}</strong>
+        <span class="badge bg-secondary ms-2">{{ quiz.question_count }} question{{ quiz.question_count|pluralize }} so far</span>
+      </div>
+      <div class="card-body p-4">
+        <form method="post">
+          {% csrf_token %}
+          <h6 class="fw-bold mb-3">Question</h6>
+          {{ qform|crispy }}
+          <hr>
+          <h6 class="fw-bold mb-3">Answer Options (mark the correct one)</h6>
+          {{ aformset.management_form }}
+          {% for af in aformset %}
+            <div class="border rounded p-3 mb-2 d-flex gap-3 align-items-start">
+              <div class="flex-grow-1">{{ af.text }}</div>
+              <div class="text-center">
+                <small class="text-muted d-block">Correct?</small>
+                {{ af.is_correct }}
+              </div>
+              <div>{{ af.DELETE }}</div>
+            </div>
+          {% endfor %}
+          <div class="d-flex gap-2 mt-4">
+            <button type="submit" name="action" value="another" class="btn btn-primary flex-grow-1">
+              Save & Add Another Question
+            </button>
+            <button type="submit" name="action" value="finish" class="btn btn-success">
+              Save & Finish
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Existing questions preview -->
+  <div class="col-lg-5">
+    <div class="card">
+      <div class="card-header">Questions Added</div>
+      <div class="list-group list-group-flush" style="max-height:500px;overflow-y:auto">
+        {% for q in existing_questions %}
+        <div class="list-group-item">
+          <div class="fw-bold small">Q{{ forloop.counter }}: {{ q.text|truncatechars:70 }}</div>
+          <div class="text-muted small mt-1">
+            {% for a in q.answers.all %}
+              <span class="{% if a.is_correct %}text-success fw-bold{% endif %}">{{ a.text }}</span>{% if not forloop.last %} · {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+        {% empty %}
+        <div class="list-group-item text-muted text-center py-3">No questions yet.</div>
+        {% endfor %}
+      </div>
+      {% if quiz.question_count > 0 %}
+        <div class="card-footer">
+          <a href="{% url 'quiz:detail' quiz.pk %}" class="btn btn-outline-success w-100">
+            View Published Quiz →
+          </a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,269 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Leaderboard - SchoolCamp{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="fw-bold mb-1">
+        <i class="bi bi-trophy text-warning me-2"></i>Leaderboard
+      </h1>
+      <p class="text-muted mb-0">Compete with fellow learners — climb the ranks!</p>
+    </div>
+    <a href="{% url 'dashboard:home' %}" class="btn btn-outline-secondary">
+      <i class="bi bi-arrow-left me-1"></i>Dashboard
+    </a>
+  </div>
+
+  <!-- Tabs -->
+  <ul class="nav nav-tabs mb-4" id="leaderboardTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="weekly-tab" data-bs-toggle="tab" data-bs-target="#weekly" type="button" role="tab">
+        <i class="bi bi-calendar-week me-1"></i>This Week
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="alltime-tab" data-bs-toggle="tab" data-bs-target="#alltime" type="button" role="tab">
+        <i class="bi bi-infinity me-1"></i>All-Time
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="streak-tab" data-bs-toggle="tab" data-bs-target="#streak" type="button" role="tab">
+        <i class="bi bi-fire me-1"></i>Streaks
+      </button>
+    </li>
+  </ul>
+
+  <div class="tab-content" id="leaderboardTabsContent">
+    <!-- Weekly Tab -->
+    <div class="tab-pane fade show active" id="weekly" role="tabpanel">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+          <h5 class="fw-bold mb-0">Week of {{ week_start|date:"M d, Y" }}</h5>
+          {% if user_weekly %}
+          <span class="badge bg-primary-subtle text-primary px-3 py-2">
+            Your Rank: #{{ user_weekly.rank }} • {{ user_weekly.xp_earned }} XP
+          </span>
+          {% endif %}
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table mb-0 leaderboard-table">
+              <thead class="bg-light">
+                <tr>
+                  <th style="width: 60px;">Rank</th>
+                  <th>Student</th>
+                  <th style="width: 120px;">XP This Week</th>
+                  <th style="width: 120px;">Activities</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for entry in weekly_entries %}
+                <tr {% if entry.user == request.user %}class="table-primary fw-medium"{% endif %}>
+                  <td>
+                    {% if entry.rank == 1 %}
+                      <span class="badge bg-warning text-dark fs-6">🥇</span>
+                    {% elif entry.rank == 2 %}
+                      <span class="badge bg-secondary fs-6">🥈</span>
+                    {% elif entry.rank == 3 %}
+                      <span class="badge bg-danger fs-6">🥉</span>
+                    {% else %}
+                      <span class="fw-bold text-muted">#{{ entry.rank }}</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    <div class="d-flex align-items-center gap-2">
+                      <img src="{{ entry.user.get_avatar_url }}" alt="" class="rounded-circle" style="width: 36px; height: 36px; object-fit: cover;">
+                      <div>
+                        <div class="fw-medium {% if entry.user == request.user %}text-primary{% endif %}">
+                          {{ entry.user.username }}
+                          {% if entry.user == request.user %}<span class="badge bg-primary-subtle text-primary ms-1 small">You</span>{% endif %}
+                        </div>
+                        <small class="text-muted">{{ entry.user.region|default:"—" }}, {{ entry.user.get_level_display|default:"—" }}</small>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="fw-bold text-success fs-5">+{{ entry.xp_earned|intcomma }}</td>
+                  <td class="text-muted">{{ entry.activities_count }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="4" class="text-center py-5 text-muted">
+                    <div style="font-size: 3rem;">🏁</div>
+                    <p class="mb-0">No activity this week yet. Be the first!</p>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- All-Time Tab -->
+    <div class="tab-pane fade" id="alltime" role="tabpanel">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+          <h5 class="fw-bold mb-0">All-Time Top Learners</h5>
+          {% if user_alltime %}
+          <span class="badge bg-primary-subtle text-primary px-3 py-2">
+            Your Rank: #{{ user_alltime.global_rank }} • {{ user_alltime.total_xp|intcomma }} XP
+          </span>
+          {% endif %}
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table mb-0 leaderboard-table">
+              <thead class="bg-light">
+                <tr>
+                  <th style="width: 60px;">Rank</th>
+                  <th>Student</th>
+                  <th style="width: 120px;">Total XP</th>
+                  <th style="width: 120px;">Level</th>
+                  <th style="width: 150px;">Streak</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for stat in top_users %}
+                <tr {% if stat.user == request.user %}class="table-primary fw-medium"{% endif %}>
+                  <td>
+                    {% if forloop.counter == 1 %}
+                      <span class="badge bg-warning text-dark fs-6">🥇</span>
+                    {% elif forloop.counter == 2 %}
+                      <span class="badge bg-secondary fs-6">🥈</span>
+                    {% elif forloop.counter == 3 %}
+                      <span class="badge bg-danger fs-6">🥉</span>
+                    {% else %}
+                      <span class="fw-bold text-muted">#{{ forloop.counter }}</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    <div class="d-flex align-items-center gap-2">
+                      <img src="{{ stat.user.get_avatar_url }}" alt="" class="rounded-circle" style="width: 36px; height: 36px; object-fit: cover;">
+                      <div>
+                        <div class="fw-medium {% if stat.user == request.user %}text-primary{% endif %}">
+                          {{ stat.user.username }}
+                          {% if stat.user == request.user %}<span class="badge bg-primary-subtle text-primary ms-1 small">You</span>{% endif %}
+                        </div>
+                        <small class="text-muted">{{ stat.user.school_name|default:"—" }}</small>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="fw-bold text-success fs-5">{{ stat.total_xp|intcomma }}</td>
+                  <td>
+                    <span class="badge bg-primary-subtle text-primary px-2 py-1">Level {{ stat.current_level }}</span>
+                  </td>
+                  <td>
+                    {% with streak=stat.user.streak %}
+                    {% if streak and streak.current_streak > 0 %}
+                      <span class="badge bg-danger-subtle text-danger px-2 py-1">
+                        <i class="bi bi-fire me-1"></i>{{ streak.current_streak }} days
+                      </span>
+                    {% else %}
+                      <span class="text-muted">—</span>
+                    {% endif %}
+                    {% endwith %}
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="5" class="text-center py-5 text-muted">
+                    <div style="font-size: 3rem;">🏁</div>
+                    <p class="mb-0">Start learning to appear on the leaderboard!</p>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Streak Leaders Tab -->
+    <div class="tab-pane fade" id="streak" role="tabpanel">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-0">
+          <h5 class="fw-bold mb-0">Longest Streaks</h5>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table mb-0 leaderboard-table">
+              <thead class="bg-light">
+                <tr>
+                  <th style="width: 60px;">Rank</th>
+                  <th>Student</th>
+                  <th style="width: 150px;">Current Streak</th>
+                  <th style="width: 150px;">Longest Streak</th>
+                  <th style="width: 120px;">Total Active Days</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for streak in streak_leaders %}
+                <tr {% if streak.user == request.user %}class="table-danger fw-medium"{% endif %}>
+                  <td>
+                    {% if forloop.counter <= 3 %}
+                      <span class="badge {% if forloop.counter == 1 %}bg-warning text-dark{% elif forloop.counter == 2 %}bg-secondary{% else %}bg-danger{% endif %} fs-6">
+                        {% if forloop.counter == 1 %}🥇{% elif forloop.counter == 2 %}🥈{% else %}🥉{% endif %}
+                      </span>
+                    {% else %}
+                      <span class="fw-bold text-muted">#{{ forloop.counter }}</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    <div class="d-flex align-items-center gap-2">
+                      <img src="{{ streak.user.get_avatar_url }}" alt="" class="rounded-circle" style="width: 36px; height: 36px; object-fit: cover;">
+                      <div class="fw-medium {% if streak.user == request.user %}text-danger{% endif %}">
+                        {{ streak.user.username }}
+                        {% if streak.user == request.user %}<span class="badge bg-danger-subtle text-danger ms-1 small">You</span>{% endif %}
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    {% if streak.current_streak > 0 %}
+                      <span class="badge bg-danger fs-6 px-3 py-2">
+                        <i class="bi bi-fire me-1"></i>{{ streak.current_streak }} days
+                      </span>
+                    {% else %}
+                      <span class="text-muted">—</span>
+                    {% endif %}
+                  </td>
+                  <td class="fw-medium text-danger">{{ streak.longest_streak }} days</td>
+                  <td class="text-muted">{{ streak.total_active_days }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="5" class="text-center py-5 text-muted">
+                    <div style="font-size: 3rem;">🔥</div>
+                    <p class="mb-0">No streaks yet. Start your journey!</p>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.leaderboard-table tbody tr {
+  transition: background-color 0.15s ease;
+}
+.leaderboard-table tbody tr:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+.table-primary {
+  --bs-table-bg-color: rgba(37, 99, 235, 0.08) !important;
+}
+.table-danger {
+  --bs-table-bg-color: rgba(239, 68, 68, 0.08) !important;
+}
+</style>
+{% endblock %}

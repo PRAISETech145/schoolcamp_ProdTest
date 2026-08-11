@@ -1,0 +1,296 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Dashboard - SchoolCamp{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="fw-bold mb-1">
+        <i class="bi bi-bar-chart-line text-primary me-2"></i>Dashboard
+      </h1>
+      <p class="text-muted mb-0">Welcome back, {{ user.username }}! Track your learning progress.</p>
+    </div>
+    <div class="d-flex gap-2">
+      <a href="{% url 'dashboard:streak_calendar' %}" class="btn btn-outline-primary">
+        <i class="bi bi-calendar3 me-1"></i>Streak Calendar
+      </a>
+      <a href="{% url 'dashboard:stats_detail' %}" class="btn btn-outline-success">
+        <i class="bi bi-graph-up me-1"></i>Detailed Stats
+      </a>
+      <a href="{% url 'dashboard:leaderboard' %}" class="btn btn-outline-warning">
+        <i class="bi bi-trophy me-1"></i>Leaderboard
+      </a>
+    </div>
+  </div>
+
+  <!-- Streak Card -->
+  <div class="row mb-4">
+    <div class="col-12 col-lg-4 mb-3">
+      <div class="card border-0 shadow-sm streak-card" style="background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);">
+        <div class="card-body p-4 text-center">
+          <div class="d-flex justify-content-center mb-3 position-relative">
+            <div class="position-relative" style="font-size: 3.5rem;">🔥</div>
+            {% if streak.has_freeze %}
+              <span class="position-absolute top-0 end-0 translate-middle badge rounded-pill bg-warning text-dark">
+                <i class="bi bi-snow"></i> Freeze Active
+              </span>
+            {% endif %}
+          </div>
+          <h1 class="display-3 fw-bold text-danger mb-1">{{ streak.current_streak }}</h1>
+          <p class="text-muted mb-1">{{ streak.current_streak|pluralize:"day,days" }} streak</p>
+          <p class="small text-muted mb-2">{{ streak.get_streak_status }}</p>
+
+          <!-- Streak stats -->
+          <div class="row text-center mb-3">
+            <div class="col-6">
+              <div class="fw-bold text-dark">{{ streak.longest_streak }}</div>
+              <div class="small text-muted">Longest</div>
+            </div>
+            <div class="col-6">
+              <div class="fw-bold text-dark">{{ streak.total_active_days }}</div>
+              <div class="small text-muted">Total Active</div>
+            </div>
+          </div>
+
+          {% if streak.current_streak > 0 and streak.days_until_milestone %}
+          <div class="alert alert-info py-2 mb-0 small">
+            <i class="bi bi-target me-1"></i> {{ streak.days_until_milestone }} more days to next milestone!
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- XP Card -->
+    <div class="col-12 col-lg-4 mb-3">
+      <div class="card border-0 shadow-sm" style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);">
+        <div class="card-body p-4 text-center">
+          <div class="mb-3" style="font-size: 3rem;">🏆</div>
+          <h1 class="display-3 fw-bold text-success mb-1">{{ stats.total_xp|intcomma }}</h1>
+          <p class="text-muted mb-1">Total XP</p>
+
+          <!-- Level progress -->
+          <div class="progress mb-3" style="height: 12px;">
+            <div class="progress-bar bg-success" role="progressbar"
+                 style="width: {{ stats.level_progress }}%"
+                 aria-valuenow="{{ stats.level_progress }}" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+          <div class="d-flex justify-content-between small text-muted mb-2">
+            <span>Level {{ stats.current_level }}</span>
+            <span>{{ stats.xp_for_next_level }} XP to Level {{ stats.current_level|add:1 }}</span>
+          </div>
+
+          <div class="row text-center">
+            <div class="col-6">
+              <div class="fw-bold text-dark">{{ stats.this_week_xp|intcomma }}</div>
+              <div class="small text-muted">This Week</div>
+            </div>
+            <div class="col-6">
+              <div class="fw-bold text-dark">{{ stats.this_month_xp|intcomma }}</div>
+              <div class="small text-muted">This Month</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Weekly Rank Card -->
+    <div class="col-12 col-lg-4 mb-3">
+      <div class="card border-0 shadow-sm" style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);">
+        <div class="card-body p-4 text-center">
+          <div class="mb-3" style="font-size: 3rem;">📊</div>
+          <h1 class="display-4 fw-bold text-primary mb-1">
+            {% if weekly_rank %}#{{ weekly_rank }}{% else %}—{% endif %}
+          </h1>
+          <p class="text-muted mb-1">Weekly Rank</p>
+          <p class="small text-muted mb-3">{{ week_start|date:"M d" }} - {{ week_end|date:"M d, Y" }}</p>
+
+          <div class="mb-3">
+            <span class="fw-bold text-primary">{{ weekly_xp|intcomma }}</span>
+            <span class="text-muted"> / {{ weekly_count }} activities this week</span>
+          </div>
+
+          <a href="{% url 'dashboard:leaderboard' %}" class="btn btn-sm btn-outline-primary">
+            View Leaderboard <i class="bi bi-arrow-right ms-1"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Row -->
+  <div class="row">
+    <!-- This Week Activity Heatmap -->
+    <div class="col-12 col-lg-7 mb-4">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+          <h5 class="fw-bold mb-0">This Week's Activity</h5>
+          <small class="text-muted">{{ week_start|date:"M d" }} - {{ week_end|date:"M d, Y" }}</small>
+        </div>
+        <div class="card-body p-3">
+          <div class="d-flex justify-content-center gap-2 flex-wrap">
+            {% for day in week_days %}
+            <div class="text-center"
+                 {% if day.is_future %}style="opacity: 0.4;"{% endif %}>
+              <div class="rounded heatmap-day
+                        {% if day.is_future %}bg-light
+                        {% elif day.level == 0 %}bg-light
+                        {% elif day.level == 1 %}bg-success-subtle
+                        {% elif day.level == 2 %}bg-success
+                        {% elif day.level == 3 %}bg-success
+                        {% else %}bg-success{% endif %}"
+                   style="width: 48px; height: 48px; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: transform 0.2s;"
+                   {% if not day.is_future %}title="XP: {{ day.xp }} | Activities: {{ day.count }}"{% endif %}>
+                <div class="fw-bold small {% if day.level >= 3 %}text-white{% elif day.level == 2 %}text-white{% else %}text-dark{% endif %}">
+                  {{ day.day_name }}
+                </div>
+                <div class="fw-medium {% if day.level >= 3 %}text-white{% elif day.level == 2 %}text-white{% else %}text-dark{% endif %}"
+                     style="font-size: 0.9rem;">
+                  {{ day.xp|default:0 }}
+                </div>
+                {% if day.is_today %}
+                  <div class="mt-1" style="width: 8px; height: 8px; border-radius: 50%; background: #2563eb;"></div>
+                {% endif %}
+              </div>
+              <div class="mt-1 small text-muted">{{ day.count }}</div>
+            </div>
+            {% endfor %}
+          </div>
+
+          <!-- Legend -->
+          <div class="d-flex align-items-center justify-content-center gap-2 mt-3 small text-muted">
+            <span>Less</span>
+            <div style="width: 16px; height: 16px; border-radius: 4px; background: #e5e7eb;"></div>
+            <div style="width: 16px; height: 16px; border-radius: 4px; background: #86efac;"></div>
+            <div style="width: 16px; height: 16px; border-radius: 4px; background: #22c55e;"></div>
+            <div style="width: 16px; height: 16px; border-radius: 4px; background: #16a34a;"></div>
+            <div style="width: 16px; height: 16px; border-radius: 4px; background: #15803d;"></div>
+            <span>More</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Activity Breakdown -->
+    <div class="col-12 col-lg-5 mb-4">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-header bg-white border-0">
+          <h5 class="fw-bold mb-0">XP Breakdown (Last 7 Days)</h5>
+        </div>
+        <div class="card-body">
+          {% if activity_breakdown %}
+            <div class="table-responsive">
+              <table class="table table-sm table-hover mb-0">
+                <thead>
+                  <tr class="text-muted small">
+                    <th style="width: 40%">Activity</th>
+                    <th class="text-end" style="width: 30%">Count</th>
+                    <th class="text-end" style="width: 30%">XP Earned</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for item in activity_breakdown %}
+                  <tr>
+                    <td class="small">{{ item.activity_type|capfirst }}</td>
+                    <td class="text-end fw-medium">{{ item.count }}</td>
+                    <td class="text-end text-success fw-medium">+{{ item.xp|intcomma }}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            <div class="mt-3 text-end">
+              <strong class="text-success">{{ total_weekly_xp|default:0|intcomma }} XP</strong>
+              <span class="text-muted small"> total this week</span>
+            </div>
+          {% else %}
+            <div class="text-center py-4 text-muted">
+              <div style="font-size: 2rem;">📊</div>
+              <p class="mb-0">No activity this week yet.</p>
+              <a href="{% url 'materials:list' %}" class="btn btn-sm btn-outline-primary mt-2">Start Learning</a>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="col-12 mb-4">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+          <h5 class="fw-bold mb-0"><i class="bi bi-clock-history text-primary me-2"></i>Recent Activity</h5>
+          <a href="{% url 'dashboard:activity_feed' %}" class="btn btn-sm btn-outline-primary">View All</a>
+        </div>
+        <div class="card-body p-0">
+          {% if recent_activities %}
+            <div class="list-group list-group-flush">
+              {% for activity in recent_activities %}
+              <div class="list-group-item list-group-item-action px-4 py-3 border-0 border-bottom">
+                <div class="d-flex align-items-start gap-3">
+                  <div class="activity-icon rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                       style="width: 36px; height: 36px;">
+                    {% if activity.activity_type == 'material_upload' %}<i class="bi bi-upload text-primary" style="background: #e0f2fe;"></i>
+                    {% elif activity.activity_type == 'material_download' %}<i class="bi bi-download text-success" style="background: #dcfce7;"></i>
+                    {% elif activity.activity_type == 'quiz_attempt' %}<i class="bi bi-clipboard-check text-warning" style="background: #fef3c7;"></i>
+                    {% elif activity.activity_type == 'quiz_pass' %}<i class="bi bi-trophy text-warning" style="background: #dcfce7;"></i>
+                    {% elif activity.activity_type == 'question_post' %}<i class="bi bi-question-circle text-pink" style="background: #fce7f3;"></i>
+                    {% elif activity.activity_type == 'question_reply' %}<i class="bi bi-chat text-purple" style="background: #ede9fe;"></i>
+                    {% elif activity.activity_type == 'answer_accepted' %}<i class="bi bi-check-circle text-success" style="background: #dcfce7;"></i>
+                    {% elif activity.activity_type == 'timetable_create' %}<i class="bi bi-calendar-plus text-blue" style="background: #dbeafe;"></i>
+                    {% elif activity.activity_type == 'course_add' %}<i class="bi bi-book text-indigo" style="background: #e0e7ff;"></i>
+                    {% elif activity.activity_type == 'group_create' %><i class="bi bi-people text-orange" style="background: #ffedd5;"></i>
+                    {% elif activity.activity_type == 'group_join' %}<i class="bi bi-person-plus text-teal" style="background: #ccfbf1;"></i>
+                    {% else %}<i class="bi bi-lightning text-secondary" style="background: #f3f4f6;"></i>{% endif %}
+                  </div>
+
+                  <div class="flex-grow-1 min-width-0">
+                    <div class="d-flex justify-content-between">
+                      <p class="fw-medium mb-1">{{ activity.description }}</p>
+                      {% if activity.xp_earned > 0 %}
+                        <span class="badge bg-success-subtle text-success fw-medium py-1 px-2">+{{ activity.xp_earned }} XP</span>
+                      {% endif %}
+                    </div>
+                    <div class="small text-muted">
+                      {{ activity.created_at|naturaltime }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="text-center py-5 text-muted">
+              <div style="font-size: 3rem;">📭</div>
+              <p class="mb-0">No recent activity. Start learning to see your progress!</p>
+              <a href="{% url 'materials:list' %}" class="btn btn-primary mt-3">Browse Materials</a>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.heatmap-day:hover {
+  transform: scale(1.1);
+  z-index: 10;
+}
+.activity-icon i {
+  font-size: 1rem;
+}
+.heatmap-day {
+  font-size: 0.85rem;
+}
+@media (max-width: 575px) {
+  .heatmap-day {
+    width: 38px !important;
+    height: 38px !important;
+    font-size: 0.75rem;
+  }
+}
+</style>
+{% endblock %}

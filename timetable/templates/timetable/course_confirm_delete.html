@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Remove {{ course.name }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'timetable/css/timetable.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="tt-page-header" style="background:linear-gradient(135deg,#c53030,#e53e3e);">
+  <h1>🗑️ Remove Course</h1>
+</div>
+<div class="container-fluid px-3">
+  <div class="tt-card" style="text-align:center;padding:32px;">
+    <div style="font-size:2.5rem;margin-bottom:12px;">⚠️</div>
+    <h3>Remove "{{ course.name }}"?</h3>
+    <p style="color:var(--sc-text-muted);margin:12px 0 8px;">
+      {{ course.get_day_of_week_display }} · {{ course.start_time|time:"g:i A" }} – {{ course.end_time|time:"g:i A" }}
+    </p>
+    <p style="color:var(--sc-text-muted);margin-bottom:24px;">This will remove the course from <strong>{{ timetable.name }}</strong>.</p>
+    <form method="post" style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+      {% csrf_token %}
+      <button type="submit" class="btn-sc-danger">Yes, Remove</button>
+      <a href="{% url 'timetable:detail' timetable.pk %}" class="btn-sc-outline">Cancel</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

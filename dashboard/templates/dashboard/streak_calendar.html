@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+{% load humanize dashboard_extras %}
+
+{% block title %}Streak Calendar - SchoolCamp{% endblock %}
+
+{% block extra_css %}
+<style>
+.heatmap-cell {
+  border-radius: 3px;
+  transition: transform 0.15s ease;
+}
+.heatmap-cell:hover {
+  transform: scale(1.3);
+  z-index: 10;
+}
+.heatmap-cell.level-0 { background-color: #ebedf0; }
+.heatmap-cell.level-1 { background-color: #9be9a8; }
+.heatmap-cell.level-2 { background-color: #40c463; }
+.heatmap-cell.level-3 { background-color: #30a14e; }
+.heatmap-cell.level-4 { background-color: #216e39; }
+.heatmap-cell.empty { background-color: transparent; }
+.heatmap-cell.today {
+  box-shadow: 0 0 0 2px #2563eb;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="fw-bold mb-1">
+        <i class="bi bi-calendar3 text-primary me-2"></i>Streak Calendar
+      </h1>
+      <p class="text-muted mb-0">Your coding activity heatmap — {{ streak.current_streak }} day streak 🔥</p>
+    </div>
+    <div class="d-flex gap-2">
+      <a href="{% url 'dashboard:streak_calendar' %}?year={{ prev_year }}" class="btn btn-outline-secondary">
+        <i class="bi bi-chevron-left"></i>
+      </a>
+      <span class="fw-bold d-flex align-items-center fs-4 px-3">{{ year }}</span>
+      <a href="{% url 'dashboard:streak_calendar' %}?year={{ next_year }}" class="btn btn-outline-secondary">
+        <i class="bi bi-chevron-right"></i>
+      </a>
+    </div>
+  </div>
+
+  <!-- Streak Summary Cards -->
+  <div class="row mb-4">
+    <div class="col-12 col-md-3 mb-3">
+      <div class="card border-0 shadow-sm text-center h-100" style="background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);">
+        <div class="card-body">
+          <div style="font-size: 2.5rem;">🔥</div>
+          <h2 class="fw-bold text-danger mb-1">{{ streak.current_streak }}</h2>
+          <p class="text-muted mb-0">Current Streak</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-3 mb-3">
+      <div class="card border-0 shadow-sm text-center h-100" style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);">
+        <div class="card-body">
+          <div style="font-size: 2.5rem;">🏆</div>
+          <h2 class="fw-bold text-success mb-1">{{ streak.longest_streak }}</h2>
+          <p class="text-muted mb-0">Longest Streak</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-3 mb-3">
+      <div class="card border-0 shadow-sm text-center h-100" style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);">
+        <div class="card-body">
+          <div style="font-size: 2.5rem;">📅</div>
+          <h2 class="fw-bold text-primary mb-1">{{ total_active_days }}</h2>
+          <p class="text-muted mb-0">Total Active Days</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-3 mb-3">
+      <div class="card border-0 shadow-sm text-center h-100" style="background: linear-gradient(135deg, #fefce8 0%, #fef08a 100%);">
+        <div class="card-body">
+          <div style="font-size: 2.5rem;">⚡</div>
+          <h2 class="fw-bold text-warning mb-1">{{ total_xp_year|intcomma }}</h2>
+          <p class="text-muted mb-0">XP This Year</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Milestone Progress -->
+  {% if streak.milestone_days and next_milestone_days %}
+  <div class="alert alert-info mb-4">
+    <div class="d-flex align-items-center">
+      <i class="bi bi-target text-primary fs-4 me-3"></i>
+      <div>
+        <strong>Next Milestone: {{ streak.milestone_days }} days</strong>
+        <div class="progress mt-1" style="height: 8px; max-width: 300px;">
+          <div class="progress-bar bg-primary" role="progressbar"
+               style="width: {{ progress_to_milestone|default:0 }}%"
+               aria-valuenow="{{ progress_to_milestone|default:0 }}" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+        <small class="text-muted">{{ next_milestone_days }} more days to reach your next milestone!</small>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Calendar Heatmap -->
+  {% for month in months %}
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-header bg-white border-0 pb-0">
+      <h5 class="fw-bold mb-0">{{ month.month_name }}</h5>
+    </div>
+    <div class="card-body p-2">
+      <div class="d-flex flex-wrap gap-1 justify-content-center">
+        {% for week in month.weeks %}
+          <div class="week-row d-flex gap-1 mb-1">
+            {% for day in week %}
+              {% if day.is_current_month %}
+                <div class="heatmap-cell {% if day.is_today %}today{% endif %} level-{{ day.level }}"
+                     style="width: 28px; height: 28px;"
+                     title="{{ day.date|date:'M d, Y' }}: {{ day.count }} activities, {{ day.xp }} XP"
+                     data-bs-toggle="tooltip" data-bs-placement="top">
+                  {% if day.is_today %}
+                    <span class="today-ring"></span>
+                  {% endif %}
+                </div>
+              {% else %}
+                <div class="heatmap-cell empty" style="width: 28px; height: 28px;"></div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+
+  <!-- Legend -->
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+      <h6 class="fw-bold mb-3">Activity Level</h6>
+      <div class="d-flex flex-wrap gap-3 align-items-center">
+        <div class="d-flex align-items-center gap-2">
+          <div class="heatmap-cell level-0" style="width: 20px; height: 20px;"></div>
+          <span class="small text-muted">No activity</span>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <div class="heatmap-cell level-1" style="width: 20px; height: 20px;"></div>
+          <span class="small text-muted">Light (1-2)</span>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <div class="heatmap-cell level-2" style="width: 20px; height: 20px;"></div>
+          <span class="small text-muted">Medium (3-5)</span>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <div class="heatmap-cell level-3" style="width: 20px; height: 20px;"></div>
+          <span class="small text-muted">High (6-9)</span>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <div class="heatmap-cell level-4" style="width: 20px; height: 20px;"></div>
+          <span class="small text-muted">Intense (10+)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Year Stats -->
+  <div class="row">
+    <div class="col-12 col-md-6 mb-3">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <h5 class="fw-bold mb-3">Year {{ year }} Summary</h5>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between px-0">
+              <span>Total Active Days</span>
+              <strong>{{ total_active_days }}</strong>
+            </li>
+            <li class="list-group-item d-flex justify-content-between px-0">
+              <span>Total XP Earned</span>
+              <strong>{{ total_xp_year|intcomma }}</strong>
+            </li>
+            <li class="list-group-item d-flex justify-content-between px-0">
+              <span>Current Streak</span>
+              <strong>{{ streak.current_streak }} days 🔥</strong>
+            </li>
+            <li class="list-group-item d-flex justify-content-between px-0">
+              <span>Longest Streak</span>
+              <strong>{{ streak.longest_streak }} days 🏆</strong>
+            </li>
+            <li class="list-group-item d-flex justify-content-between px-0">
+              <span>Activity Rate</span>
+              <strong>{{ activity_rate }}%</strong>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-6 mb-3">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <h5 class="fw-bold mb-3">Monthly Breakdown</h5>
+          <div class="table-responsive">
+            <table class="table table-sm table-hover mb-0">
+              <thead>
+                <tr class="text-muted small">
+                  <th>Month</th>
+                  <th class="text-end">Days Active</th>
+                  <th class="text-end">XP</th>
+                  <th class="text-end">Activities</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for month in months %}
+                <tr>
+                  <td>{{ month.month_name|truncatechars:3 }}</td>
+                  <td class="text-end">{{ month.active_days }}</td>
+                  <td class="text-end text-success">{{ month.month_xp|intcomma }}</td>
+                  <td class="text-end">{{ month.month_count }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+Django>=5.2
+gunicorn==22.0.0
+psycopg2-binary==2.9.9
+python-decouple==3.8
+whitenoise==6.7.0
+Pillow==10.3.0
+cloudinary==1.40.0
+django-cloudinary-storage==0.3.0
+requests==2.32.3
+django-anymail==10.3
+django-cors-headers==4.4.0
+django-extensions==3.2.3
+django-ratelimit==4.1.0
+django-redis==6.0.0
+python-dotenv==1.2.2
+
+# ASGI / Channels (for real-time chat)
+daphne==4.1.0
+channels==4.1.0
+channels-redis==4.2.0
+
+# Forms & UI
+django-crispy-forms==2.3
+crispy-bootstrap5==2024.10
+
+# Tags
+django-taggit==5.1.0
+
+# REST Framework
+djangorestframework==3.15.0
+
+# Allauth (authentication)
+django-allauth==0.63.4
+
+# Database URL parsing (for Railway PostgreSQL)
+dj-database-url==2.2.0

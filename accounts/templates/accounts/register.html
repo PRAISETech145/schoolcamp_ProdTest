@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Join SchoolCamp{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6 col-lg-5">
+    <div class="card p-4 mt-4">
+      <div class="text-center mb-4">
+        <div style="font-size:3rem">🏕</div>
+        <h2 class="fw-bold">Join SchoolCamp</h2>
+        <p class="text-muted">Free for all Cameroonian students</p>
+      </div>
+      <form method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="btn btn-primary w-100 py-2 mt-2 fw-bold">Create Account</button>
+      </form>
+      <hr>
+      <p class="text-center mb-0">Already have an account? <a href="{% url 'accounts:login' %}">Log in</a></p>
+    </div>
+  </div>
+</div>
+{% endblock %}

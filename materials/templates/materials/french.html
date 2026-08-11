@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bibliothèque de Français | SchoolCamp 🏕</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Fira+Code:wght@400;500&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --sc-green: #1a9e5a;
+      --sc-dark: #0f1c14;
+      --sc-light-green: #e8f5ee;
+      --sc-accent: #4cd98a;
+      --fr-blue: #002395;
+      --fr-red: #ED2939;
+      --fr-white: #ffffff;
+      --sidebar-w: 275px;
+    }
+
+    * { box-sizing: border-box; }
+    body { background: #f4f7f5; font-family: 'Nunito', sans-serif; margin: 0; }
+
+    /* ── NAVBAR ── */
+    .navbar { background: var(--sc-dark) !important; position: sticky; top: 0; z-index: 1030; }
+    .navbar-brand { color: #fff !important; font-weight: 800; font-size: 1.4rem; }
+    .navbar-brand span { color: var(--sc-accent); }
+    .nav-link { color: #cde8d8 !important; }
+    .nav-link:hover { color: #fff !important; }
+
+    /* French flag stripe under navbar */
+    .flag-stripe {
+      height: 4px;
+      background: linear-gradient(90deg, var(--fr-blue) 33.3%, var(--fr-white) 33.3%, var(--fr-white) 66.6%, var(--fr-red) 66.6%);
+    }
+
+    /* ── LAYOUT ── */
+    .page-wrapper { display: flex; min-height: calc(100vh - 60px); }
+
+    /* ── SIDEBAR ── */
+    #sidebar {
+      width: var(--sidebar-w);
+      min-width: var(--sidebar-w);
+      background: var(--sc-dark);
+      color: #cde8d8;
+      padding: 0;
+      position: sticky;
+      top: 60px;
+      height: calc(100vh - 60px);
+      overflow-y: auto;
+      transition: transform 0.3s ease;
+      z-index: 1020;
+      flex-shrink: 0;
+    }
+    #sidebar::-webkit-scrollbar { width: 5px; }
+    #sidebar::-webkit-scrollbar-thumb { background: #2a5c3a; border-radius: 10px; }
+
+    .sidebar-header {
+      background: #0a1510;
+      padding: 16px 20px;
+      font-weight: 800;
+      font-size: 0.85rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--sc-accent);
+      border-bottom: 1px solid #1e3828;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sidebar-search {
+      padding: 12px 14px;
+      border-bottom: 1px solid #1e3828;
+    }
+    .sidebar-search input {
+      background: #1a2e20;
+      border: 1px solid #2a5c3a;
+      color: #cde8d8;
+      border-radius: 8px;
+      padding: 7px 12px;
+      width: 100%;
+      font-size: 13px;
+      outline: none;
+    }
+    .sidebar-search input::placeholder { color: #6aad82; }
+    .sidebar-search input:focus { border-color: var(--sc-accent); }
+
+    .sidebar-nav .category-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 20px;
+      color: #9ecfb0;
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 600;
+      border-left: 3px solid transparent;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    .sidebar-nav .category-link:hover,
+    .sidebar-nav .category-link.active {
+      color: #fff;
+      background: rgba(76,217,138,0.1);
+      border-left-color: var(--sc-accent);
+    }
+    .sidebar-nav .category-link i { font-size: 1rem; color: var(--sc-accent); }
+
+    .sidebar-section-label {
+      padding: 10px 20px 4px;
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #4a7a5a;
+    }
+
+    /* ── MOBILE SIDEBAR ── */
+    #sidebarOverlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 1019;
+    }
+    #sidebarToggle {
+      display: none;
+      background: var(--sc-green);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* ── MAIN CONTENT ── */
+    #mainContent { flex: 1; padding: 28px 24px; overflow-x: hidden; min-width: 0; }
+
+    .page-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--sc-dark);
+      margin-bottom: 4px;
+    }
+    .page-subtitle { color: #5a8a6a; font-size: 0.95rem; margin-bottom: 28px; }
+
+    /* ── SECTION CARDS ── */
+    .formula-section { margin-bottom: 44px; scroll-margin-top: 80px; }
+    .formula-section.hidden { display: none; }
+
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--sc-dark);
+      border-left: 4px solid var(--sc-green);
+      padding-left: 12px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-title i { color: var(--sc-green); font-size: 1.1rem; }
+
+    .formula-card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+      overflow: hidden;
+      margin-bottom: 14px;
+      border: none;
+      transition: box-shadow 0.2s;
+    }
+    .formula-card:hover { box-shadow: 0 4px 20px rgba(26,158,90,0.15); }
+
+    .formula-card-header {
+      background: var(--sc-light-green);
+      border-bottom: 1px solid #d2e8db;
+      padding: 10px 16px;
+      font-weight: 700;
+      font-size: 0.92rem;
+      color: #0f3d22;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .formula-body { padding: 14px 16px; }
+
+    /* ── RULE BOX (replaces formula-box for French rules) ── */
+    .rule-box {
+      background: #0f1c14;
+      border-radius: 8px;
+      padding: 14px 18px;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.92rem;
+      color: #4cd98a;
+      margin: 8px 0;
+      position: relative;
+      overflow-x: auto;
+      line-height: 1.9;
+    }
+    .rule-box .ex   { color: #fda085; font-style: italic; }
+    .rule-box .kw   { color: #f6d365; font-weight: bold; font-style: normal; }
+    .rule-box .note { color: #89d8ff; }
+    .rule-box .ok   { color: #4cd98a; }
+    .rule-box .bad  { color: #ff6b6b; text-decoration: line-through; }
+
+    .copy-btn {
+      position: absolute; top: 8px; right: 8px;
+      background: rgba(76,217,138,0.15);
+      border: 1px solid rgba(76,217,138,0.3);
+      color: var(--sc-accent);
+      border-radius: 6px;
+      padding: 2px 8px;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Nunito', sans-serif;
+    }
+    .copy-btn:hover { background: var(--sc-green); color: #fff; border-color: var(--sc-green); }
+
+    .formula-note {
+      font-size: 0.83rem;
+      color: #5a8a6a;
+      margin-top: 6px;
+      font-style: italic;
+    }
+    .formula-note strong { color: #1a7a42; font-style: normal; }
+
+    /* ── TABLES ── */
+    .formula-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    .formula-table th {
+      background: var(--sc-light-green);
+      color: #0f3d22;
+      padding: 8px 12px;
+      text-align: left;
+      font-weight: 700;
+      border-bottom: 2px solid #d2e8db;
+    }
+    .formula-table td {
+      padding: 8px 12px;
+      border-bottom: 1px solid #eef5f1;
+      vertical-align: middle;
+    }
+    .formula-table tr:hover td { background: #f8fbf9; }
+    .formula-table code {
+      background: #0f1c14;
+      color: #4cd98a;
+      border-radius: 5px;
+      padding: 2px 7px;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.86rem;
+    }
+
+    /* ── EXAMPLE DIALOGUE BOX ── */
+    .dialogue-box {
+      background: #f8fbf9;
+      border: 1px solid #d2e8db;
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-size: 0.88rem;
+      line-height: 1.8;
+    }
+    .dialogue-box .speaker { font-weight: 800; color: var(--sc-green); }
+    .dialogue-box .trad { color: #888; font-style: italic; font-size: 0.82rem; }
+
+    /* ── CONJUGATION GRID ── */
+    .conj-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      margin: 8px 0;
+    }
+    .conj-item {
+      background: #f0fbf5;
+      border: 1px solid #b5d9c5;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 0.87rem;
+    }
+    .conj-item .pronoun { color: #888; font-size: 0.78rem; display: block; }
+    .conj-item .verb-form { font-weight: 700; color: var(--sc-dark); font-family: 'Fira Code', monospace; }
+
+    /* ── LEVEL PILLS ── */
+    .level-pill {
+      font-size: 10px;
+      border-radius: 20px;
+      padding: 2px 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+    .level-basic { background: #d4edda; color: #155724; }
+    .level-inter { background: #fff3cd; color: #856404; }
+    .level-adv   { background: #f8d7da; color: #721c24; }
+
+    /* ── BREADCRUMB ── */
+    .sc-breadcrumb { font-size: 0.82rem; color: #7aad92; margin-bottom: 20px; }
+    .sc-breadcrumb a { color: var(--sc-green); text-decoration: none; }
+
+    /* ── FOOTER ── */
+    footer { background: var(--sc-dark); color: #7aad92; padding: 30px 0; margin-top: 20px; }
+    footer a { color: var(--sc-accent); text-decoration: none; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      #sidebar {
+        position: fixed;
+        top: 60px;
+        left: 0;
+        height: calc(100vh - 60px);
+        transform: translateX(-100%);
+        box-shadow: 4px 0 20px rgba(0,0,0,0.3);
+      }
+      #sidebar.open { transform: translateX(0); }
+      #sidebarOverlay.open { display: block; }
+      #sidebarToggle { display: flex; }
+      #mainContent { padding: 20px 16px; }
+      .page-title { font-size: 1.5rem; }
+      .rule-box { font-size: 0.8rem; }
+      .conj-grid { grid-template-columns: 1fr; }
+    }
+
+    mark { background: #f6d36555; border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+  <div class="container-fluid px-3">
+    <a class="navbar-brand" href="#">🏕 School<span>Camp</span></a>
+    <div class="ms-auto d-flex align-items-center gap-3">
+      <button id="sidebarToggle" onclick="toggleSidebar()">
+        <i class="bi bi-list"></i> Rubriques
+      </button>
+      <a class="nav-link d-none d-lg-block" href="#"><i class="bi bi-house"></i> Home</a>
+    </div>
+  </div>
+</nav>
+<div class="flag-stripe"></div>
+
+<!-- SIDEBAR OVERLAY -->
+<div id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<!-- PAGE WRAPPER -->
+<div class="page-wrapper">
+
+  <!-- SIDEBAR -->
+  <aside id="sidebar">
+    <div class="sidebar-header">
+      <i class="bi bi-book-half"></i> 🇫🇷 Français
+    </div>
+    <div class="sidebar-search">
+      <input type="text" id="sidebarSearch" placeholder="🔍 Rechercher…" oninput="filterSections(this.value)">
+    </div>
+    <nav class="sidebar-nav" id="sidebarNav">
+
+      <div class="sidebar-section-label">Débutant</div>
+      <a class="category-link active" onclick="return scrollToSection('alphabet')" href="#">
+        <i class="bi bi-fonts"></i> Alphabet & Prononciation
+      </a>
+      <a class="category-link" onclick="return scrollToSection('salutations')" href="#">
+        <i class="bi bi-hand-wave"></i> Salutations
+      </a>
+      <a class="category-link" onclick="return scrollToSection('articles')" href="#">
+        <i class="bi bi-tag"></i> Articles
+      </a>
+      <a class="category-link" onclick="return scrollToSection('noms')" href="#">
+        <i class="bi bi-person"></i> Noms & Genre
+      </a>
+      <a class="category-link" onclick="return scrollToSection('adjectifs')" href="#">
+        <i class="bi bi-stars"></i> Adjectifs
+      </a>
+      <a class="category-link" onclick="return scrollToSection('pronoms')" href="#">
+        <i class="bi bi-people"></i> Pronoms
+      </a>
+      <a class="category-link" onclick="return scrollToSection('nombres')" href="#">
+        <i class="bi bi-123"></i> Nombres
+      </a>
+
+      <div class="sidebar-section-label">Intermédiaire</div>
+      <a class="category-link" onclick="return scrollToSection('present')" href="#">
+        <i class="bi bi-clock"></i> Présent de l'Indicatif
+      </a>
+      <a class="category-link" onclick="return scrollToSection('passe')" href="#">
+        <i class="bi bi-arrow-counterclockwise"></i> Passé Composé
+      </a>
+      <a class="category-link" onclick="return scrollToSection('imparfait')" href="#">
+        <i class="bi bi-hourglass-split"></i> Imparfait
+      </a>
+      <a class="category-link" onclick="return scrollToSection('futur')" href="#">
+        <i class="bi bi-arrow-right-circle"></i> Futur
+      </a>
+      <a class="category-link" onclick="return scrollToSection('negatif')" href="#">
+        <i class="bi bi-x-circle"></i> Négation
+      </a>
+      <a class="category-link" onclick="return scrollToSection('questions')" href="#">
+        <i class="bi bi-question-circle"></i> Interrogation
+      </a>
+      <a class="category-link" onclick="return scrollToSection('prepositions')" href="#">
+        <i class="bi bi-geo-alt"></i> Prépositions & Lieux
+      </a>
+      <a class="category-link" onclick="return scrollToSection('comparaison')" href="#">
+        <i class="bi bi-arrows-expand"></i> Comparatif & Superlatif
+      </a>
+
+      <div class="sidebar-section-label">Avancé</div>
+      <a class="category-link" onclick="return scrollToSection('subjonctif')" href="#">
+        <i class="bi bi-lightning"></i> Subjonctif
+      </a>
+      <a class="category-link" onclick="return scrollToSection('conditionnel')" href="#">
+        <i class="bi bi-shuffle"></i> Conditionnel
+      </a>
+      <a class="category-link" onclick="return scrollToSection('plusqueparfait')" href="#">
+        <i class="bi bi-skip-backward"></i> Plus-que-parfait
+      </a>
+      <a class="category-link" onclick="return scrollToSection('passif')" href="#">
+        <i class="bi bi-arrow-left-right"></i> Voix Passive
+      </a>
+      <a class="category-link" onclick="return scrollToSection('discours')" href="#">
+        <i class="bi bi-chat-quote"></i> Discours Indirect
+      </a>
+      <a class="category-link" onclick="return scrollToSection('relatifs')" href="#">
+        <i class="bi bi-link-45deg"></i> Pronoms Relatifs
+      </a>
+      <a class="category-link" onclick="return scrollToSection('stylistique')" href="#">
+        <i class="bi bi-pen"></i> Stylistique & Figures
+      </a>
+    </nav>
+  </aside>
+
+  <!-- MAIN -->
+  <main id="mainContent">
+    <div class="sc-breadcrumb">
+      <a href="#">🏕 SchoolCamp</a> › <a href="#">Matières</a> › Français
+    </div>
+    <h1 class="page-title">🇫🇷 Bibliothèque de Français</h1>
+    <p class="page-subtitle">Du débutant au niveau avancé — toutes les règles, conjugaisons et structures en un seul endroit.</p>
+
+    <!-- ═══════════ ALPHABET ═══════════ -->
+    <section class="formula-section" id="alphabet" data-title="Alphabet Prononciation">
+      <div class="section-title"><i class="bi bi-fonts"></i> Alphabet & Prononciation</div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Les voyelles françaises <span class="level-pill level-basic">Débutant</span></div>
+        <div class="formula-body">
+          <table class="formula-table">
+            <tr><th>Lettre(s)</th><th>Son (API)</th><th>Exemple</th><th>Traduction</th></tr>
+            <tr><td><code>a, à, â</code></td><td>/a/</td><td>ami, âme</td><td>friend, soul</td></tr>
+            <tr><td><code>e</code></td><td>/ə/ ou /e/</td><td>le, mer</td><td>the, sea</td></tr>
+            <tr><td><code>é</code></td><td>/e/</td><td>été</td><td>summer</td></tr>
+            <tr><td><code>è, ê, ë</code></td><td>/ɛ/</td><td>père, fête</td><td>father, party</td></tr>
+            <tr><td><code>i, î, ï</code></td><td>/i/</td><td>livre, île</td><td>book, island</td></tr>
+            <tr><td><code>o, ô</code></td><td>/o/ ou /ɔ/</td><td>mot, porte</td><td>word, door</td></tr>
+            <tr><td><code>u, û</code></td><td>/y/</td><td>rue, sûr</td><td>street, sure</td></tr>
+            <tr><td><code>ou</code></td><td>/u/</td><td>rouge</td><td>red</td></tr>
+            <tr><td><code>eu, œu</code></td><td>/ø/ ou /œ/</td><td>feu, cœur</td><td>fire, heart</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Voyelles nasales <span class="level-pill level-basic">Débutant</span></div>
+        <div class="formula-body">
+          <table class="formula-table">
+            <tr><th>Combinaison</th><th>Son</th><th>Exemple</th></tr>
+            <tr><td><code>an, en, am, em</code></td><td>/ɑ̃/</td><td>enfant, temps</td></tr>
+            <tr><td><code>in, ain, im, ein, yn</code></td><td>/ɛ̃/</td><td>vin, pain, faim</td></tr>
+            <tr><td><code>on, om</code></td><td>/ɔ̃/</td><td>bon, ombre</td></tr>
+            <tr><td><code>un, um</code></td><td>/œ̃/</td><td>un, parfum</td></tr>
+          </table>
+          <p class="formula-note">⚠️ La voyelle nasale <strong>disparaît</strong> devant une autre voyelle ou un double n/m : <em>bonne</em> /bɔn/ ≠ <em>bon</em> /bɔ̃/</p>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Consonnes muettes & liaisons <span class="level-pill level-inter">Intermédiaire</span></div>
+        <div class="formula-body">
+          <div class="rule-box">
+            <button class="copy-btn" onclick="copyRule(this)">Copier</button>
+            <span class="kw">Consonne finale muette :</span>  <span class="ex">chat, Paris, grand</span><br>
+            <span class="kw">Liaison obligatoire :</span>  <span class="ex">les_enfants /le.zɑ̃.fɑ̃/</span><br>
+            <span class="kw">Liaison interdite :</span>  <span class="ex">et // il  ← jamais de liaison avec "et"</span><br>
+            <span class="kw">H aspiré (pas de liaison) :</span>  <span class="ex">le hibou  (pas *l'hibou)</span><br>
+            <span class="kw">H muet (liaison) :</span>  <span class="ex">l'homme, les_hommes</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ SALUTATIONS ═══════════ -->
+    <section class="formula-section" id="salutations" data-title="Salutations Expressions courantes">
+      <div class="section-title"><i class="bi bi-hand-wave"></i> Salutations & Expressions courantes</div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Bonjour / Au revoir <span class="level-pill level-basic">Débutant</span></div>
+        <div class="formula-body">
+          <table class="formula-table">
+            <tr><th>Français</th><th>Contexte</th><th>Traduction</th></tr>
+            <tr><td><strong>Bonjour</strong></td><td>Formel / le matin</td><td>Hello / Good morning</td></tr>
+            <tr><td><strong>Bonsoir</strong></td><td>Le soir</td><td>Good evening</td></tr>
+            <tr><td><strong>Salut</strong></td><td>Informel (amis)</td><td>Hi / Hey</td></tr>
+            <tr><td><strong>Coucou</strong></td><td>Très familier</td><td>Hey! (casual)</td></tr>
+            <tr><td><strong>Au revoir</strong></td><td>Formel</td><td>Goodbye</td></tr>
+            <tr><td><strong>À bientôt</strong></td><td>Neutre</td><td>See you soon</td></tr>
+            <tr><td><strong>À tout à l'heure</strong></td><td>Plus tard dans la journée</td><td>See you later today</td></tr>
+            <tr><td><strong>Bonne nuit</strong></td><td>Avant de dormir</td><td>Good night</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Se présenter <span class="level-pill level-basic">Débutant</span></div>
+        <div class="formula-body">
+          <div class="rule-box">
+            <button class="copy-btn" onclick="copyRule(this)">Copier</button>
+            <span class="kw">Je m'appelle</span> <span class="ex">Marie.</span>  <span class="note">← My name is Marie</span><br>
+            <span class="kw">J'ai</span> <span class="ex">vingt ans.</span>  <span class="note">← I am twenty years old</span><br>
+            <span class="kw">Je suis</span> <span class="ex">étudiant(e).</span>  <span class="note">← I am a student</span><br>
+            <span class="kw">Je viens de</span> <span class="ex">Cameroun.</span>  <span class="note">← I come from Cameroon</span><br>
+            <span class="kw">J'habite à</span> <span class="ex">Douala.</span>  <span class="note">← I live in Douala</span><br>
+            <span class="kw">Je parle</span> <span class="ex">français et anglais.</span>  <span class="note">← I speak French and English</span>
+          </div>
+          <div class="dialogue-box mt-3">
+            <div><span class="speaker">A :</span> Comment vous appelez-vous ? <span class="trad">(What is your name? — formal)</span></div>
+            <div><span class="speaker">B :</span> Je m'appelle Paul. Et vous ? <span class="trad">(My name is Paul. And you?)</span></div>
+            <div><span class="speaker">A :</span> Enchanté, je suis Marie. <span class="trad">(Nice to meet you, I'm Marie.)</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ ARTICLES ═══════════ -->
+    <section class="formula-section" id="articles" data-title="Articles définis indéfinis partitifs">
+      <div class="section-title"><i class="bi bi-tag"></i> Articles</div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Articles définis <span class="level-pill level-basic">Débutant</span></div>
+        <div class="formula-body">
+          <table class="formula-table">
+            <tr><th></th><th>Masculin</th><th>Féminin</th><th>Pluriel</th></tr>
+            <tr><td><strong>Forme</strong></td><td><code>le</code></td><td><code>la</code></td><td><code>les</code></td></tr>
+            <tr><td><strong>Devant voyelle</strong></td><td><code>l'</code></td><td><code>l'</code></td><td><code>les</code></td></tr>
+            <tr><td><strong>Exemple</strong></td><td>le garçon</td><td>la fille</td><td>les enfants</td></tr>
+          </table>
+          <p class="formula-note">⚠️ <strong>Contraction obligatoire :</strong> de + le = <strong>du</strong> · de + les = <strong>des</strong> · à + le = <strong>au</strong> · à + les = <strong>aux</strong></p>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Articles indéfinis & partitifs <span class="level-pill level-basic">Débutant</span></div>
+        <div class="formula-body">
+          <table class="formula-table">
+            <tr><th>Type</th><th>Masculin</th><th>Féminin</th><th>Pluriel</th><th>Usage</th></tr>
+            <tr><td>Indéfini</td><td><code>un</code></td><td><code>une</code></td><td><code>des</code></td><td>un objet non spécifié</td></tr>
+            <tr><td>Partitif</td><td><code>du</code></td><td><code>de la</code></td><td><code>des</code></td><td>une quantité indéfinie</td></tr>
+          </table>
+          <div class="rule-box mt-2">
+            <button class="copy-btn" onclick="copyRule(this)">Copier</button>
+            <span class="kw">Après négation :</span>  article → <span class="kw">de/d'</span><br>
+            <span class="ok">✓ Je mange du pain.</span>  →  <span class="bad">Je ne mange pas du pain.</span>  →  <span class="ok">✓ Je ne mange pas <span class="kw">de</span> pain.</span><br>
+            <span class="ok">✓ J'ai des amis.</span>  →  <span class="ok">✓ Je n'ai pas <span class="kw">d'</span>amis.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ NOMS ═══════════ -->
+    <section class="formula-section" id="noms" data-title="Noms Genre Pluriel masculin féminin">
+      <div class="section-title"><i class="bi bi-person"></i> Noms — Genre & Pluriel</div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Formation du féminin <span class="level-pill level-basic">Débutant</span></div>
+        <div class="formula-body">
+          <table class="formula-table">
+            <tr><th>Règle</th><th>Masculin</th><th>Féminin</th></tr>
+            <tr><td>+e (général)</td><td>ami</td><td>amie</td></tr>
+            <tr><td>-er → -ère</td><td>boulanger</td><td>boulangère</td></tr>
+            <tr><td>-eur → -euse</td><td>vendeur</td><td>vendeuse</td></tr>
+            <tr><td>-teur → -trice</td><td>acteur</td><td>actrice</td></tr>
+            <tr><td>-ien → -ienne</td><td>musicien</td><td>musicienne</td></tr>
+            <tr><td>-on → -onne</td><td>lion</td><td>lionne</td></tr>
+            <tr><td>-el → -elle</td><td>formel</td><td>formelle</td></tr>
+            <tr><td>Irrégulier</td><td>homme / fils / roi</td><td>femme / fille / reine</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Formation du pluriel <span class="level-pill level-basic">Débutant</span></div>
+        <div class="formula-body">
+          <table class="formula-table">
+            <tr><th>Règle</th><th>Singulier</th><th>Pluriel</th></tr>
+            <tr><td>+s (général)</td><td>livre</td><td>livres</td></tr>
+            <tr><td>-eau → -eaux</td><td>gâteau</td><td>gâteaux</td></tr>
+            <tr><td>-al → -aux</td><td>animal</td><td>animaux</td></tr>
+            <tr><td>-ail → -aux</td><td>travail</td><td>travaux</td></tr>
+            <tr><td>-s/-x/-z (inchangé)</td><td>bras, voix, nez</td><td>bras, voix, nez</td></tr>
+            <tr><td>-ou → -oux (7 mots)</td><td>genou, bijou, chou…</td><td>genoux, bijoux, choux…</td></tr>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ ADJECTIFS ═══════════ -->
+    <section class="formula-section" id="adjectifs" data-title="Adjectifs accord position">
+      <div class="section-title"><i class="bi bi-stars"></i> Adjectifs — Accord & Position</div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Accord de l'adjectif <span class="level-pill level-basic">Débutant</span></div>
+        <div class="formula-body">
+          <div class="rule-box">
+            <button class="copy-btn" onclick="copyRule(this)">Copier</button>
+            <span class="kw">Règle :</span>  L'adjectif s'accorde en <span class="kw">genre</span> et en <span class="kw">nombre</span> avec le nom.<br><br>
+            <span class="note">Masc. sing. :</span>  <span class="ex">un garçon grand</span><br>
+            <span class="note">Fém. sing. :</span>   <span class="ex">une fille grande</span><br>
+            <span class="note">Masc. plur. :</span>  <span class="ex">des garçons grands</span><br>
+            <span class="note">Fém. plur. :</span>   <span class="ex">des filles grandes</span>
+          </div>
+          <table class="formula-table mt-2">
+            <tr><th>Terminaison masc.</th><th>Féminin</th><th>Exemple</th></tr>
+            <tr><td>-e (déjà fém.)</td><td>-e</td><td>rouge → rouge</td></tr>
+            <tr><td>-eux</td><td>-euse</td><td>heureux → heureuse</td></tr>
+            <tr><td>-if</td><td>-ive</td><td>actif → active</td></tr>
+            <tr><td>-ier</td><td>-ière</td><td>entier → entière</td></tr>
+            <tr><td>-el/-eil/-il</td><td>double + e</td><td>naturel → naturelle</td></tr>
+            <tr><td>Irrégulier</td><td>—</td><td>beau→belle, vieux→vieille, nouveau→nouvelle</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Position BANGS <span class="level-pill level-inter">Intermédiaire</span></div>
+        <div class="formula-body">
+          <div class="rule-box">
+            <button class="copy-btn" onclick="copyRule(this)">Copier</button>
+            <span class="kw">BANGS</span> = adjectifs qui se placent <span class="kw">AVANT</span> le nom :<br>
+            <span class="note">B</span>eauty  — beau, joli<br>
+            <span class="note">A</span>ge     — jeune, vieux, nouveau<br>
+            <span class="note">N</span>umber  — premier, deuxième, dernier<br>
+            <span class="note">G</span>oodness — bon, mauvais, gentil<br>
+            <span class="note">S</span>ize    — grand, petit, gros, long<br><br>
+            <span class="ok">✓ une <span class="kw">belle</span> maison</span>  |  <span class="ok">✓ un <span class="kw">petit</span> chat</span><br>
+            Tous les autres adjectifs : <span class="kw">APRÈS</span> le nom.<br>
+            <span class="ok">✓ une voiture <span class="kw">rouge</span></span>  |  <span class="ok">✓ un homme <span class="kw">intelligent</span></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ PRONOMS ═══════════ -->
+    <section class="formula-section" id="pronoms" data-title="Pronoms personnels sujets toniques COD COI">
+      <div class="section-title"><i class="bi bi-people"></i> Pronoms Personnels</div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Pronoms sujets & toniques <span class="level-pill level-basic">Débutant</span></div>
+        <div class="formula-body">
+          <table class="formula-table">
+            <tr><th>Personne</th><th>Sujet</th><th>Tonique</th><th>Exemple sujet</th></tr>
+            <tr><td>1ʳᵉ sing.</td><td><code>je / j'</code></td><td><code>moi</code></td><td>Je parle.</td></tr>
+            <tr><td>2ᵉ sing.</td><td><code>tu</code></td><td><code>toi</code></td><td>Tu écoutes.</td></tr>
+            <tr><td>3ᵉ sing. m.</td><td><code>il</code></td><td><code>lui</code></td><td>Il mange.</td></tr>
+            <tr><td>3ᵉ sing. f.</td><td><code>elle</code></td><td><code>elle</code></td><td>Elle lit.</td></tr>
+            <tr><td>Formel</td><td><code>vous</code></td><td><code>vous</code></td><td>Vous venez ?</td></tr>
+            <tr><td>1ʳᵉ plur.</td><td><code>nous</code></td><td><code>nous</code></td><td>Nous aimons.</td></tr>
+            <tr><td>2ᵉ plur.</td><td><code>vous</code></td><td><code>vous</code></td><td>Vous partez.</td></tr>
+            <tr><td>3ᵉ plur. m.</td><td><code>ils</code></td><td><code>eux</code></td><td>Ils dorment.</td></tr>
+            <tr><td>3ᵉ plur. f.</td><td><code>elles</code></td><td><code>elles</code></td><td>Elles chantent.</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Pronoms COD & COI <span class="level-pill level-inter">Intermédiaire</span></div>
+        <div class="formula-body">
+          <table class="formula-table">
+            <tr><th>Personne</th><th>COD</th><th>COI</th></tr>
+            <tr><td>1ʳᵉ sing.</td><td><code>me / m'</code></td><td><code>me / m'</code></td></tr>
+            <tr><td>2ᵉ sing.</td><td><code>te / t'</code></td><td><code>te / t'</code></td></tr>
+            <tr><td>3ᵉ sing.</td><td><code>le / la / l'</code></td><td><code>lui</code></td></tr>
+            <tr><td>1ʳᵉ plur.</td><td><code>nous</code></td><td><code>nous</code></td></tr>
+            <tr><td>2ᵉ plur.</td><td><code>vous</code></td><td><code>vous</code></td></tr>
+            <tr><td>3ᵉ plur.</td><td><code>les</code></td><td><code>leur</code></td></tr>
+          </table>
+          <div class="rule-box mt-2">
+            <button class="copy-btn" onclick="copyRule(this)">Copier</button>
+            <span class="kw">Ordre des pronoms :</span>  sujet + <span class="note">me/te/se/nous/vous</span> + <span class="note">le/la/les</span> + <span class="note">lui/leur</span> + <span class="note">y</span> + <span class="note">en</span> + verbe<br><br>
+            <span class="ok">✓ Il me le donne.</span>  <span class="note">(He gives it to me.)</span><br>
+            <span class="ok">✓ Elle lui en parle.</span>  <span class="note">(She talks to him about it.)</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ NOMBRES ═══════════ -->
+    <section class="formula-section" id="nombres" data-title="Nombres cardinaux ordinaux">
+      <div class="section-title"><i class="bi bi-123"></i> Nombres</div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Nombres cardinaux (0–100) <span class="level-pill level-basic">Débutant</span></div>
+        <div class="formula-body">
+          <table class="formula-table">
+            <tr><th>Chiffre</th><th>Français</th><th>Chiffre</th><th>Français</th></tr>
+            <tr><td>0</td><td>zéro</td><td>11</td><td>onze</td></tr>
+            <tr><td>1</td><td>un / une</td><td>12</td><td>douze</td></tr>
+            <tr><td>2</td><td>deux</td><td>16</td><td>seize</td></tr>
+            <tr><td>10</td><td>dix</td><td>17</td><td>dix-sept</td></tr>
+            <tr><td>20</td><td>vingt</td><td>70</td><td>soixante-dix</td></tr>
+            <tr><td>21</td><td>vingt et un</td><td>80</td><td>quatre-vingts</td></tr>
+            <tr><td>30</td><td>trente</td><td>81</td><td>quatre-vingt-un</td></tr>
+            <tr><td>60</td><td>soixante</td><td>90</td><td>quatre-vingt-dix</td></tr>
+            <tr><td>61</td><td>soixante et un</td><td>100</td><td>cent</td></tr>
+          </table>
+          <p class="formula-note">⚠️ <strong>71 = soixante et onze</strong> · <strong>91 = quatre-vingt-onze</strong> — Attention au système belge/suisse : 70 = <em>septante</em>, 80 = <em>huitante</em>, 90 = <em>nonante</em>.</p>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Nombres ordinaux <span class="level-pill level-basic">Débutant</span></div>
+        <div class="formula-body">
+          <div class="rule-box">
+            <button class="copy-btn" onclick="copyRule(this)">Copier</button>
+            <span class="kw">Règle générale :</span>  nombre + <span class="kw">-ième</span>  (ex: deux → deuxi<span class="kw">ème</span>)<br>
+            <span class="note">Exceptions :</span>  1er (premier / première),  2ème (deuxième),  5ème (cinqu<span class="kw">ième</span>),  9ème (neuvi<span class="kw">ème</span>)
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ PRÉSENT ═══════════ -->
+    <section class="formula-section" id="present" data-title="Présent indicatif conjugaison -er -ir -re">
+      <div class="section-title"><i class="bi bi-clock"></i> Présent de l'Indicatif</div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Verbes réguliers en -ER <span class="level-pill level-basic">Débutant</span></div>
+        <div class="formula-body">
+          <p class="formula-note mb-2">Modèle : <strong>PARLER</strong> (to speak)</p>
+          <div class="conj-grid">
+            <div class="conj-item"><span class="pronoun">je</span><span class="verb-form">parle</span></div>
+            <div class="conj-item"><span class="pronoun">tu</span><span class="verb-form">parles</span></div>
+            <div class="conj-item"><span class="pronoun">il/elle/on</span><span class="verb-form">parle</span></div>
+            <div class="conj-item"><span class="pronoun">nous</span><span class="verb-form">parlons</span></div>
+            <div class="conj-item"><span class="pronoun">vous</span><span class="verb-form">parlez</span></div>
+            <div class="conj-item"><span class="pronoun">ils/elles</span><span class="verb-form">parlent</span></div>
+          </div>
+          <p class="formula-note mt-2">Autres verbes -ER : aimer, donner, manger, travailler, habiter, écouter…</p>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Verbes en -IR et -RE <span class="level-pill level-inter">Intermédiaire</span></div>
+        <div class="formula-body">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <p class="formula-note mb-2">Modèle : <strong>FINIR</strong> (to finish)</p>
+              <div class="conj-grid">
+                <div class="conj-item"><span class="pronoun">je</span><span class="verb-form">finis</span></div>
+                <div class="conj-item"><span class="pronoun">tu</span><span class="verb-form">finis</span></div>
+                <div class="conj-item"><span class="pronoun">il/elle</span><span class="verb-form">finit</span></div>
+                <div class="conj-item"><span class="pronoun">nous</span><span class="verb-form">finissons</span></div>
+                <div class="conj-item"><span class="pronoun">vous</span><span class="verb-form">finissez</span></div>
+                <div class="conj-item"><span class="pronoun">ils/elles</span><span class="verb-form">finissent</span></div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <p class="formula-note mb-2">Modèle : <strong>VENDRE</strong> (to sell)</p>
+              <div class="conj-grid">
+                <div class="conj-item"><span class="pronoun">je</span><span class="verb-form">vends</span></div>
+                <div class="conj-item"><span class="pronoun">tu</span><span class="verb-form">vends</span></div>
+                <div class="conj-item"><span class="pronoun">il/elle</span><span class="verb-form">vend</span></div>
+                <div class="conj-item"><span class="pronoun">nous</span><span class="verb-form">vendons</span></div>
+                <div class="conj-item"><span class="pronoun">vous</span><span class="verb-form">vendez</span></div>
+                <div class="conj-item"><span class="pronoun">ils/elles</span><span class="verb-form">vendent</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Verbes irréguliers essentiels <span class="level-pill level-inter">Intermédiaire</span></div>
+        <div class="formula-body">
+          <table class="formula-table">
+            <tr><th>Pronom</th><th>ÊTRE</th><th>AVOIR</th><th>ALLER</th><th>FAIRE</th><th>VENIR</th><th>POUVOIR</th></tr>
+            <tr><td>je</td><td><code>suis</code></td><td><code>ai</code></td><td><code>vais</code></td><td><code>fais</code></td><td><code>viens</code></td><td><code>peux</code></td></tr>
+            <tr><td>tu</td><td><code>es</code></td><td><code>as</code></td><td><code>vas</code></td><td><code>fais</code></td><td><code>viens</code></td><td><code>peux</code></td></tr>
+            <tr><td>il/elle</td><td><code>est</code></td><td><code>a</code></td><td><code>va</code></td><td><code>fait</code></td><td><code>vient</code></td><td><code>peut</code></td></tr>
+            <tr><td>nous</td><td><code>sommes</code></td><td><code>avons</code></td><td><code>allons</code></td><td><code>faisons</code></td><td><code>venons</code></td><td><code>pouvons</code></td></tr>
+            <tr><td>vous</td><td><code>êtes</code></td><td><code>avez</code></td><td><code>allez</code></td><td><code>faites</code></td><td><code>venez</code></td><td><code>pouvez</code></td></tr>
+            <tr><td>ils/elles</td><td><code>sont</code></td><td><code>ont</code></td><td><code>vont</code></td><td><code>font</code></td><td><code>viennent</code></td><td><code>peuvent</code></td></tr>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ PASSÉ COMPOSÉ ═══════════ -->
+    <section class="formula-section" id="passe" data-title="Passé composé avoir être participe passé accord">
+      <div class="section-title"><i class="bi bi-arrow-counterclockwise"></i> Passé Composé</div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Formation <span class="level-pill level-inter">Intermédiaire</span></div>
+        <div class="formula-body">
+          <div class="rule-box">
+            <button class="copy-btn" onclick="copyRule(this)">Copier</button>
+            <span class="kw">Passé composé</span>  =  auxiliaire (<span class="note">avoir</span> ou <span class="note">être</span>) au présent  +  <span class="kw">participe passé</span><br><br>
+            <span class="note">-ER → -é :</span>  parler → <span class="kw">parlé</span><br>
+            <span class="note">-IR → -i :</span>  finir  → <span class="kw">fini</span><br>
+            <span class="note">-RE → -u :</span>  vendre → <span class="kw">vendu</span><br>
+            <span class="note">Irréguliers :</span>  être→été  avoir→eu  faire→fait  venir→venu  prendre→pris  mettre→mis
+          </div>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Auxiliaire AVOIR vs ÊTRE — La Maison d'Être <span class="level-pill level-inter">Intermédiaire</span></div>
+        <div class="formula-body">
+          <div class="rule-box">
+            <button class="copy-btn" onclick="copyRule(this)">Copier</button>
+            <span class="kw">→ ÊTRE :</span>  verbes de mouvement/état + tous les <span class="note">verbes pronominaux</span><br>
+            <span class="ex">aller, venir, partir, arriver, entrer, sortir, monter, descendre,</span><br>
+            <span class="ex">naître, mourir, rester, tomber, retourner, passer + pronominaux (se laver…)</span><br><br>
+            <span class="kw">→ AVOIR :</span>  tous les autres verbes.<br><br>
+            <span class="note">Accord avec ÊTRE :</span>  le participe s'accorde avec le <span class="kw">sujet</span><br>
+            <span class="ok">✓ Elle est partie.</span>  <span class="ok">✓ Ils sont arrivés.</span>  <span class="ok">✓ Elles sont tombées.</span><br><br>
+            <span class="note">Accord avec AVOIR :</span>  s'accorde avec le COD placé <span class="kw">avant</span> le verbe<br>
+            <span class="ok">✓ Les fleurs qu'il a <span class="kw">cueillies</span>.</span>  <span class="ok">✓ Je les ai <span class="kw">vues</span>.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ IMPARFAIT ═══════════ -->
+    <section class="formula-section" id="imparfait" data-title="Imparfait formation usage habitude description">
+      <div class="section-title"><i class="bi bi-hourglass-split"></i> Imparfait</div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Formation <span class="level-pill level-inter">Intermédiaire</span></div>
+        <div class="formula-body">
+          <div class="rule-box">
+            <button class="copy-btn" onclick="copyRule(this)">Copier</button>
+            <span class="kw">Base :</span>  radical de la 1ʳᵉ personne du pluriel (<span class="note">nous</span>) au présent<br>
+            <span class="kw">Terminaisons :</span>  -ais / -ais / -ait / -ions / -iez / -aient<br><br>
+            <span class="ex">parler : nous parlons → parl-  →  je parl<span class="kw">ais</span>, tu parl<span class="kw">ais</span>, il parl<span class="kw">ait</span>…</span><br>
+            <span class="note">Exception :</span>  <span class="kw">être</span> → ét- (j'étais, tu étais, il était…)
+          </div>
+          <table class="formula-table mt-2">
+            <tr><th>Usage</th><th>Exemple</th></tr>
+            <tr><td>Habitude passée</td><td><em>Quand j'étais enfant, je <strong>jouais</strong> au foot.</em></td></tr>
+            <tr><td>Description (passé)</td><td><em>Il <strong>faisait</strong> beau ce jour-là.</em></td></tr>
+            <tr><td>Action en cours (interrompue)</td><td><em>Je <strong>dormais</strong> quand le téléphone a sonné.</em></td></tr>
+            <tr><td>Politesse (imparfait de politesse)</td><td><em>Je <strong>voulais</strong> vous demander un service.</em></td></tr>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ FUTUR ═══════════ -->
+    <section class="formula-section" id="futur" data-title="Futur simple proche formation">
+      <div class="section-title"><i class="bi bi-arrow-right-circle"></i> Futur</div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Futur proche vs Futur simple <span class="level-pill level-inter">Intermédiaire</span></div>
+        <div class="formula-body">
+          <div class="rule-box">
+            <button class="copy-btn" onclick="copyRule(this)">Copier</button>
+            <span class="kw">Futur proche :</span>  <span class="note">aller</span> (présent) + infinitif  ← action imminente<br>
+            <span class="ex">Je vais manger.  Tu vas partir.  Il va pleuvoir.</span><br><br>
+            <span class="kw">Futur simple :</span>  infinitif + terminaisons  ← action future générale<br>
+            <span class="note">Terminaisons :</span>  -ai / -as / -a / -ons / -ez / -ont<br>
+            <span class="ex">parler → je parl<span class="kw">erai</span>, tu parl<span class="kw">eras</span>, il parl<span class="kw">era</span>…</span>
+          </div>
+          <table class="formula-table mt-2">
+            <tr><th>Verbe</th><th>Radical irrégulier</th><th>Exemple</th></tr>
+            <tr><td>être</td><td><code>ser-</code></td><td>je serai</td></tr>
+            <tr><td>avoir</td><td><code>aur-</code></td><td>tu auras</td></tr>
+            <tr><td>aller</td><td><code>ir-</code></td><td>il ira</td></tr>
+            <tr><td>faire</td><td><code>fer-</code></td><td>nous ferons</td></tr>
+            <tr><td>venir</td><td><code>viendr-</code></td><td>vous viendrez</td></tr>
+            <tr><td>pouvoir</td><td><code>pourr-</code></td><td>ils pourront</td></tr>
+            <tr><td>vouloir</td><td><code>voudr-</code></td><td>je voudrai</td></tr>
+            <tr><td>savoir</td><td><code>saur-</code></td><td>tu sauras</td></tr>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ NÉGATION ═══════════ -->
+    <section class="formula-section" id="negatif" data-title="Négation ne pas jamais plus rien personne">
+      <div class="section-title"><i class="bi bi-x-circle"></i> Négation</div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Structures négatives <span class="level-pill level-basic">Débutant</span></div>
+        <div class="formula-body">
+          <table class="formula-table">
+            <tr><th>Structure</th><th>Sens</th><th>Exemple</th></tr>
+            <tr><td><code>ne … pas</code></td><td>not</td><td>Je ne parle pas.</td></tr>
+            <tr><td><code>ne … jamais</code></td><td>never</td><td>Il ne mange jamais de viande.</td></tr>
+            <tr><td><code>ne … plus</code></td><td>no longer / not anymore</td><td>Elle ne fume plus.</td></tr>
+            <tr><td><code>ne … rien</code></td><td>nothing</td><td>Je ne vois rien.</td></tr>
+            <tr><td><code>ne … personne</code></td><td>nobody</td><td>Il ne connaît personne.</td></tr>
+            <tr><td><code>ne … que</code></td><td>only</td><td>Elle ne mange que des légumes.</td></tr>
+            <tr><td><code>ne … ni … ni</code></td><td>neither … nor</td><td>Il n'aime ni le café ni le thé.</td></tr>
+            <tr><td><code>ne … aucun(e)</code></td><td>no / none</td><td>Je n'ai aucun doute.</td></tr>
+          </table>
+          <div class="rule-box mt-2">
+            <button class="copy-btn" onclick="copyRule(this)">Copier</button>
+            <span class="kw">Au passé composé :</span>  ne + auxiliaire + <span class="note">pas/jamais/plus/rien</span> + participe passé<br>
+            <span class="ok">✓ Je n'ai <span class="kw">pas</span> mangé.</span>  <span class="ok">✓ Elle n'a <span class="kw">rien</span> dit.</span><br><br>
+            <span class="kw">Exception :</span>  <span class="note">personne/aucun</span> → après le participe<br>
+            <span class="ok">✓ Il n'a vu <span class="kw">personne</span>.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ QUESTIONS ═══════════ -->
+    <section class="formula-section" id="questions" data-title="Interrogation questions mot interrogatif inversion">
+      <div class="section-title"><i class="bi bi-question-circle"></i> Interrogation</div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">3 façons de poser une question <span class="level-pill level-basic">Débutant</span></div>
+        <div class="formula-body">
+          <div class="rule-box">
+            <button class="copy-btn" onclick="copyRule(this)">Copier</button>
+            <span class="note">① Intonation (oral informel) :</span><br>
+            <span class="ex">Tu parles français ?</span><br><br>
+            <span class="note">② Est-ce que (standard) :</span><br>
+            <span class="ex">Est-ce que tu parles français ?</span><br><br>
+            <span class="note">③ Inversion (écrit formel) :</span><br>
+            <span class="ex">Parles-tu français ?  |  Parle-t-il français ?</span>  <span class="note">(← -t- euphonique)</span>
+          </div>
+          <table class="formula-table mt-2">
+            <tr><th>Mot interrogatif</th><th>Sens</th><th>Exemple</th></tr>
+            <tr><td><code>Qui</code></td><td>Who</td><td>Qui est-ce ?</td></tr>
+            <tr><td><code>Que / Qu'</code></td><td>What (objet)</td><td>Que fais-tu ?</td></tr>
+            <tr><td><code>Quoi</code></td><td>What (après prép.)</td><td>À quoi penses-tu ?</td></tr>
+            <tr><td><code>Quel(le)(s)</code></td><td>Which / What</td><td>Quelle heure est-il ?</td></tr>
+            <tr><td><code>Où</code></td><td>Where</td><td>Où habites-tu ?</td></tr>
+            <tr><td><code>Quand</code></td><td>When</td><td>Quand pars-tu ?</td></tr>
+            <tr><td><code>Comment</code></td><td>How</td><td>Comment vas-tu ?</td></tr>
+            <tr><td><code>Combien (de)</code></td><td>How many/much</td><td>Combien ça coûte ?</td></tr>
+            <tr><td><code>Pourquoi</code></td><td>Why</td><td>Pourquoi pleures-tu ?</td></tr>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ PRÉPOSITIONS ═══════════ -->
+    <section class="formula-section" id="prepositions" data-title="Prépositions lieux pays villes en au aux">
+      <div class="section-title"><i class="bi bi-geo-alt"></i> Prépositions & Lieux</div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Prépositions de lieu <span class="level-pill level-basic">Débutant</span></div>
+        <div class="formula-body">
+          <table class="formula-table">
+            <tr><th>Préposition</th><th>Sens</th><th>Exemple</th></tr>
+            <tr><td><code>à</code></td><td>at / in (ville)</td><td>Je suis à Paris.</td></tr>
+            <tr><td><code>en</code></td><td>in (pays fém. / continent)</td><td>Je vis en France, en Afrique.</td></tr>
+            <tr><td><code>au</code></td><td>in (pays masc.)</td><td>Il habite au Cameroun.</td></tr>
+            <tr><td><code>aux</code></td><td>in (pays pluriel)</td><td>Elle est aux États-Unis.</td></tr>
+            <tr><td><code>dans</code></td><td>in/inside (espace délimité)</td><td>Le chat est dans la boîte.</td></tr>
+            <tr><td><code>sur</code></td><td>on/on top of</td><td>Le livre est sur la table.</td></tr>
+            <tr><td><code>sous</code></td><td>under</td><td>Le chat est sous le lit.</td></tr>
+            <tr><td><code>devant</code></td><td>in front of</td><td>Il attend devant la porte.</td></tr>
+            <tr><td><code>derrière</code></td><td>behind</td><td>Le jardin est derrière la maison.</td></tr>
+            <tr><td><code>entre</code></td><td>between</td><td>Le café est entre l'école et la gare.</td></tr>
+            <tr><td><code>près de</code></td><td>near</td><td>J'habite près de l'université.</td></tr>
+            <tr><td><code>loin de</code></td><td>far from</td><td>C'est loin du centre-ville.</td></tr>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ COMPARAISON ═══════════ -->
+    <section class="formula-section" id="comparaison" data-title="Comparatif superlatif plus moins aussi que">
+      <div class="section-title"><i class="bi bi-arrows-expand"></i> Comparatif & Superlatif</div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Comparatif <span class="level-pill level-inter">Intermédiaire</span></div>
+        <div class="formula-body">
+          <div class="rule-box">
+            <button class="copy-btn" onclick="copyRule(this)">Copier</button>
+            <span class="kw">Supériorité :</span>   <span class="note">plus</span>  + adjectif/adverbe + <span class="note">que</span><br>
+            <span class="kw">Égalité :</span>       <span class="note">aussi</span> + adjectif/adverbe + <span class="note">que</span><br>
+            <span class="kw">Infériorité :</span>   <span class="note">moins</span> + adjectif/adverbe + <span class="note">que</span><br><br>
+            <span class="ok">✓ Marie est <span class="kw">plus grande</span> que Paul.</span><br>
+            <span class="ok">✓ Il court <span class="kw">aussi vite</span> qu'elle.</span><br>
+            <span class="ok">✓ Ce film est <span class="kw">moins intéressant</span> que l'autre.</span><br><br>
+            <span class="note">Irréguliers :</span>  bon → <span class="kw">meilleur</span>  |  bien → <span class="kw">mieux</span>  |  mauvais → <span class="kw">pire</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Superlatif <span class="level-pill level-inter">Intermédiaire</span></div>
+        <div class="formula-body">
+          <div class="rule-box">
+            <button class="copy-btn" onclick="copyRule(this)">Copier</button>
+            <span class="kw">Superlatif relatif :</span>  le/la/les + <span class="note">plus/moins</span> + adjectif (+ de)<br>
+            <span class="ok">✓ C'est la <span class="kw">plus belle</span> ville <span class="kw">de</span> France.</span><br>
+            <span class="ok">✓ Il est le <span class="kw">moins rapide</span> de l'équipe.</span><br><br>
+            <span class="kw">Superlatif absolu :</span>  <span class="note">très / extrêmement / absolument</span> + adjectif<br>
+            <span class="ok">✓ Ce gâteau est <span class="kw">absolument délicieux</span>.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ SUBJONCTIF ═══════════ -->
+    <section class="formula-section" id="subjonctif" data-title="Subjonctif présent formation usage vouloir falloir douter">
+      <div class="section-title"><i class="bi bi-lightning"></i> Subjonctif</div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Formation du subjonctif présent <span class="level-pill level-adv">Avancé</span></div>
+        <div class="formula-body">
+          <div class="rule-box">
+            <button class="copy-btn" onclick="copyRule(this)">Copier</button>
+            <span class="kw">Base :</span>  radical de la 3ᵉ personne du pluriel (<span class="note">ils</span>) au présent<br>
+            <span class="kw">Terminaisons :</span>  -e / -es / -e / -ions / -iez / -ent<br><br>
+            <span class="ex">parler : ils parlent → parl- → que je <span class="kw">parle</span>, que tu <span class="kw">parles</span>…</span><br>
+            <span class="ex">finir  : ils finissent → finiss- → que je <span class="kw">finisse</span>…</span><br><br>
+            <span class="note">Irréguliers :</span>  être → <span class="kw">soit</span>  |  avoir → <span class="kw">ait</span>  |  aller → <span class="kw">aille</span>  |  faire → <span class="kw">fasse</span>  |  pouvoir → <span class="kw">puisse</span>
+          </div>
+          <table class="formula-table mt-2">
+            <tr><th>Déclencheurs du subjonctif</th><th>Exemple</th></tr>
+            <tr><td>Volonté : vouloir, désirer, souhaiter que</td><td><em>Je veux qu'il <strong>vienne</strong>.</em></td></tr>
+            <tr><td>Nécessité : il faut que, il est nécessaire que</td><td><em>Il faut que tu <strong>partes</strong>.</em></td></tr>
+            <tr><td>Doute/incertitude : douter que, ne pas croire que</td><td><em>Je doute qu'il <strong>ait</strong> raison.</em></td></tr>
+            <tr><td>Émotion : être content/triste/surpris que</td><td><em>Je suis content qu'elle <strong>soit</strong> là.</em></td></tr>
+            <tr><td>Conjonctions : bien que, pour que, avant que, à moins que</td><td><em>Bien qu'il <strong>fasse</strong> froid, je sors.</em></td></tr>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ CONDITIONNEL ═══════════ -->
+    <section class="formula-section" id="conditionnel" data-title="Conditionnel présent passé si hypothèse politesse">
+      <div class="section-title"><i class="bi bi-shuffle"></i> Conditionnel</div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Conditionnel présent & passé <span class="level-pill level-adv">Avancé</span></div>
+        <div class="formula-body">
+          <div class="rule-box">
+            <button class="copy-btn" onclick="copyRule(this)">Copier</button>
+            <span class="kw">Conditionnel présent :</span>  radical du futur + terminaisons de l'imparfait<br>
+            <span class="note">Terminaisons :</span>  -ais / -ais / -ait / -ions / -iez / -aient<br>
+            <span class="ex">parler → je <span class="kw">parlerais</span>, tu <span class="kw">parlerais</span>, il <span class="kw">parlerait</span>…</span><br><br>
+            <span class="kw">Conditionnel passé :</span>  auxiliaire au conditionnel + participe passé<br>
+            <span class="ex">J'<span class="kw">aurais parlé</span>.  Elle <span class="kw">serait partie</span>.</span>
+          </div>
+          <table class="formula-table mt-2">
+            <tr><th>Hypothèse (Si…)</th><th>Structure</th><th>Exemple</th></tr>
+            <tr><td>Réelle (futur)</td><td><code>Si + présent, futur simple</code></td><td><em>Si je mange, je grossirai.</em></td></tr>
+            <tr><td>Irréelle (présent)</td><td><code>Si + imparfait, cond. présent</code></td><td><em>Si j'avais de l'argent, j'achèterais.</em></td></tr>
+            <tr><td>Irréelle (passé)</td><td><code>Si + plus-que-parfait, cond. passé</code></td><td><em>Si j'avais étudié, j'aurais réussi.</em></td></tr>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ PLUS-QUE-PARFAIT ═══════════ -->
+    <section class="formula-section" id="plusqueparfait" data-title="Plus-que-parfait formation usage antériorité">
+      <div class="section-title"><i class="bi bi-skip-backward"></i> Plus-que-parfait</div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Formation & Usage <span class="level-pill level-adv">Avancé</span></div>
+        <div class="formula-body">
+          <div class="rule-box">
+            <button class="copy-btn" onclick="copyRule(this)">Copier</button>
+            <span class="kw">Formation :</span>  auxiliaire (<span class="note">avoir/être</span>) à l'<span class="note">imparfait</span> + participe passé<br><br>
+            <span class="ex">J'<span class="kw">avais mangé</span>.  Il <span class="kw">était parti</span>.  Elles <span class="kw">s'étaient levées</span>.</span><br><br>
+            <span class="kw">Usage :</span>  action passée <span class="note">antérieure</span> à une autre action passée<br>
+            <span class="ok">✓ Quand il est arrivé, j'<span class="kw">avais déjà fini</span>.</span><br>
+            <span class="ok">✓ Elle a dit qu'elle <span class="kw">avait vu</span> ce film.</span>  <span class="note">(discours indirect)</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ VOIX PASSIVE ═══════════ -->
+    <section class="formula-section" id="passif" data-title="Voix passive formation transformation agent par">
+      <div class="section-title"><i class="bi bi-arrow-left-right"></i> Voix Passive</div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Formation & Transformation <span class="level-pill level-adv">Avancé</span></div>
+        <div class="formula-body">
+          <div class="rule-box">
+            <button class="copy-btn" onclick="copyRule(this)">Copier</button>
+            <span class="kw">Voix active :</span>   Sujet + verbe + COD<br>
+            <span class="kw">Voix passive :</span>  COD (devenu sujet) + <span class="note">être</span> (au même temps) + participe passé + <span class="note">par</span> + agent<br><br>
+            <span class="ok">✓ Actif  : Le chat <span class="kw">mange</span> la souris.</span><br>
+            <span class="ok">✓ Passif : La souris <span class="kw">est mangée</span> par le chat.</span><br><br>
+            <span class="ok">✓ Actif  : La police <span class="kw">a arrêté</span> le voleur.</span><br>
+            <span class="ok">✓ Passif : Le voleur <span class="kw">a été arrêté</span> par la police.</span><br><br>
+            <span class="note">⚠️ Le participe passé s'accorde avec le nouveau sujet.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ DISCOURS INDIRECT ═══════════ -->
+    <section class="formula-section" id="discours" data-title="Discours indirect rapporté concordance des temps">
+      <div class="section-title"><i class="bi bi-chat-quote"></i> Discours Indirect</div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Concordance des temps <span class="level-pill level-adv">Avancé</span></div>
+        <div class="formula-body">
+          <table class="formula-table">
+            <tr><th>Discours direct</th><th>→</th><th>Discours indirect (passé)</th></tr>
+            <tr><td>Présent</td><td>→</td><td>Imparfait</td></tr>
+            <tr><td>Passé composé</td><td>→</td><td>Plus-que-parfait</td></tr>
+            <tr><td>Futur simple</td><td>→</td><td>Conditionnel présent</td></tr>
+            <tr><td>Futur antérieur</td><td>→</td><td>Conditionnel passé</td></tr>
+            <tr><td>Impératif</td><td>→</td><td>de + infinitif</td></tr>
+          </table>
+          <div class="rule-box mt-2">
+            <button class="copy-btn" onclick="copyRule(this)">Copier</button>
+            <span class="ok">Direct  : Il dit : « Je <span class="kw">suis</span> fatigué. »</span><br>
+            <span class="ok">Indirect : Il dit qu'il <span class="kw">était</span> fatigué.</span><br><br>
+            <span class="ok">Direct  : Elle a dit : « Je <span class="kw">viendrai</span> demain. »</span><br>
+            <span class="ok">Indirect : Elle a dit qu'elle <span class="kw">viendrait</span> le lendemain.</span><br><br>
+            <span class="note">Changements de mots :</span>  aujourd'hui→ce jour-là  |  demain→le lendemain  |  hier→la veille  |  ici→là
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ PRONOMS RELATIFS ═══════════ -->
+    <section class="formula-section" id="relatifs" data-title="Pronoms relatifs qui que dont où lequel">
+      <div class="section-title"><i class="bi bi-link-45deg"></i> Pronoms Relatifs</div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Pronoms relatifs simples & composés <span class="level-pill level-adv">Avancé</span></div>
+        <div class="formula-body">
+          <table class="formula-table">
+            <tr><th>Pronom</th><th>Fonction</th><th>Exemple</th></tr>
+            <tr><td><code>qui</code></td><td>sujet</td><td><em>L'homme <strong>qui</strong> parle est mon père.</em></td></tr>
+            <tr><td><code>que / qu'</code></td><td>COD</td><td><em>Le livre <strong>que</strong> je lis est intéressant.</em></td></tr>
+            <tr><td><code>dont</code></td><td>complément de + nom/verbe</td><td><em>L'ami <strong>dont</strong> je te parle habite à Paris.</em></td></tr>
+            <tr><td><code>où</code></td><td>lieu ou temps</td><td><em>La ville <strong>où</strong> je suis né est belle.</em></td></tr>
+            <tr><td><code>lequel / laquelle / lesquels / lesquelles</code></td><td>après préposition (chose)</td><td><em>La chaise sur <strong>laquelle</strong> tu es assis.</em></td></tr>
+            <tr><td><code>auquel / à laquelle / auxquels</code></td><td>à + lequel</td><td><em>Le projet <strong>auquel</strong> je travaille.</em></td></tr>
+            <tr><td><code>duquel / de laquelle / desquels</code></td><td>de + lequel</td><td><em>Le problème <strong>duquel</strong> il s'occupe.</em></td></tr>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ STYLISTIQUE ═══════════ -->
+    <section class="formula-section" id="stylistique" data-title="Stylistique figures de style métaphore comparaison allitération">
+      <div class="section-title"><i class="bi bi-pen"></i> Stylistique & Figures de Style</div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Figures de style essentielles <span class="level-pill level-adv">Avancé</span></div>
+        <div class="formula-body">
+          <table class="formula-table">
+            <tr><th>Figure</th><th>Définition</th><th>Exemple</th></tr>
+            <tr><td><strong>Comparaison</strong></td><td>Rapproche deux éléments avec un outil comparatif (comme, tel, ainsi que…)</td><td><em>Il est courageux <strong>comme</strong> un lion.</em></td></tr>
+            <tr><td><strong>Métaphore</strong></td><td>Identification directe sans outil comparatif</td><td><em>C'est un lion dans l'arène.</em></td></tr>
+            <tr><td><strong>Personnification</strong></td><td>Attribue des caractéristiques humaines à un non-humain</td><td><em>Le vent <strong>gémissait</strong> dans les arbres.</em></td></tr>
+            <tr><td><strong>Hyperbole</strong></td><td>Exagération pour renforcer une idée</td><td><em>Je meurs de faim !</em></td></tr>
+            <tr><td><strong>Litote</strong></td><td>Dire moins pour suggérer plus</td><td><em>Ce n'est pas mal. (= C'est très bien.)</em></td></tr>
+            <tr><td><strong>Euphémisme</strong></td><td>Atténuer une réalité dure</td><td><em>Il nous a quittés. (= Il est mort.)</em></td></tr>
+            <tr><td><strong>Antithèse</strong></td><td>Opposer deux idées contrastées</td><td><em>L'homme est mortel, l'art est éternel.</em></td></tr>
+            <tr><td><strong>Allitération</strong></td><td>Répétition d'un son consonantique</td><td><em>Pour qui sont ces serpents qui sifflent sur vos têtes ?</em></td></tr>
+            <tr><td><strong>Anaphore</strong></td><td>Répétition d'un mot en début de phrase</td><td><em>J'ai rêvé… J'ai lutté… J'ai vaincu.</em></td></tr>
+            <tr><td><strong>Chiasme</strong></td><td>Structure croisée ABBA</td><td><em>Il faut manger pour vivre, non vivre pour manger.</em></td></tr>
+            <tr><td><strong>Oxymore</strong></td><td>Association de termes contradictoires</td><td><em>Un silence éloquent. / Cette obscure clarté.</em></td></tr>
+            <tr><td><strong>Ironie</strong></td><td>Dire le contraire de ce qu'on pense</td><td><em>Quelle surprise ! (en voyant quelque chose de prévisible)</em></td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="formula-card">
+        <div class="formula-card-header">Connecteurs logiques essentiels <span class="level-pill level-adv">Avancé</span></div>
+        <div class="formula-body">
+          <table class="formula-table">
+            <tr><th>Relation</th><th>Connecteurs</th></tr>
+            <tr><td>Addition</td><td><code>de plus, en outre, par ailleurs, également, de surcroît</code></td></tr>
+            <tr><td>Opposition</td><td><code>mais, cependant, néanmoins, toutefois, or, en revanche, pourtant</code></td></tr>
+            <tr><td>Cause</td><td><code>car, parce que, puisque, étant donné que, vu que</code></td></tr>
+            <tr><td>Conséquence</td><td><code>donc, ainsi, par conséquent, c'est pourquoi, dès lors</code></td></tr>
+            <tr><td>But</td><td><code>pour, afin de, afin que, pour que, de façon à</code></td></tr>
+            <tr><td>Concession</td><td><code>bien que, quoique, malgré, même si, certes…mais</code></td></tr>
+            <tr><td>Illustration</td><td><code>par exemple, notamment, c'est-à-dire, tel que, ainsi</code></td></tr>
+            <tr><td>Conclusion</td><td><code>en conclusion, en somme, bref, finalement, pour conclure</code></td></tr>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container text-center">
+    <p class="mb-1">🏕 <strong style="color:#fff">SchoolCamp</strong> — La communauté étudiante du Cameroun 🇨🇲</p>
+    <small>
+      <a href="#">Forum</a> · <a href="#">Groupes</a> · <a href="#">Matériaux</a> · <a href="#">Quiz</a>
+    </small>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  /* ── SIDEBAR TOGGLE ── */
+  function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebarOverlay').classList.toggle('open');
+  }
+
+  /* ── SCROLL TO SECTION ── */
+  function scrollToSection(id) {
+    const el = document.getElementById(id);
+    if (!el) return false;
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (window.innerWidth <= 768) toggleSidebar();
+    document.querySelectorAll('.category-link').forEach(l => l.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+    return false;
+  }
+
+  /* ── SIDEBAR SEARCH ── */
+  function filterSections(query) {
+    const q = query.toLowerCase().trim();
+    document.querySelectorAll('.formula-section').forEach(section => {
+      if (!q) { section.classList.remove('hidden'); return; }
+      const text = section.textContent.toLowerCase();
+      section.classList.toggle('hidden', !text.includes(q));
+    });
+  }
+
+  /* ── COPY RULE ── */
+  function copyRule(btn) {
+    const box = btn.closest('.rule-box');
+    const text = box.innerText.replace('Copier\n','').trim();
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = '✓ Copié !';
+      btn.style.background = 'var(--sc-green)';
+      btn.style.color = '#fff';
+      setTimeout(() => { btn.textContent = 'Copier'; btn.style.background = ''; btn.style.color = ''; }, 2000);
+    });
+  }
+
+  /* ── ACTIVE SECTION ON SCROLL ── */
+  const sections = document.querySelectorAll('.formula-section');
+  const links = document.querySelectorAll('.category-link');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY + 90 >= s.offsetTop) current = s.id;
+    });
+    links.forEach(l => {
+      l.classList.remove('active');
+      if (l.getAttribute('onclick') && l.getAttribute('onclick').includes(`'${current}'`)) {
+        l.classList.add('active');
+      }
+    });
+  });
+</script>
+</body>
+</html>
