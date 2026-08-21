@@ -3,8 +3,6 @@
     "builder": "NIXPACKS"
   },
   "deploy": {
-    "healthcheckPath": "/forum/",
-    "restartPolicyType": "ON_FAILURE",
-    "restartPolicyMaxRetries": 3
+    "startCommand": "gunicorn schoolcamp.wsgi:application"
   }
 }
