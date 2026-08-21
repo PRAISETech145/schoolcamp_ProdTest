@@ -619,20 +619,7 @@ def on_request(request_type, name, response_time, response_length,
 
 @events.test_start.add_listener
 def on_test_start(environment, **kwargs):
-    print("""
-╔══════════════════════════════════════════════╗
-║   🏕  SchoolCamp Load Test Starting...       ║
-║   • GuestUser    → browse without login      ║
-║   • StudentUser  → full authenticated flow   ║
-║   • PowerUser    → heavy posting/chatting    ║
-║   • PaymentUser  → MTN MoMo payment flow     ║
-║                                              ║
-║   MTN Sandbox Numbers:                       ║
-║   46733123454 → SUCCESSFUL ✅                ║
-║   46733123450 → FAILED     ❌                ║
-║   46733123451 → PENDING    ⏳                ║
-╚══════════════════════════════════════════════╝
-    """)
+ pass
 
 
 @events.test_stop.add_listener
