@@ -15,11 +15,3 @@ class UserAdmin(BaseUserAdmin):
             'fields': ('school_name', 'region', 'level', 'bio', 'avatar', 'xp_points', 'is_email_verified')
         }),
     )
-from payment.models import Payment
-from django.contrib.auth import get_user_model
-import uuid
-User = get_user_model()  
-u = User.objects.first()
-ref = 'SC-' + uuid.uuid4().hex[:10].upper()
-p = Payment.objects.create(user=u, provider='mtn', phone_number='682834990', amount=200, reference=ref, status='pending')
-print('Reference:', p.reference)
