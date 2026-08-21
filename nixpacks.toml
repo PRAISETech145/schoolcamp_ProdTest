@@ -11,4 +11,4 @@ cmds = [
 ]
 
 [start]
-cmd = "gunicorn schoolcamp.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 120"
+cmd = "daphne -b 0.0.0.0 -p $PORT schoolcamp.asgi:application --verbosity 2"
