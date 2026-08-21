@@ -7,8 +7,8 @@ cmds = ["pip install -r requirements.txt"]
 [phases.build]
 cmds = [
   "python manage.py collectstatic --no-input",
-  "python manage.py migrate --no-input"
+  "POSTGRES_LOCALLY=true python manage.py migrate --no-input"
 ]
 
 [start]
-cmd = "daphne -b 0.0.0.0 -p $PORT schoolcamp.asgi:application --verbosity 2"
+cmd = "python manage.py migrate --no-input && daphne -b 0.0.0.0 -p $PORT schoolcamp.asgi:application --verbosity 2"
