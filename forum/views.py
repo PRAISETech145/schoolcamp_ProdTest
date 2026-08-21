@@ -1,13 +1,18 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.db.models import Q, Count
 from django.views.decorators.http import require_POST
 from functools import wraps
 from .models import Question, Reply, Like, ReplyLike
 from .forms import QuestionForm, ReplyForm
 from payment.views import subscription_required
+
+
+def health_check(request):
+    """Lightweight health check for Railway - no DB access needed"""
+    return HttpResponse("OK", status=200)
 
 
 def ajax_like_required(view_func):
